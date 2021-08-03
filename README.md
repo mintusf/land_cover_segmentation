@@ -1,5 +1,8 @@
+![CI pipeline](https://github.com/mintusf/land_cover_tracking/actions/workflows/unittests.yml/badge.svg?branch=main)
+![Flake8 check](https://github.com/mintusf/land_cover_tracking/actions/workflows/flake8.yml/badge.svg?branch=main)
+
 ### Summary
-Using Sentinel-2 data to detect percentage of various land types. 
+Using Sentinel-2 data to detect percentage of various land types (WIP).
 
 ### Dataset
 Used for searching:
