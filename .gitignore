@@ -2,3 +2,4 @@
 docker/setup.bs
 
 *.ipynb
+*.pyc
