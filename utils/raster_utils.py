@@ -2,8 +2,9 @@ from typing import List
 
 from rasterio.io import DatasetReader
 
+
 def get_coord_from_raster(raster: DatasetReader) -> List[float]:
-    """ Gets coordintes from raster
+    """Gets coordintes from raster
 
     Args:
         raster (DatasetReader): Rasterio dataset reader
