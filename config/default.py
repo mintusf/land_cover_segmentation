@@ -8,6 +8,7 @@ _C.MODEL.TYPE = "DeepLab"
 
 _C.DATASET = CfgNode()
 _C.DATASET.ROOT = os.path.join("/data")
+_C.DATASET.LIST = os.path.join("config", "dataset_list", "test.txt")
 
 
 def get_cfg_defaults():

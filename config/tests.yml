@@ -3,3 +3,4 @@ MODEL:
 
 DATASET:
   ROOT: "/data"
+  LIST: "config/dataset_list/test.txt"
