@@ -3,6 +3,8 @@ name: Issue assign project
 on:
   issues:
     types: [opened, labeled]
+  pull_request:
+    types: [opened, labeled]
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
