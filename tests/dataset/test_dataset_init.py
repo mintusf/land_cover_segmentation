@@ -1,13 +1,17 @@
 import os
 
 from config.default import get_cfg_defaults
+from dataset import PatchDataset
 
 
-def test_config():
+def test_dataset_init():
     cfg = get_cfg_defaults()
     cfg.merge_from_file(os.path.join("config", "tests.yml"))
     cfg.freeze()
 
-    assert "MODEL" in cfg and "DATASET" in cfg
-    assert cfg.MODEL.TYPE == "DeepLab"
-    assert cfg.DATASET.ROOT == "/data"
+    dataset = PatchDataset(cfg)
+
+    assert len(dataset) == 2
+
+
+test_dataset_init()
