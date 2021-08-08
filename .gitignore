@@ -1,5 +1,4 @@
 *.code-workspace
 docker/setup.bs
 
-*.ipynb
 *.pyc
