@@ -2,7 +2,11 @@ MODEL:
   TYPE: DeepLab
 
 DATASET:
-  ROOT: "/data"
+  ROOT: "./tests/dataset/dummy_dataset"
   LIST: "config/dataset/lists/test.txt"
+  INPUT:
+    SENSOR: s2
+    USED_CHANNELS: [3,2,1]
   MASK:
+    SENSOR: lc
     CONFIG: "config/dataset/mask_configs/test.yml"

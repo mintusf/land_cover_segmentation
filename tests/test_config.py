@@ -10,4 +10,4 @@ def test_config():
 
     assert "MODEL" in cfg and "DATASET" in cfg
     assert cfg.MODEL.TYPE == "DeepLab"
-    assert cfg.DATASET.ROOT == "/data"
+    assert cfg.DATASET.ROOT == "./tests/dataset/dummy_dataset"
