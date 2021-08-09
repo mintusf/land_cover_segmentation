@@ -1,4 +1,10 @@
+import json
+from typing import List
 import os
+
+import numpy as np
+
+from utils.raster_utils import get_stats
 
 
 def split_sample_name(sample_name: str) -> str:
@@ -29,3 +35,40 @@ def get_raster_filepath(rootdir: str, sample_name: str, sensor: str) -> str:
     folder = os.path.join(rootdir, roi_folder_name, get_area_foldername(sensor, area))
     filename = f"{roi_folder_name}_{sensor}_{area}_{subgrid_id}.tif"
     return os.path.join(folder, filename)
+
+
+def build_dataset_stats_json(
+    dataset_list: List[str],
+    dataset_root: str,
+    input_sensor_name: str,
+    channels_list: List[int],
+    savepath: str,
+):
+    """Builds stats json for a dataset.
+
+    Args:
+        dataset_list (list): List of dataset.
+        dataset_root (str): Root directory of the dataset.
+        input_sensor_name (str): Name of the input sensor.
+        channels_list (list): List of channels.
+        savepath (str): Path to save the json.
+    """
+    means = np.zeros((len(channels_list)))
+    stds = np.zeros((len(channels_list)))
+    filepaths = [
+        get_raster_filepath(dataset_root, sample_name, input_sensor_name)
+        for sample_name in dataset_list
+    ]
+    for file in filepaths:
+        image_means, image_stds = get_stats(file)
+        means += image_means
+        stds += image_stds
+
+    means = means / len(filepaths)
+    stds = stds / len(filepaths)
+
+    means_dict = {band: mean for band, mean in zip(channels_list, means)}
+    stds_dict = {band: std for band, std in zip(channels_list, stds)}
+
+    with open(savepath, "w") as f:
+        json.dump({"means": means_dict, "stds": stds_dict}, f)

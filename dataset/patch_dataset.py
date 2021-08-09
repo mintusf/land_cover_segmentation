@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 
 import torch
@@ -11,7 +12,7 @@ from utils.utils import get_raster_filepath
 
 
 class PatchDataset(Dataset):
-    def __init__(self, cfg: CfgNode, transform=None):
+    def __init__(self, cfg: CfgNode, transforms=None):
         """Patch Dataset initialization
 
         Args:
@@ -23,10 +24,11 @@ class PatchDataset(Dataset):
         self.dataset_root = cfg.DATASET.ROOT
         self.mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
         self.input_sensor_name = cfg.DATASET.INPUT.SENSOR
+        self.channels_list = cfg.DATASET.INPUT.CHANNELS
         self.input_used_channels = cfg.DATASET.INPUT.USED_CHANNELS
         self.target_sensor_name = cfg.DATASET.MASK.SENSOR
 
-        self.transform = transform
+        self.transforms = transforms
 
     def __len__(self) -> int:
         """Get length of dataset
@@ -70,7 +72,7 @@ class PatchDataset(Dataset):
         sample = {"input": input_tensor, "target": target_tensor}
 
         # Tranform
-        if self.transform:
-            sample = self.transform(sample)
+        if self.transforms:
+            sample = self.transforms(sample)
 
         return sample
