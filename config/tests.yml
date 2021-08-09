@@ -6,7 +6,7 @@ DATASET:
   LIST: "config/dataset/lists/test.txt"
   INPUT:
     SENSOR: s2
-    USED_CHANNELS: [3,2,1]
+    USED_CHANNELS: [3,2,1,12]
     STATS_FILE: "config/dataset/stats/test.json"
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:

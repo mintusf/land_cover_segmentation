@@ -25,7 +25,7 @@ def test_dataset_get_sample():
     assert sample_input.dim() == 3
     assert sample_target.dim() == 3
 
-    assert sample_input.shape[0] == 3
+    assert sample_input.shape[0] == len(cfg.DATASET.INPUT.USED_CHANNELS)
     assert sample_input.shape[1] == 256
     assert sample_input.shape[2] == 256
     assert sample_target.shape[0] == 1
