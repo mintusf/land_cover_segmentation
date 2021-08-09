@@ -3,4 +3,6 @@ MODEL:
 
 DATASET:
   ROOT: "/data"
-  LIST: "config/dataset_list/test.txt"
+  LIST: "config/dataset/lists/test.txt"
+  MASK:
+    CONFIG: "config/dataset/mask_configs/test.yml"
