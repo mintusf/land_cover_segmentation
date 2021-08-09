@@ -12,6 +12,3 @@ def test_dataset_init():
     dataset = PatchDataset(cfg)
 
     assert len(dataset) == 2
-
-
-test_dataset_init()

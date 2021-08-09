@@ -9,7 +9,13 @@ _C.MODEL.TYPE = "DeepLab"
 _C.DATASET = CfgNode()
 _C.DATASET.ROOT = os.path.join("/data")
 _C.DATASET.LIST = os.path.join("config", "dataset", "lists", "test.txt")
+_C.DATASET.INPUT = CfgNode()
+_C.DATASET.INPUT.SENSOR = "s2"
+
+# [B1, B2, B3, B4, B5, B6, B7, B8, B8a, B9, B10, B11, B12]
+_C.DATASET.INPUT.USED_CHANNELS = [3, 2, 1]
 _C.DATASET.MASK = CfgNode()
+_C.DATASET.MASK.SENSOR = "lc"
 _C.DATASET.MASK.CONFIG = os.path.join(
     "config", "dataset", "mask_configs", "default.yml"
 )

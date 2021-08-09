@@ -71,8 +71,6 @@ def test_build_mask():
     whole_mask = np.stack(
         [whole_mask_dummy_channel_1, whole_mask_dummy_channel_2], axis=0
     )
-    print(whole_mask.shape)
-    print("kupa")
 
     mask_out_target = np.array(
         [
