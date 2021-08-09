@@ -1,13 +1,16 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 import torch
+from yacs.config import CfgNode
+
+from utils.io_utils import load_json
 
 
 class NormalizeSample(object):
     def __init__(
         self,
-        dataset_mean: float,
-        dataset_std: float,
+        dataset_mean: Tuple[float],
+        dataset_std: Tuple[float],
         target_mean: float = 0.0,
         target_std: float = 1.0,
     ):
@@ -38,3 +41,24 @@ class NormalizeSample(object):
             ) / self.dataset_std[channel]
 
         return {"input": sample_input, "target": sample_target}
+
+
+def get_transform(cfg: CfgNode) -> NormalizeSample:
+    """Gets transform function.
+
+    Args:
+        cfg (CfgNode): Config
+
+    Returns:
+        NormalizeSample: NormalizeSample object
+    """
+    channels = cfg.DATASET.INPUT.CHANNELS
+    used_channels = cfg.DATASET.INPUT.USED_CHANNELS
+    stats_file = cfg.DATASET.INPUT.STATS_FILE
+    stats = load_json(stats_file)
+    means = [stats["means"][channels[channel]] for channel in used_channels]
+    stds = [stats["stds"][channels[channel]] for channel in used_channels]
+
+    transform = NormalizeSample(dataset_mean=means, dataset_std=stds)
+
+    return transform
