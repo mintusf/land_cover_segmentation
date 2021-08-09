@@ -35,6 +35,18 @@ _C.DATASET.MASK.CONFIG = os.path.join(
     "config", "dataset", "mask_configs", "default.yml"
 )
 
+_C.TRAIN = CfgNode()
+_C.TRAIN.EPOCHS = 100
+_C.TRAIN.BATCH_SIZE = 8
+_C.TRAIN.DEVICE = "cuda:0"
+_C.TRAIN.WORKERS = 8
+_C.TRAIN.LOSS = "categorical_crossentropy"
+_C.TRAIN.OPTIMIZER = "adam"
+_C.TRAIN.LR = 0.001
+_C.TRAIN.WEIGHT_DECAY = 0.0005
+_C.TRAIN.VERBOSE_STEP = 10
+_C.TRAIN.VAL_STEP = 100
+
 
 def get_cfg_defaults():
     """Get a yacs CfgNode object with default values for my_project."""
