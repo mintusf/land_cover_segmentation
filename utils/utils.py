@@ -3,8 +3,10 @@ from typing import List
 import os
 
 import numpy as np
+from yacs.config import CfgNode
 
 from utils.raster_utils import get_stats
+from utils.io_utils import get_lines_from_txt
 
 
 def split_sample_name(sample_name: str) -> str:
@@ -72,3 +74,19 @@ def build_dataset_stats_json(
 
     with open(savepath, "w") as f:
         json.dump({"means": means_dict, "stds": stds_dict}, f)
+
+
+def build_dataset_stats_json_from_cfg(cfg: CfgNode) -> None:
+    """Builds stats json for a dataset given config.
+
+    Args:
+        cfg (CfgNode): A Yacs CfgNode object.
+    """
+    dataset_list = get_lines_from_txt(cfg.DATASET.LIST)
+    build_dataset_stats_json(
+        dataset_list,
+        cfg.DATASET.ROOT,
+        cfg.DATASET.INPUT.SENSOR,
+        cfg.DATASET.INPUT.CHANNELS,
+        cfg.DATASET.INPUT.STATS_FILE,
+    )
