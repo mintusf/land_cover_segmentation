@@ -78,3 +78,18 @@ def raster_to_tensor(
     img_tensor = np_to_torch(img_np)
 
     return img_tensor
+
+
+def get_stats(file: str) -> Tuple[np.array]:
+    """Gets raster's mean and std for each channel.
+
+    Args:
+        file (str): Path to the raster
+
+    Returns:
+        Tuple[np.array]: (mean, std)
+    """
+    img_np = raster_to_np(file)
+    image_stds = np.std(img_np, axis=(1, 2))
+    image_means = np.mean(img_np, axis=(1, 2))
+    return image_means, image_stds
