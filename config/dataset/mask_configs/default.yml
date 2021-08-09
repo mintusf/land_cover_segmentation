@@ -1,0 +1,34 @@
+maskname2int: 
+  IGBP: 0
+  LCCS_LC: 1
+  LCCS_LU: 2
+  LCCS_SH: 3
+channels_priority: ["LCCS_LU", "LCCS_SH"]
+selected_masks:
+  LCCS_LU:
+    1: [9]
+    2: [25, 35, 36]
+  LCCS_SH:
+    3: [1]
+    4: [2]
+    5: [3]
+    6: [10]
+    7: [20]
+    8: [27, 50]
+    9: [30]
+    10: [40]
+    11: [51]
+    0: [0]
+class2label:
+  1: "urban"
+  2: "agricultural"
+  3: "barren"
+  4: "snow"
+  5: "water"
+  6: "dense_forest"
+  7: "open_forest"
+  8: "wetlands"
+  9: "grasslands"
+  10: "shrublands"
+  11: "tundra"
+  0: "other"
