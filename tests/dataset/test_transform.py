@@ -7,10 +7,8 @@ import torch
 from utils.utils import build_dataset_stats_json_from_cfg
 from dataset import PatchDataset
 from dataset.transforms import get_transform
-from tests.conftest import with_class_json
 
 
-@with_class_json
 def test_dataset_init(test_config):
 
     build_dataset_stats_json_from_cfg(test_config)

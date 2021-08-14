@@ -43,16 +43,7 @@ def module_dict():
     return out_dict
 
 
-def with_class_json(func):
-    def wrapper():
-
-        cfg = get_cfg_from_file(test_config_path)
-        assert not os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
-
-        func(cfg)
-
-        # Test if stats json exists
-        assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
-        os.remove(cfg.DATASET.INPUT.STATS_FILE)
-
-    return wrapper
+def pytest_sessionfinish():
+    cfg = get_cfg_from_file(test_config_path)
+    assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
+    os.remove(cfg.DATASET.INPUT.STATS_FILE)

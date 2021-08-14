@@ -3,11 +3,9 @@ from torchvision.transforms import Compose
 
 from dataset import PatchDataset, get_transform
 from models import get_model
-from tests.conftest import with_class_json
 from utils.io_utils import load_yaml
 
 
-@with_class_json
 def test_deeplab_forward(test_config):
     channels_in = len(test_config.DATASET.INPUT.USED_CHANNELS)
     labels_config = load_yaml(test_config.DATASET.MASK.CONFIG)
