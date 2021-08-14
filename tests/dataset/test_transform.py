@@ -9,6 +9,7 @@ from dataset import PatchDataset
 from dataset.transforms import get_transform
 from tests.conftest import with_class_json
 
+
 @with_class_json
 def test_dataset_init(test_config):
 
