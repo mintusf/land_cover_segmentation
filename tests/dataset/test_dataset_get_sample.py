@@ -17,11 +17,10 @@ def test_dataset_get_sample(test_config):
     assert isinstance(sample_target, torch.Tensor)
 
     assert sample_input.dim() == 3
-    assert sample_target.dim() == 3
+    assert sample_target.dim() == 2
 
     assert sample_input.shape[0] == len(test_config.DATASET.INPUT.USED_CHANNELS)
     assert sample_input.shape[1] == 256
     assert sample_input.shape[2] == 256
-    assert sample_target.shape[0] == 1
+    assert sample_target.shape[0] == 256
     assert sample_target.shape[1] == 256
-    assert sample_target.shape[2] == 256

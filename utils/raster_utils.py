@@ -50,14 +50,13 @@ def np_expand_to_3_dim(np_arrray: np.array) -> np.array:
     return img_np
 
 
-def np_to_torch(img_np: np.array) -> torch.Tensor:
+def np_to_torch(img_np: np.array, dtype=torch.float) -> torch.Tensor:
     """Convert np.array to torch.Tensor."""
     if img_np.dtype != np.float32:
         img_np = img_np.astype(np.float32)
     img_tensor = torch.from_numpy(img_np)
 
-    if img_tensor.ndim == 2:
-        img_tensor = img_tensor.unsqueeze(0)
+    img_tensor = img_tensor.type(dtype)
 
     return img_tensor
 
