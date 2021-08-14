@@ -92,4 +92,5 @@ def run_training(cfg_path: str) -> None:
         )
         save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
 
+
 run_training("config/firstrun.yml")
