@@ -1,7 +1,11 @@
+from dataset.transforms import get_transform
 import os
 import pytest
 
 from config.default import get_cfg_from_file
+from train_utils import get_loss, get_optimizer, get_lr_scheduler
+from models import get_model
+from dataset import get_dataloader
 
 test_config_path = os.path.join("config", "tests.yml")
 
@@ -10,6 +14,35 @@ test_config_path = os.path.join("config", "tests.yml")
 def test_config():
     cfg = get_cfg_from_file(test_config_path)
     return cfg
+
+
+@pytest.fixture(scope="session")
+def modules_dict():
+
+    cfg = get_cfg_from_file(test_config_path)
+
+    model = get_model(cfg)
+    optimizer = get_optimizer(model, cfg)
+    criterion = get_loss(cfg)
+    lr_scheduler = get_lr_scheduler(optimizer, cfg)
+
+    transforms = get_transform(cfg)
+    train_dataloader = get_dataloader(cfg, "train")
+    val_dataloader = get_dataloader(cfg, "val")
+    test_dataloader = get_dataloader(cfg, "test")
+
+    out_dict = {
+        "model": model,
+        "optimizer": optimizer,
+        "criterion": criterion,
+        "lr_scheduler": lr_scheduler,
+        "transforms": transforms,
+        "train_dataloader": train_dataloader,
+        "val_dataloader": val_dataloader,
+        "test_dataloader": test_dataloader,
+    }
+
+    return out_dict
 
 
 def with_class_json(func):
