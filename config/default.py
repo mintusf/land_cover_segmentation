@@ -8,7 +8,9 @@ _C.MODEL.TYPE = "DeepLab"
 
 _C.DATASET = CfgNode()
 _C.DATASET.ROOT = os.path.join("/data")
-_C.DATASET.LIST = os.path.join("config", "dataset", "lists", "test.txt")
+_C.DATASET.LIST_TRAIN = os.path.join("config", "dataset", "lists", "train.txt")
+_C.DATASET.LIST_VAL = os.path.join("config", "dataset", "lists", "val.txt")
+_C.DATASET.LIST_TEST = os.path.join("config", "dataset", "lists", "test.txt")
 _C.DATASET.INPUT = CfgNode()
 _C.DATASET.INPUT.SENSOR = "s2"
 
@@ -40,6 +42,7 @@ _C.TRAIN.EPOCHS = 100
 _C.TRAIN.BATCH_SIZE = 8
 _C.TRAIN.DEVICE = "cuda:0"
 _C.TRAIN.WORKERS = 8
+_C.TRAIN.SHUFFLE = True
 _C.TRAIN.LOSS = "categorical_crossentropy"
 _C.TRAIN.OPTIMIZER = "adam"
 _C.TRAIN.LR = 0.001

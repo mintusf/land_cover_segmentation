@@ -3,7 +3,9 @@ MODEL:
 
 DATASET:
   ROOT: "./tests/dataset/dummy_dataset"
-  LIST: "config/dataset/lists/test.txt"
+  LIST_TRAIN: "config/dataset/lists/dummy_train.txt"
+  LIST_VAL: "config/dataset/lists/dummy_val.txt"
+  LIST_TEST: "config/dataset/lists/dummy_test.txt"
   INPUT:
     SENSOR: s2
     USED_CHANNELS: [3,2,1,12]
@@ -17,6 +19,7 @@ TRAIN:
   BATCH_SIZE: 2
   DEVICE: "cpu"
   WORKERS: 2
+  SHUFFLE: True
   LOSS: "categorical_crossentropy"
   OPTIMIZER: "adam"
   LR: 0.001
