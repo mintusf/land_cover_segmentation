@@ -12,14 +12,13 @@ from utils.utils import get_raster_filepath
 
 
 class PatchDataset(Dataset):
-    def __init__(self, cfg: CfgNode, transforms=None):
+    def __init__(self, cfg: CfgNode, mode: str, transforms=None):
         """Patch Dataset initialization
 
         Args:
             cfg (CfgNode): Config
         """
         self.cfg = cfg
-        self.dataset_list = get_lines_from_txt(cfg.DATASET.LIST)
 
         self.dataset_root = cfg.DATASET.ROOT
         self.mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
@@ -28,7 +27,17 @@ class PatchDataset(Dataset):
         self.input_used_channels = cfg.DATASET.INPUT.USED_CHANNELS
         self.target_sensor_name = cfg.DATASET.MASK.SENSOR
 
+        if mode == "train":
+            self.dataset_list = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
+        elif mode == "val":
+            self.dataset_list = get_lines_from_txt(cfg.DATASET.LIST_VAL)
+        elif mode == "test":
+            self.dataset_list = get_lines_from_txt(cfg.DATASET.LIST_TEST)
+        else:
+            raise ValueError(f"Unknown mode: {mode}")
+
         self.transforms = transforms
+        self.device = cfg.TRAIN.DEVICE
 
     def __len__(self) -> int:
         """Get length of dataset
@@ -66,7 +75,16 @@ class PatchDataset(Dataset):
         )
         target_np = raster_to_np(target_raster_path)
         transformed_mask = build_mask(target_np, self.mask_config)
-        target_tensor = np_to_torch(transformed_mask)
+        target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
+
+        if "cuda" in self.device:
+            input_tensor = input_tensor.cuda().float()
+            target_tensor = target_tensor.cuda()
+        elif "cpu" in self.device:
+            input_tensor = input_tensor.cpu().float()
+            target_tensor = target_tensor.cpu()
+        else:
+            raise NotImplementedError
 
         # Return sample
         sample = {"input": input_tensor, "target": target_tensor}

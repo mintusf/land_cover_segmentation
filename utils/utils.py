@@ -82,7 +82,7 @@ def build_dataset_stats_json_from_cfg(cfg: CfgNode) -> None:
     Args:
         cfg (CfgNode): A Yacs CfgNode object.
     """
-    dataset_list = get_lines_from_txt(cfg.DATASET.LIST)
+    dataset_list = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
     build_dataset_stats_json(
         dataset_list,
         cfg.DATASET.ROOT,

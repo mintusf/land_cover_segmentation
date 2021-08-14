@@ -3,7 +3,9 @@ MODEL:
 
 DATASET:
   ROOT: "./tests/dataset/dummy_dataset"
-  LIST: "config/dataset/lists/test.txt"
+  LIST_TRAIN: "config/dataset/lists/dummy_train.txt"
+  LIST_VAL: "config/dataset/lists/dummy_val.txt"
+  LIST_TEST: "config/dataset/lists/dummy_test.txt"
   INPUT:
     SENSOR: s2
     USED_CHANNELS: [3,2,1,12]
@@ -12,3 +14,18 @@ DATASET:
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/test.yml"
+TRAIN:
+  EPOCHS: 2
+  RESUME_CHECKPOINT: ""
+  BATCH_SIZE: 2
+  DEVICE: "cpu"
+  WORKERS: 0
+  SHUFFLE: True
+  SEED: 42
+  LOSS: "categorical_crossentropy"
+  OPTIMIZER: "adam"
+  LR: 0.001
+  WEIGHT_DECAY: 0.0005
+  VERBOSE_STEP: 1
+  VAL_STEP: 1
+  WEIGHTS_FOLDER: "tests/weights"
