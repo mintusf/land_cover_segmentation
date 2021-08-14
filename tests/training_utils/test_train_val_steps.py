@@ -1,30 +1,27 @@
-import os
-from train_utils import training_step, model_validation, get_loss, get_optimizer
-from models import get_model
-from dataset import get_dataloader
-from tests.conftest import with_class_json
+from torch import Tensor
+
+from train_utils import training_step, model_validation
 
 
-@with_class_json
-def test_train_step(test_config):
+def test_train_step(module_dict):
 
-    model = get_model(test_config)
-    optimizer = get_optimizer(model, test_config)
-    criterion = get_loss(test_config)
+    model = module_dict["model"]
+    optimizer = module_dict["optimizer"]
+    criterion = module_dict["criterion"]
 
-    train_dataloader = get_dataloader(test_config, "train")
+    train_dataloader = module_dict["train_dataloader"]
 
     for batch in train_dataloader:
-        training_step(model, optimizer, criterion, batch)
+        loss = training_step(model, optimizer, criterion, batch)
+        assert isinstance(loss, Tensor)
 
 
-@with_class_json
-def test_val_step(test_config):
+def test_val_step(module_dict):
 
-    model = get_model(test_config)
-    criterion = get_loss(test_config)
+    model = module_dict["model"]
+    criterion = module_dict["criterion"]
 
-    val_dataloader = get_dataloader(test_config, "val")
+    val_dataloader = module_dict["val_dataloader"]
 
     loss = model_validation(model, criterion, val_dataloader)
 

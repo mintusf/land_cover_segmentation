@@ -25,7 +25,7 @@ def set_seeds(cfg: CfgNode) -> None:
 
 def training_step(
     model: Module, optimizer: Optimizer, criterion: Module, batch: dict
-) -> float:
+) -> torch.Tensor:
     """Run a training step on a batch
 
     Args:
@@ -35,24 +35,16 @@ def training_step(
         batch (dict): Batch to train on
 
     Returns:
-        float: Batch loss
+        torch.Tensor: Batch loss
     """
     model.train()
     inputs, labels = batch["input"], batch["target"]
 
-    # zero the parameter gradients
+    # Forward and backward propagations
     optimizer.zero_grad()
-
-    # Forward propagation
     outputs = model(inputs)["out"]
-
-    # Calc loss
     loss = criterion(outputs, labels)
-
-    # Backward propagation
     loss.backward()
-
-    # Optimize
     optimizer.step()
 
     return loss

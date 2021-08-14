@@ -1,12 +1,9 @@
-import os
-
 import torch
 from torchvision.transforms import Compose
 
-from models.deeplab import create_deeplab
+from dataset import PatchDataset, get_transform
+from models import get_model
 from utils.io_utils import load_yaml
-from dataset import PatchDataset
-from dataset.transforms import get_transform
 
 
 def test_deeplab_forward(test_config):
@@ -17,7 +14,7 @@ def test_deeplab_forward(test_config):
     assert channels_in == 4
     assert channels_out == 5
 
-    model = create_deeplab(channels_in, channels_out)
+    model = get_model(test_config)
 
     transform = get_transform(test_config)
     transforms = Compose([transform])
@@ -32,7 +29,3 @@ def test_deeplab_forward(test_config):
     assert pred.shape[1] == channels_out
     assert pred.shape[2] == 256
     assert pred.shape[3] == 256
-
-    # Test if stats json exists
-    assert os.path.isfile(test_config.DATASET.INPUT.STATS_FILE)
-    os.remove(test_config.DATASET.INPUT.STATS_FILE)

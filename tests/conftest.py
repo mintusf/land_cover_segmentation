@@ -1,7 +1,11 @@
+from dataset.transforms import get_transform
 import os
 import pytest
 
 from config.default import get_cfg_from_file
+from train_utils import get_loss, get_optimizer, get_lr_scheduler
+from models import get_model
+from dataset import get_dataloader
 
 test_config_path = os.path.join("config", "tests.yml")
 
@@ -12,16 +16,34 @@ def test_config():
     return cfg
 
 
-def with_class_json(func):
-    def wrapper():
+@pytest.fixture(scope="session")
+def module_dict():
 
-        cfg = get_cfg_from_file(test_config_path)
-        assert not os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
+    cfg = get_cfg_from_file(test_config_path)
 
-        func(cfg)
+    model = get_model(cfg)
+    optimizer = get_optimizer(model, cfg)
+    criterion = get_loss(cfg)
+    lr_scheduler = get_lr_scheduler(optimizer, cfg)
 
-        # Test if stats json exists
-        assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
-        os.remove(cfg.DATASET.INPUT.STATS_FILE)
+    transforms = get_transform(cfg)
+    train_dataloader = get_dataloader(cfg, "train")
+    val_dataloader = get_dataloader(cfg, "val")
 
-    return wrapper
+    out_dict = {
+        "model": model,
+        "optimizer": optimizer,
+        "criterion": criterion,
+        "lr_scheduler": lr_scheduler,
+        "transforms": transforms,
+        "train_dataloader": train_dataloader,
+        "val_dataloader": val_dataloader,
+    }
+
+    return out_dict
+
+
+def pytest_sessionfinish():
+    cfg = get_cfg_from_file(test_config_path)
+    assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
+    os.remove(cfg.DATASET.INPUT.STATS_FILE)

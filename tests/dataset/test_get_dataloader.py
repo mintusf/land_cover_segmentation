@@ -1,10 +1,6 @@
-import os
-
 from dataset import get_dataloader
-from tests.conftest import with_class_json
 
 
-@with_class_json
 def test_dataloader(test_config):
 
     train_dataloader = get_dataloader(test_config, "train")
