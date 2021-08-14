@@ -1,13 +1,14 @@
-import os
-
 import torch
 from torchvision.transforms import Compose
 
+from dataset import PatchDataset, get_transform
+from models import get_model
+from tests.conftest import with_class_json
 from utils.io_utils import load_yaml
-from dataset import PatchDataset
 
 
-def test_deeplab_forward(test_config, module_dict):
+@with_class_json
+def test_deeplab_forward(test_config):
     channels_in = len(test_config.DATASET.INPUT.USED_CHANNELS)
     labels_config = load_yaml(test_config.DATASET.MASK.CONFIG)
     channels_out = len(labels_config["class2label"])
@@ -15,9 +16,9 @@ def test_deeplab_forward(test_config, module_dict):
     assert channels_in == 4
     assert channels_out == 5
 
-    model = module_dict["model"]
+    model = get_model(test_config)
 
-    transform = module_dict["transforms"]
+    transform = get_transform(test_config)
     transforms = Compose([transform])
     dataset = PatchDataset(test_config, mode="train", transforms=transforms)
 
@@ -30,7 +31,3 @@ def test_deeplab_forward(test_config, module_dict):
     assert pred.shape[1] == channels_out
     assert pred.shape[2] == 256
     assert pred.shape[3] == 256
-
-    # Test if stats json exists
-    assert os.path.isfile(test_config.DATASET.INPUT.STATS_FILE)
-    os.remove(test_config.DATASET.INPUT.STATS_FILE)
