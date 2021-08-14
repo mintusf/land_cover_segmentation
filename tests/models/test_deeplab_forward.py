@@ -3,7 +3,6 @@ import os
 import torch
 from torchvision.transforms import Compose
 
-from utils.utils import build_dataset_stats_json_from_cfg
 from models.deeplab import create_deeplab
 from config.default import get_cfg_defaults
 from utils.io_utils import load_yaml
@@ -24,7 +23,6 @@ def test_deeplab_forward():
 
     model = create_deeplab(channels_in, channels_out)
 
-    build_dataset_stats_json_from_cfg(cfg)
     transform = get_transform(cfg)
     transforms = Compose([transform])
     dataset = PatchDataset(cfg, transforms)

@@ -12,3 +12,14 @@ DATASET:
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/test.yml"
+TRAIN:
+  EPOCHS: 100
+  BATCH_SIZE: 2
+  DEVICE: "cpu"
+  WORKERS: 2
+  LOSS: "categorical_crossentropy"
+  OPTIMIZER: "adam"
+  LR: 0.001
+  WEIGHT_DECAY: 0.0005
+  VERBOSE_STEP: 10
+  VAL_STEP: 100

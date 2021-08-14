@@ -1,9 +1,11 @@
+import os
 from typing import Dict, Tuple
 
 import torch
 from yacs.config import CfgNode
 
 from utils.io_utils import load_json
+from utils.utils import build_dataset_stats_json_from_cfg
 
 
 class NormalizeSample(object):
@@ -44,7 +46,7 @@ class NormalizeSample(object):
 
 
 def get_transform(cfg: CfgNode) -> NormalizeSample:
-    """Gets transform function.
+    """Gets transform function. Builds stats dict if not existing.
 
     Args:
         cfg (CfgNode): Config
@@ -55,6 +57,9 @@ def get_transform(cfg: CfgNode) -> NormalizeSample:
     channels = cfg.DATASET.INPUT.CHANNELS
     used_channels = cfg.DATASET.INPUT.USED_CHANNELS
     stats_file = cfg.DATASET.INPUT.STATS_FILE
+
+    if not os.path.isfile(stats_file):
+        build_dataset_stats_json_from_cfg(cfg)
     stats = load_json(stats_file)
     means = [stats["means"][channels[channel]] for channel in used_channels]
     stds = [stats["stds"][channels[channel]] for channel in used_channels]

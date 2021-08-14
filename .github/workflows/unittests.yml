@@ -2,7 +2,12 @@
 name: Integration Test
 
 # Specify when the action should be run
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - training_loop
 
 jobs:
   build:
