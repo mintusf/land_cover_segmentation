@@ -1,0 +1,31 @@
+MODEL:
+  TYPE: DeepLab
+
+DATASET:
+  ROOT: "/data"
+  LIST_TRAIN: "config/dataset/lists/train.txt"
+  LIST_VAL: "config/dataset/lists/val.txt"
+  LIST_TEST: "config/dataset/lists/test.txt"
+  INPUT:
+    SENSOR: s2
+    USED_CHANNELS: [0,1,2,3]
+    STATS_FILE: "config/dataset/stats/default.json"
+    CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
+  MASK:
+    SENSOR: lc
+    CONFIG: "config/dataset/mask_configs/test.yml"
+TRAIN:
+  EPOCHS: 10
+  RESUME_CHECKPOINT: ""
+  BATCH_SIZE: 2
+  DEVICE: "cuda:15"
+  WORKERS: 4
+  SHUFFLE: True
+  SEED: 42
+  LOSS: "categorical_crossentropy"
+  OPTIMIZER: "adam"
+  LR: 0.001
+  WEIGHT_DECAY: 0.0005
+  VERBOSE_STEP: 10
+  VAL_STEP: 1000
+  WEIGHTS_FOLDER: "weights"
