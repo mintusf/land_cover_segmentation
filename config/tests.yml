@@ -20,6 +20,7 @@ TRAIN:
   DEVICE: "cpu"
   WORKERS: 2
   SHUFFLE: True
+  SEED: 42
   LOSS: "categorical_crossentropy"
   OPTIMIZER: "adam"
   LR: 0.001

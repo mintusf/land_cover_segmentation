@@ -43,6 +43,7 @@ _C.TRAIN.BATCH_SIZE = 8
 _C.TRAIN.DEVICE = "cuda:0"
 _C.TRAIN.WORKERS = 8
 _C.TRAIN.SHUFFLE = True
+_C.TRAIN.SEED = 42
 _C.TRAIN.LOSS = "categorical_crossentropy"
 _C.TRAIN.OPTIMIZER = "adam"
 _C.TRAIN.LR = 0.001

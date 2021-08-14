@@ -1,4 +1,24 @@
 import torch
+import random
+
+import numpy as np
+
+from config import CfgNode
+
+
+def set_seeds(cfg: CfgNode) -> None:
+    """Set random seeds
+
+    Args:
+        cfg (CfgNode): Config
+    """
+    seed = cfg.TRAIN.SEED
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
 
 
 def training_loop(
