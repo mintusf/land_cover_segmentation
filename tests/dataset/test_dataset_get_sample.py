@@ -1,17 +1,11 @@
-import os
-
 import torch
 
-from config.default import get_cfg_defaults
 from dataset import PatchDataset
 
 
-def test_dataset_get_sample():
-    cfg = get_cfg_defaults()
-    cfg.merge_from_file(os.path.join("config", "tests.yml"))
-    cfg.freeze()
+def test_dataset_get_sample(test_config):
 
-    dataset = PatchDataset(cfg, mode="train")
+    dataset = PatchDataset(test_config, mode="train")
 
     sample = dataset[0]
 
@@ -25,7 +19,7 @@ def test_dataset_get_sample():
     assert sample_input.dim() == 3
     assert sample_target.dim() == 3
 
-    assert sample_input.shape[0] == len(cfg.DATASET.INPUT.USED_CHANNELS)
+    assert sample_input.shape[0] == len(test_config.DATASET.INPUT.USED_CHANNELS)
     assert sample_input.shape[1] == 256
     assert sample_input.shape[2] == 256
     assert sample_target.shape[0] == 1

@@ -1,36 +1,31 @@
-import os
 from torch.nn import CrossEntropyLoss
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from config.default import get_cfg_from_file
 from models import get_model
 from train_utils import get_loss, get_optimizer, get_lr_scheduler
 
 
-def test_get_loss():
-    cfg = get_cfg_from_file(os.path.join("config", "tests.yml"))
+def test_get_loss(test_config):
 
-    loss = get_loss(cfg)
+    loss = get_loss(test_config)
 
     assert isinstance(loss, CrossEntropyLoss)
 
 
-def test_get_optimizer():
-    cfg = get_cfg_from_file(os.path.join("config", "tests.yml"))
+def test_get_optimizer(test_config):
 
-    model = get_model(cfg)
-    optimizer = get_optimizer(model, cfg)
+    model = get_model(test_config)
+    optimizer = get_optimizer(model, test_config)
 
     assert isinstance(optimizer, Optimizer)
 
 
-def test_get_lr_scheduler():
-    cfg = get_cfg_from_file(os.path.join("config", "tests.yml"))
+def test_get_lr_scheduler(test_config):
 
-    model = get_model(cfg)
-    optimizer = get_optimizer(model, cfg)
+    model = get_model(test_config)
+    optimizer = get_optimizer(model, test_config)
 
-    scheduler = get_lr_scheduler(optimizer, cfg)
+    scheduler = get_lr_scheduler(optimizer, test_config)
 
     assert isinstance(scheduler, ReduceLROnPlateau)

@@ -1,18 +1,15 @@
 import os
 
-from config.default import get_cfg_from_file
 from dataset import get_dataloader
 
 
-def test_dataloader():
+def test_dataloader(test_config):
 
-    cfg = get_cfg_from_file(os.path.join("config", "tests.yml"))
+    assert not os.path.isfile(test_config.DATASET.INPUT.STATS_FILE)
 
-    assert not os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
-
-    train_dataloader = get_dataloader(cfg, "train")
-    val_dataloader = get_dataloader(cfg, "val")
-    test_dataloader = get_dataloader(cfg, "test")
+    train_dataloader = get_dataloader(test_config, "train")
+    val_dataloader = get_dataloader(test_config, "val")
+    test_dataloader = get_dataloader(test_config, "test")
 
     assert len(train_dataloader.dataset) == 2
     assert len(val_dataloader.dataset) == 2
@@ -22,5 +19,5 @@ def test_dataloader():
         pass
 
     # Test if stats json exists
-    assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
-    os.remove(cfg.DATASET.INPUT.STATS_FILE)
+    assert os.path.isfile(test_config.DATASET.INPUT.STATS_FILE)
+    os.remove(test_config.DATASET.INPUT.STATS_FILE)
