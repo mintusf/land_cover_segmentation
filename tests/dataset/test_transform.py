@@ -7,11 +7,11 @@ import torch
 from utils.utils import build_dataset_stats_json_from_cfg
 from dataset import PatchDataset
 from dataset.transforms import get_transform
+from tests.conftest import with_class_json
 
 
+@with_class_json
 def test_dataset_init(test_config):
-
-    assert not os.path.isfile(test_config.DATASET.INPUT.STATS_FILE)
 
     build_dataset_stats_json_from_cfg(test_config)
 
@@ -44,7 +44,3 @@ def test_dataset_init(test_config):
         np.ones((len(test_config.DATASET.INPUT.USED_CHANNELS))),
         decimal=4,
     )
-
-    # Test if stats json exists
-    assert os.path.isfile(test_config.DATASET.INPUT.STATS_FILE)
-    os.remove(test_config.DATASET.INPUT.STATS_FILE)

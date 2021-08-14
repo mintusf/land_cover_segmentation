@@ -74,7 +74,7 @@ class PatchDataset(Dataset):
         )
         target_np = raster_to_np(target_raster_path)
         transformed_mask = build_mask(target_np, self.mask_config)
-        target_tensor = np_to_torch(transformed_mask)
+        target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
 
         # Return sample
         sample = {"input": input_tensor, "target": target_tensor}
