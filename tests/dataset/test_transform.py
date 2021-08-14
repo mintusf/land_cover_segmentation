@@ -22,7 +22,7 @@ def test_dataset_init(test_config):
     means = torch.zeros((len(test_config.DATASET.INPUT.USED_CHANNELS)))
     stds = torch.zeros((len(test_config.DATASET.INPUT.USED_CHANNELS)))
     for sample in dataset:
-        sample_input = sample["input"]
+        sample_input = sample["input"].cpu()
         image_means = torch.mean(sample_input, dim=[1, 2])
         image_stds = torch.std(sample_input, dim=[1, 2])
         means += image_means
