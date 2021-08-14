@@ -17,7 +17,7 @@ def test_config():
 
 
 @pytest.fixture(scope="session")
-def modules_dict():
+def module_dict():
 
     cfg = get_cfg_from_file(test_config_path)
 
@@ -29,7 +29,6 @@ def modules_dict():
     transforms = get_transform(cfg)
     train_dataloader = get_dataloader(cfg, "train")
     val_dataloader = get_dataloader(cfg, "val")
-    test_dataloader = get_dataloader(cfg, "test")
 
     out_dict = {
         "model": model,
@@ -39,7 +38,6 @@ def modules_dict():
         "transforms": transforms,
         "train_dataloader": train_dataloader,
         "val_dataloader": val_dataloader,
-        "test_dataloader": test_dataloader,
     }
 
     return out_dict
