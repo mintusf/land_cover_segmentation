@@ -5,7 +5,9 @@ name: Integration Test
 on:
   pull_request:
   push:
-    branch: [master, training_loop]
+    branches:
+      - main
+      - training_loop
 
 jobs:
   build:
