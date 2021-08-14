@@ -9,6 +9,6 @@ def test_dataset_init():
     cfg.merge_from_file(os.path.join("config", "tests.yml"))
     cfg.freeze()
 
-    dataset = PatchDataset(cfg)
+    dataset = PatchDataset(cfg, mode="train")
 
     assert len(dataset) == 2

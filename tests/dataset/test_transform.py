@@ -22,7 +22,7 @@ def test_dataset_init():
     transform = get_transform(cfg)
     transforms = Compose([transform])
 
-    dataset = PatchDataset(cfg, transforms=transforms)
+    dataset = PatchDataset(cfg, mode="train", transforms=transforms)
 
     # Calculate stats of transformed dataset
     means = torch.zeros((len(cfg.DATASET.INPUT.USED_CHANNELS)))

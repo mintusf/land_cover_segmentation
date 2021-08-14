@@ -11,7 +11,7 @@ def test_dataset_get_sample():
     cfg.merge_from_file(os.path.join("config", "tests.yml"))
     cfg.freeze()
 
-    dataset = PatchDataset(cfg)
+    dataset = PatchDataset(cfg, mode="train")
 
     sample = dataset[0]
 

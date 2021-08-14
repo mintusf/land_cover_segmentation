@@ -25,7 +25,7 @@ def test_deeplab_forward():
 
     transform = get_transform(cfg)
     transforms = Compose([transform])
-    dataset = PatchDataset(cfg, transforms)
+    dataset = PatchDataset(cfg, mode="train", transforms=transforms)
 
     sample_batch = torch.stack([dataset[0]["input"], dataset[1]["input"]], 0)
 
