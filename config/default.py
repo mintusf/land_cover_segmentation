@@ -52,7 +52,6 @@ _C.TRAIN.SCHEDULER.FACTOR = 0.1
 _C.TRAIN.SCHEDULER.PATIENCE = 2
 
 
-
 def get_cfg_defaults():
     """Get a yacs CfgNode object with default values for my_project."""
     # Return a clone so that the defaults will not be altered
