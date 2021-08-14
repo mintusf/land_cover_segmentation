@@ -37,6 +37,7 @@ class PatchDataset(Dataset):
             raise ValueError(f"Unknown mode: {mode}")
 
         self.transforms = transforms
+        self.device = cfg.TRAIN.DEVICE
 
     def __len__(self) -> int:
         """Get length of dataset
@@ -75,6 +76,15 @@ class PatchDataset(Dataset):
         target_np = raster_to_np(target_raster_path)
         transformed_mask = build_mask(target_np, self.mask_config)
         target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
+
+        if "cuda" in self.device:
+            input_tensor = input_tensor.cuda().float()
+            target_tensor = target_tensor.cuda()
+        elif "cpu" in self.device:
+            input_tensor = input_tensor.cpu().float()
+            target_tensor = target_tensor.cpu()
+        else:
+            raise NotImplementedError
 
         # Return sample
         sample = {"input": input_tensor, "target": target_tensor}

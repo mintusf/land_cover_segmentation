@@ -10,8 +10,8 @@ def test_dataset_get_sample(test_config):
     sample = dataset[0]
 
     # Test generated sample
-    sample_input = sample["input"]
-    sample_target = sample["target"]
+    sample_input = sample["input"].cpu()
+    sample_target = sample["target"].cpu()
 
     assert isinstance(sample_input, torch.Tensor)
     assert isinstance(sample_target, torch.Tensor)
