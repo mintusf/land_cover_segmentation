@@ -3,11 +3,11 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from yacs.config import CfgNode
 
 
-def get_lr_scheduler(cfg: CfgNode, optimizer: Optimizer):
+def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode):
     """Returns LR scheduler module"""
 
     # Get mode
-    if cfg.TRAIN.LOSS == "cross-entropy":
+    if cfg.TRAIN.LOSS == "categorical_crossentropy":
         mode = "min"
     else:
         raise NotImplementedError
