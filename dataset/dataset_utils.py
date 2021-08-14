@@ -1,5 +1,8 @@
 import numpy as np
 
+from config.default import CfgNode
+from utils.io_utils import load_yaml
+
 
 def build_mask_single_channel(
     whole_mask: np.array, channel_int: int, labels_config: dict
@@ -57,3 +60,14 @@ def build_mask(whole_mask: np.array, mask_config: dict) -> np.array:
         mask_out = np.where(mask_out == 0, single_mask, mask_out)
 
     return mask_out
+
+
+def get_channels_in_count(cfg: CfgNode) -> int:
+    """Returns the number of input channels given config"""
+    return len(cfg.DATASET.INPUT.USED_CHANNELS)
+
+
+def get_channels_out_count(cfg: CfgNode) -> int:
+    """Returns the number of output channels given config"""
+    labels_config = load_yaml(cfg.DATASET.MASK.CONFIG)
+    return len(labels_config["class2label"])
