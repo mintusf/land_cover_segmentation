@@ -91,3 +91,5 @@ def run_training(cfg_path: str) -> None:
             cfg.TRAIN.WEIGHTS_FOLDER, f"cfg_{cfg_name}_epoch_{epoch}.pth"
         )
         save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
+
+run_training("config/firstrun.yml")
