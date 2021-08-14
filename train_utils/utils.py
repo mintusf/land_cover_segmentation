@@ -23,6 +23,46 @@ def set_seeds(cfg: CfgNode) -> None:
     torch.backends.cudnn.deterministic = True
 
 
+def save_checkpoint(
+    model: Module, epoch: int, optimizer, loss: float, cfg_path: str, save_path: str
+) -> None:
+    """Save checkpoint to file.
+    Args:
+        model (Module): Model to save
+        epoch (int): Epoch number
+        optimizer ([type]): Optimizer to save
+        loss (float): Loss to save
+        cfg_path (str): Path to config file
+        save_path (str): Path to save checkpoint
+    """
+    torch.save(
+        {
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "loss": loss,
+            "cfg_path": cfg_path,
+        },
+        save_path,
+    )
+
+
+def load_checkpoint(checkpoint_path: str):
+    """Load checkpoint from file.
+    Args:
+        checkpoint_path (str): Path to checkpoint file
+    """
+    checkpoint = torch.load(checkpoint_path)
+
+    epoch = checkpoint["epoch"]
+    weights = checkpoint["model_state_dict"]
+    optimizer = checkpoint["optimizer_state_dict"]
+    loss = checkpoint["loss"]
+    cfg_path = checkpoint["cfg_path"]
+
+    return epoch, weights, optimizer, loss, cfg_path
+
+
 def training_step(
     model: Module, optimizer: Optimizer, criterion: Module, batch: dict
 ) -> torch.Tensor:

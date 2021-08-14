@@ -39,6 +39,7 @@ _C.DATASET.MASK.CONFIG = os.path.join(
 
 _C.TRAIN = CfgNode()
 _C.TRAIN.EPOCHS = 100
+_C.TRAIN.RESUME_CHECKPOINT = ""
 _C.TRAIN.BATCH_SIZE = 8
 _C.TRAIN.DEVICE = "cuda:0"  # From ["cuda:N", "cuda:all", "cpu"]
 _C.TRAIN.WORKERS = 8
@@ -54,6 +55,7 @@ _C.TRAIN.SCHEDULER = CfgNode()
 _C.TRAIN.SCHEDULER.TYPE = "ReduceLROnPlateau"
 _C.TRAIN.SCHEDULER.FACTOR = 0.1
 _C.TRAIN.SCHEDULER.PATIENCE = 2
+_C.TRAIN.WEIGHTS_FOLDER = "tests/weights"
 
 
 def get_cfg_defaults():

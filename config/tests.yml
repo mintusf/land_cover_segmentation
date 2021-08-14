@@ -15,7 +15,8 @@ DATASET:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/test.yml"
 TRAIN:
-  EPOCHS: 100
+  EPOCHS: 2
+  RESUME_CHECKPOINT: ""
   BATCH_SIZE: 2
   DEVICE: "cpu"
   WORKERS: 0
@@ -25,5 +26,6 @@ TRAIN:
   OPTIMIZER: "adam"
   LR: 0.001
   WEIGHT_DECAY: 0.0005
-  VERBOSE_STEP: 10
-  VAL_STEP: 100
+  VERBOSE_STEP: 1
+  VAL_STEP: 1
+  WEIGHTS_FOLDER: "tests/weights"
