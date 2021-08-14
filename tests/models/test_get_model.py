@@ -1,14 +1,10 @@
-import os
-
 from torch.nn import Module
 
 from models import get_model
-from config.default import get_cfg_from_file
 
 
-def test_get_model():
-    cfg = get_cfg_from_file(os.path.join("config", "tests.yml"))
+def test_get_model(test_config):
 
-    model = get_model(cfg)
+    model = get_model(test_config)
 
     assert isinstance(model, Module)

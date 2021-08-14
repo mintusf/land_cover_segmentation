@@ -1,13 +1,10 @@
-import os
-
 import numpy as np
 
-from config.default import get_cfg_defaults
 from dataset.dataset_utils import build_mask
 from utils.io_utils import load_yaml
 
 
-def test_build_mask():
+def test_build_mask(test_config):
     """
     Given config:
         mask_1:
@@ -42,11 +39,8 @@ def test_build_mask():
         3 3 2 2 2
         3 3 2 2 2
     """
-    cfg = get_cfg_defaults()
-    cfg.merge_from_file(os.path.join("config", "tests.yml"))
-    cfg.freeze()
 
-    mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
+    mask_config = load_yaml(test_config.DATASET.MASK.CONFIG)
 
     whole_mask_dummy_channel_1 = np.array(
         [
