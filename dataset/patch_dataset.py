@@ -8,7 +8,7 @@ from yacs.config import CfgNode
 from dataset.dataset_utils import build_mask
 from utils.io_utils import get_lines_from_txt, load_yaml
 from utils.raster_utils import raster_to_tensor, raster_to_np, np_to_torch
-from utils.utils import get_raster_filepath
+from utils.utilities import get_raster_filepath
 
 
 class PatchDataset(Dataset):
