@@ -1,5 +1,6 @@
 from typing import List, Tuple, Union
 
+import cv2
 import numpy as np
 import rasterio as rio
 from rasterio.io import DatasetReader
@@ -43,7 +44,30 @@ def raster_to_np(
     return img_np
 
 
-def np_expand_to_3_dim(np_arrray: np.array) -> np.array:
+def convert_for_vis(
+    raster_path: str,
+    global_stats_dict: dict,
+    all_channels: Tuple[str],
+    bands_rgb: Tuple[int] = [3, 2, 1],
+    target_size: Tuple[int] = [256, 256],
+) -> np.array:
+    img = raster_to_np(raster_path, bands_rgb)
+    img = transpose_to_channels_first(img)
+    img = cv2.resize(img, target_size)
+
+    means = [global_stats_dict["means"][all_channels[channel]] for channel in bands_rgb]
+    stds = [global_stats_dict["stds"][all_channels[channel]] for channel in bands_rgb]
+
+    for channel in range(img.shape[2]):
+        img[:, :, channel] = (img[:, :, channel] - means[channel]) / stds[channel]
+
+    img = (img + 2) * 255 / 4
+
+    img = img.astype(np.uint8)
+    return img
+
+
+def transpose_to_channels_first(np_arrray: np.array) -> np.array:
     """Expand np.array to 3-dimensions."""
     if np_arrray.ndim == 3:
         img_np = np.transpose(np_arrray, [1, 2, 0])

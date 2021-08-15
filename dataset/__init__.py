@@ -7,7 +7,7 @@ from torchvision.transforms import Compose
 from config.default import CfgNode
 from dataset.patch_dataset import PatchDataset
 from dataset.transforms import get_transform
-from utils.utils import build_dataset_stats_json_from_cfg
+from utils.utilities import build_dataset_stats_json_from_cfg
 
 
 def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
