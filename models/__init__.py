@@ -26,8 +26,8 @@ def get_model(cfg: CfgNode) -> Module:
     else:
         raise NotImplementedError
 
-    if "cuda" in cfg.TRAIN.DEVICE:
-        model.cuda()
+    if "cuda" in cfg.TRAIN.DEVICE and "all" not in cfg.TRAIN.DEVICE:
+        model.to(torch.device(cfg.TRAIN.DEVICE))
     elif "cpu" in cfg.TRAIN.DEVICE:
         model.cpu()
     elif cfg.TRAIN.DEVICE == "cuda:all":

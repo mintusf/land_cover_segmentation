@@ -77,9 +77,9 @@ class PatchDataset(Dataset):
         transformed_mask = build_mask(target_np, self.mask_config)
         target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
 
-        if "cuda" in self.device:
-            input_tensor = input_tensor.cuda().float()
-            target_tensor = target_tensor.cuda()
+        if "cuda" in self.cfg.TRAIN.DEVICE and "all" not in self.cfg.TRAIN.DEVICE:
+            input_tensor = input_tensor.to(torch.device(self.cfg.TRAIN.DEVICE)).float()
+            target_tensor = target_tensor.to(torch.device(self.cfg.TRAIN.DEVICE))
         elif "cpu" in self.device:
             input_tensor = input_tensor.cpu().float()
             target_tensor = target_tensor.cpu()
