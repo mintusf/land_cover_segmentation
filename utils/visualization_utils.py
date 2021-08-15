@@ -4,11 +4,10 @@ import sys
 import cv2
 import numpy as np
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
-from config.default import CfgNode, get_cfg_from_file
+from config.default import CfgNode
 from dataset.dataset_utils import build_mask
-from utils.io_utils import load_yaml, get_lines_from_txt
-from utils.raster_utils import raster_to_np, transpose_to_channels_first
+from utils.io_utils import load_yaml, load_json
+from utils.raster_utils import convert_for_vis, raster_to_np
 from utils.utilities import get_raster_filepath
 
 
@@ -33,6 +32,16 @@ def apply_single_mask(
 
 
 def create_alphablend(img: np.array, mask: np.array, config: dict) -> np.array:
+    """A method to create alphablend image
+
+    Args:
+        img (np.array): Input image
+        mask (np.array): Mask
+        config (dict): Mask config
+
+    Returns:
+        np.array: Alphablend image
+    """
     classes_mask = np.unique(mask)
     classes = list(config["class2label"].keys())
     assert not (set(classes_mask) - set(classes))
@@ -48,19 +57,27 @@ def create_alphablend(img: np.array, mask: np.array, config: dict) -> np.array:
 
 
 def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
+    """A method to visualize a sample
+
+    Args:
+        sample_name (str): Sample name
+        cfg (CfgNode): Config
+        savepath (str): Save path
+    """
     # Parse config
     dataset_root = cfg.DATASET.ROOT
     mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     input_sensor_name = cfg.DATASET.INPUT.SENSOR
-    channels_list = cfg.DATASET.INPUT.USED_CHANNELS
+    all_channels = cfg.DATASET.INPUT.CHANNELS
+    rgb_channels = [3, 2, 1]
     target_sensor_name = cfg.DATASET.MASK.SENSOR
 
     # Get image
     input_raster_path = get_raster_filepath(
         dataset_root, sample_name, input_sensor_name
     )
-    img = raster_to_np(input_raster_path, channels_list)
-    img = transpose_to_channels_first(img)
+    stats_dict = load_json(cfg.DATASET.INPUT.STATS_FILE)
+    img = convert_for_vis(input_raster_path, stats_dict, all_channels, rgb_channels)
 
     # Get mask
     target_raster_path = get_raster_filepath(
@@ -73,15 +90,5 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     alphablend = create_alphablend(img, mask, mask_config)
 
     # Save
+    alphablend = cv2.cvtColor(alphablend, cv2.COLOR_RGB2BGR)
     cv2.imwrite(savepath, alphablend)
-
-
-cfg_path = "config/firstrun.yml"
-cfg = get_cfg_from_file(cfg_path)
-samples = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
-i = 0
-for sample in samples:
-    if i > 50:
-        break
-    i += 1
-    vis_sample(sample, cfg, f"vis/{sample}.png")
