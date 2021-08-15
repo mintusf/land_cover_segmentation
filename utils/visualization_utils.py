@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from config.default import CfgNode, get_cfg_from_file
 from dataset.dataset_utils import build_mask
 from utils.io_utils import load_yaml, get_lines_from_txt
-from utils.raster_utils import raster_to_np
+from utils.raster_utils import raster_to_np, transpose_to_channels_first
 from utils.utilities import get_raster_filepath
 
 
@@ -33,15 +33,16 @@ def apply_single_mask(
 
 
 def create_alphablend(img: np.array, mask: np.array, config: dict) -> np.array:
-    classes_mask = mask.unique()
-    classes = config["class2label"].keys().tolist()
-    assert set(classes_mask) - set(classes) == {}
+    classes_mask = np.unique(mask)
+    classes = list(config["class2label"].keys())
+    assert not (set(classes_mask) - set(classes))
 
     alpha = config["alpha"]
     colors_dict = config["colors"]
 
     for class_int, color in colors_dict.items():
-        img = apply_single_mask(img, mask, color, alpha)
+        class_mask = np.where(mask == class_int, 1, 0)
+        img = apply_single_mask(img, class_mask, color, alpha)
 
     return img
 
@@ -51,7 +52,7 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     dataset_root = cfg.DATASET.ROOT
     mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     input_sensor_name = cfg.DATASET.INPUT.SENSOR
-    channels_list = cfg.DATASET.INPUT.CHANNELS
+    channels_list = cfg.DATASET.INPUT.USED_CHANNELS
     target_sensor_name = cfg.DATASET.MASK.SENSOR
 
     # Get image
@@ -59,6 +60,7 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
         dataset_root, sample_name, input_sensor_name
     )
     img = raster_to_np(input_raster_path, channels_list)
+    img = transpose_to_channels_first(img)
 
     # Get mask
     target_raster_path = get_raster_filepath(
@@ -76,7 +78,7 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
 
 cfg_path = "config/firstrun.yml"
 cfg = get_cfg_from_file(cfg_path)
-samples = get_lines_from_txt(cfg.DATASET.TRAIN_LIST)
+samples = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
 i = 0
 for sample in samples:
     if i > 50:
