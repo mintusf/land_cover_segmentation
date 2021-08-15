@@ -48,18 +48,18 @@ def convert_for_vis(
     raster_path: str,
     global_stats_dict: dict,
     all_channels: Tuple[str],
-    bands_rgb: Tuple[int] = [1, 2, 3],
+    bands_rgb: Tuple[int] = [3, 2, 1],
     target_size: Tuple[int] = [256, 256],
 ) -> np.array:
-    img = raster_to_np(raster_path)
+    img = raster_to_np(raster_path, bands_rgb)
     img = transpose_to_channels_first(img)
     img = cv2.resize(img, target_size)
 
     means = [global_stats_dict["means"][all_channels[channel]] for channel in bands_rgb]
     stds = [global_stats_dict["stds"][all_channels[channel]] for channel in bands_rgb]
 
-    for channel in range(img.shape[0]):
-        img[channel, :, :] = (img[channel, :, :] - means[channel]) / stds[channel]
+    for channel in range(img.shape[2]):
+        img[:, :, channel] = (img[:, :, channel] - means[channel]) / stds[channel]
 
     img = (img + 2) * 255 / 4
 
