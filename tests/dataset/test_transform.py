@@ -1,10 +1,10 @@
 import os
-
+import sys
 from torchvision.transforms import Compose
 import numpy as np
 import torch
 
-from utils.utils import build_dataset_stats_json_from_cfg
+from utils.utilities import build_dataset_stats_json_from_cfg
 from dataset import PatchDataset
 from dataset.transforms import get_transform
 
@@ -19,26 +19,23 @@ def test_dataset_init(test_config):
     dataset = PatchDataset(test_config, mode="train", transforms=transforms)
 
     # Calculate stats of transformed dataset
-    means = torch.zeros((len(test_config.DATASET.INPUT.USED_CHANNELS)))
-    stds = torch.zeros((len(test_config.DATASET.INPUT.USED_CHANNELS)))
+    samples = []
     for sample in dataset:
         sample_input = sample["input"].cpu()
-        image_means = torch.mean(sample_input, dim=[1, 2])
-        image_stds = torch.std(sample_input, dim=[1, 2])
-        means += image_means
-        stds += image_stds
+        samples.append(sample_input)
 
-    means = means / len(dataset)
-    stds = stds / len(dataset)
+    merged = np.concatenate(samples, axis=1)
+    global_means = np.mean(merged, axis=(1, 2))
+    global_stds = np.std(merged, axis=(1, 2))
 
     # Compare with expected values
     np.testing.assert_almost_equal(
-        np.array(means),
+        np.array(global_means),
         np.zeros((len(test_config.DATASET.INPUT.USED_CHANNELS))),
-        decimal=4,
+        decimal=6,
     )
     np.testing.assert_almost_equal(
-        np.array(stds),
+        np.array(global_stds),
         np.ones((len(test_config.DATASET.INPUT.USED_CHANNELS))),
-        decimal=4,
+        decimal=6,
     )

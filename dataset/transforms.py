@@ -5,7 +5,7 @@ import torch
 from yacs.config import CfgNode
 
 from utils.io_utils import load_json
-from utils.utils import build_dataset_stats_json_from_cfg
+from utils.utilities import build_dataset_stats_json_from_cfg
 
 
 class NormalizeSample(object):

@@ -47,3 +47,4 @@ def pytest_sessionfinish():
     cfg = get_cfg_from_file(test_config_path)
     assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
     os.remove(cfg.DATASET.INPUT.STATS_FILE)
+    os.remove("tests/utils/test_vis.png")
