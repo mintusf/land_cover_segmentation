@@ -9,7 +9,7 @@ from config.default import CfgNode, get_cfg_from_file
 from dataset.dataset_utils import build_mask
 from utils.io_utils import load_yaml, get_lines_from_txt
 from utils.raster_utils import raster_to_np
-from utils.utils import get_raster_filepath
+from utils.utilities import get_raster_filepath
 
 
 def apply_single_mask(
