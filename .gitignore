@@ -4,3 +4,4 @@ docker/setup.bs
 *.pyc
 *.out
 *.pth
+setup.bs
