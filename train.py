@@ -1,4 +1,5 @@
 import os
+import torch
 
 from config.default import get_cfg_from_file
 from train_utils import (
@@ -91,3 +92,8 @@ def run_training(cfg_path: str) -> None:
             cfg.TRAIN.WEIGHTS_FOLDER, f"cfg_{cfg_name}_epoch_{epoch}.pth"
         )
         save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
+
+
+if __name__ == "__main__":
+    # torch.multiprocessing.set_start_method("spawn") # If multiple workers
+    run_training("config/firstrun.yml")
