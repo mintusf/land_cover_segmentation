@@ -8,7 +8,7 @@ DATASET:
   LIST_TEST: "config/dataset/lists/test.txt"
   INPUT:
     SENSOR: s2
-    USED_CHANNELS: [0,1,2,3]
+    USED_CHANNELS: [1,2,3,4]
     STATS_FILE: "config/dataset/stats/default.json"
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
@@ -25,7 +25,11 @@ TRAIN:
   LOSS: "categorical_crossentropy"
   OPTIMIZER: "adam"
   LR: 0.01
-  WEIGHT_DECAY: 0.0005
-  VERBOSE_STEP: 10
+  WEIGHT_DECAY: 0.0001
+  VERBOSE_STEP: 100
   VAL_STEP: 1000
+  SCHEDULER:
+    TYPE: "ReduceLROnPlateau"
+    FACTOR: 0.2
+    PATIENCE: 5
   WEIGHTS_FOLDER: "weights"

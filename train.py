@@ -81,7 +81,7 @@ def run_training(cfg_path: str) -> None:
                     best_val_loss = val_loss
                     save_path = os.path.join(
                         cfg.TRAIN.WEIGHTS_FOLDER,
-                        f"cfg_{cfg_name}_bestloss_epoch_{epoch}_batch_{i}.pth",
+                        f"cfg_{cfg_name}_bestloss.pth",
                     )
                     save_checkpoint(
                         model, epoch, optimizer, current_loss, cfg, save_path
