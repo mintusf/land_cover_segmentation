@@ -90,3 +90,9 @@ def build_dataset_stats_json_from_cfg(cfg: CfgNode) -> None:
         cfg.DATASET.INPUT.CHANNELS,
         cfg.DATASET.INPUT.STATS_FILE,
     )
+
+
+def get_sample_name(filename: str) -> str:
+    """Get sample name from filename."""
+    split = filename.split("_")
+    return "_".join(split[:2] + split[3:])
