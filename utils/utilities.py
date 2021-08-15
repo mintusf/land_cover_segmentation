@@ -55,22 +55,33 @@ def build_dataset_stats_json(
         channels_list (list): List of channels.
         savepath (str): Path to save the json.
     """
-    means = np.zeros((len(channels_list)))
-    stds = np.zeros((len(channels_list)))
+    means = []
+    stds = []
     filepaths = [
         get_raster_filepath(dataset_root, sample_name, input_sensor_name)
         for sample_name in dataset_list
     ]
+
     for file in filepaths:
         image_means, image_stds = get_stats(file)
-        means += image_means
-        stds += image_stds
+        means.append(image_means)
+        stds.append(image_stds)
 
-    means = means / len(filepaths)
-    stds = stds / len(filepaths)
+    means = np.array(means)
+    stds = np.array(stds)
 
-    means_dict = {band: mean for band, mean in zip(channels_list, means)}
-    stds_dict = {band: std for band, std in zip(channels_list, stds)}
+    # Since all images have same amount of pixels,
+    # mean of combination is mean of means
+    global_mean = np.mean(means, axis=0)
+
+    # Calculate std of combination
+    _N = stds.shape[0]
+    std_squared_sum = np.sum(stds ** 2, axis=0)
+    means_difference_squared_sum = np.sum((means - global_mean) ** 2, axis=0)
+    global_std = ((std_squared_sum + means_difference_squared_sum) / (_N)) ** 0.5
+
+    means_dict = {band: mean.item() for band, mean in zip(channels_list, global_mean)}
+    stds_dict = {band: std.item() for band, std in zip(channels_list, global_std)}
 
     with open(savepath, "w") as f:
         json.dump({"means": means_dict, "stds": stds_dict}, f)
