@@ -95,5 +95,5 @@ def run_training(cfg_path: str) -> None:
 
 
 if __name__ == "__main__":
-    # torch.multiprocessing.set_start_method("spawn")
+    # torch.multiprocessing.set_start_method("spawn") # If multiple workers
     run_training("config/firstrun.yml")
