@@ -41,7 +41,14 @@ _C.TRAIN = CfgNode()
 _C.TRAIN.EPOCHS = 100
 _C.TRAIN.RESUME_CHECKPOINT = ""
 _C.TRAIN.BATCH_SIZE = 8
-_C.TRAIN.DEVICE = "cuda:0"  # From ["cuda:N", "cuda:all", "cpu"]
+
+# Can be
+# * `cpu`
+# * `cuda:N` (one device)
+# * `cuda:N1,N2` (multiple devices)
+# * `cuda:all` (all available devices)
+_C.TRAIN.DEVICE = "cuda:0"
+
 _C.TRAIN.WORKERS = 8
 _C.TRAIN.SHUFFLE = True
 _C.TRAIN.SEED = 42
