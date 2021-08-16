@@ -1,6 +1,6 @@
 import torch
 from torch.nn import Module
-from torch.nn import DataParallel
+from torch.nn.parallel import DataParallel
 
 from config.default import CfgNode
 from dataset.dataset_utils import get_channels_in_count, get_channels_out_count
@@ -26,12 +26,14 @@ def get_model(cfg: CfgNode) -> Module:
     else:
         raise NotImplementedError
 
-    if "cuda" in cfg.TRAIN.DEVICE and "all" not in cfg.TRAIN.DEVICE:
+    if "cuda" in cfg.TRAIN.DEVICE:
         if "all" in cfg.TRAIN.DEVICE:
             gpus_count = torch.cuda.device_count()
-            assert gpus_count < 2, "No multi-gpu support"
+            assert gpus_count > 1, "No multi-gpu support"
             devices = [i for i in range(gpus_count)]
-            model = DataParallel(model, device_ids=devices, output_device=devices[0])
+            model1 = DataParallel(model, device_ids=[0])
+            model = DataParallel(model, device_ids=devices)
+            del model1
         else:
             devices = cfg.TRAIN.DEVICE.split(":")[1].split(",")
             if len(devices) == 1:
