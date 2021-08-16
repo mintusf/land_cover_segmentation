@@ -1,6 +1,9 @@
 from typing import Optional
 
+import torch
+import torch.nn as nn
 from torch.nn import CrossEntropyLoss
+import torch.nn.functional as F
 
 
 def get_loss(cfg):
@@ -12,11 +15,7 @@ def get_loss(cfg):
         raise NotImplementedError(f"Loss {cfg.TRAIN.LOSS} is not implemented")
 
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
-# based on:
+# Focal loss is based on:
 # https://github.com/zhezh/focalloss/blob/master/focalloss.py
 # https://github.com/kornia/kornia/blob/master/kornia/losses/focal.py
 
@@ -37,17 +36,6 @@ def one_hot(
         dtype: the desired data type of returned tensor.
     Returns:
         the labels in one hot tensor of shape :math:`(N, C, *)`,
-    Examples:
-        >>> labels = torch.LongTensor([[[0, 1], [2, 0]]])
-        >>> one_hot(labels, num_classes=3)
-        tensor([[[[1.0000e+00, 1.0000e-06],
-                  [1.0000e-06, 1.0000e+00]],
-        <BLANKLINE>
-                 [[1.0000e-06, 1.0000e+00],
-                  [1.0000e-06, 1.0000e-06]],
-        <BLANKLINE>
-                 [[1.0000e-06, 1.0000e-06],
-                  [1.0000e+00, 1.0000e-06]]]])
     """
     if not isinstance(labels, torch.Tensor):
         raise TypeError(
@@ -89,7 +77,7 @@ def focal_loss(
        - :math:`p_t` is the model's estimated probability for each class.
     Args:
         input: logits tensor with shape :math:`(N, C, *)` where C = number of classes.
-        target: labels tensor with shape :math:`(N, *)` 
+        target: labels tensor with shape :math:`(N, *)`
                 where each value is :math:`0 ≤ targets[i] ≤ C−1`.
         alpha: Weighting factor :math:`\alpha \in [0, 1]`.
         gamma: Focusing parameter :math:`\gamma >= 0`.
@@ -101,12 +89,6 @@ def focal_loss(
         eps: Scalar to enforce numerical stabiliy.
     Return:
         the computed loss.
-    Example:
-        >>> N = 5  # num_classes
-        >>> input = torch.randn(1, N, 3, 5, requires_grad=True)
-        >>> target = torch.empty(1, 3, 5, dtype=torch.long).random_(N)
-        >>> output = focal_loss(input, target, alpha=0.5, gamma=2.0, reduction='mean')
-        >>> output.backward()
     """
     if not isinstance(input, torch.Tensor):
         raise TypeError("Input type is not a torch.Tensor. Got {}".format(type(input)))
@@ -182,14 +164,6 @@ class FocalLoss(nn.Module):
         - Input: :math:`(N, C, *)` where C = number of classes.
         - Target: :math:`(N, *)` where each value is
           :math:`0 ≤ targets[i] ≤ C−1`.
-    Example:
-        >>> N = 5  # num_classes
-        >>> kwargs = {"alpha": 0.5, "gamma": 2.0, "reduction": 'mean'}
-        >>> criterion = FocalLoss(**kwargs)
-        >>> input = torch.randn(1, N, 3, 5, requires_grad=True)
-        >>> target = torch.empty(1, 3, 5, dtype=torch.long).random_(N)
-        >>> output = criterion(input, target)
-        >>> output.backward()
     """
 
     def __init__(
