@@ -7,7 +7,7 @@ def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode):
     """Returns LR scheduler module"""
 
     # Get mode
-    if cfg.TRAIN.LOSS == "categorical_crossentropy":
+    if cfg.TRAIN.LOSS in ["categorical_crossentropy", "focal_loss"]:
         mode = "min"
     else:
         raise NotImplementedError
