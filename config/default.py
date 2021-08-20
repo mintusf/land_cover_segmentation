@@ -40,7 +40,7 @@ _C.DATASET.MASK.CONFIG = os.path.join(
 _C.TRAIN = CfgNode()
 _C.TRAIN.EPOCHS = 100
 _C.TRAIN.RESUME_CHECKPOINT = ""
-_C.TRAIN.BATCH_SIZE = 8
+_C.TRAIN.BATCH_SIZE_PER_GPU = 8
 
 # Can be
 # * `cpu`
