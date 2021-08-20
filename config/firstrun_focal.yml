@@ -18,11 +18,11 @@ TRAIN:
   EPOCHS: 10
   RESUME_CHECKPOINT: ""
   BATCH_SIZE: 8
-  DEVICE: "cuda:15"
+  DEVICE: "cuda:14"
   WORKERS: 0
   SHUFFLE: True
   SEED: 42
-  LOSS: "categorical_crossentropy"
+  LOSS: "focal_loss"
   OPTIMIZER: "adam"
   LR: 0.01
   WEIGHT_DECAY: 0.0001
