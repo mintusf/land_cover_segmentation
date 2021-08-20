@@ -39,7 +39,6 @@ def get_raster_filepath(rootdir: str, sample_name: str, sensor: str) -> str:
     filename = f"{roi_folder_name}_{sensor}_{area}_{subgrid_id}.tif"
     return os.path.join(folder, filename)
 
-
 def build_dataset_stats_json(
     dataset_list: List[str],
     dataset_root: str,
