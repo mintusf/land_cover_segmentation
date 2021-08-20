@@ -77,12 +77,17 @@ class PatchDataset(Dataset):
         transformed_mask = build_mask(target_np, self.mask_config)
         target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
 
-        if "cuda" in self.cfg.TRAIN.DEVICE and "all" not in self.cfg.TRAIN.DEVICE:
-            input_tensor = input_tensor.to(torch.device(self.cfg.TRAIN.DEVICE)).float()
-            target_tensor = target_tensor.to(torch.device(self.cfg.TRAIN.DEVICE))
-        elif "cpu" in self.device:
+        if "cuda" in self.cfg.TRAIN.DEVICE:
+            if "all" in self.cfg.TRAIN.DEVICE:
+                device = 0
+            else:
+                devices = self.cfg.TRAIN.DEVICE.split(":")[1].split(",")
+                device = devices[0]
+            input_tensor = input_tensor.to(torch.device(f"cuda:{device}")).float()
+            target_tensor = target_tensor.to(torch.device(f"cuda:{device}"))
+        elif "cpu" in self.cfg.TRAIN.DEVICE:
             input_tensor = input_tensor.cpu().float()
-            target_tensor = target_tensor.cpu()
+            target_tensor = target_tensor.cpu().long()
         else:
             raise NotImplementedError
 

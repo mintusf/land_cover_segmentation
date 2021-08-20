@@ -15,10 +15,10 @@ DATASET:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/default.yml"
 TRAIN:
-  EPOCHS: 10
+  EPOCHS: 20
   RESUME_CHECKPOINT: ""
-  BATCH_SIZE: 8
-  DEVICE: "cuda:14"
+  BATCH_SIZE_PER_GPU: 16
+  DEVICE: "cuda:all"
   WORKERS: 0
   SHUFFLE: True
   SEED: 42
@@ -27,9 +27,9 @@ TRAIN:
   LR: 0.01
   WEIGHT_DECAY: 0.0001
   VERBOSE_STEP: 100
-  VAL_STEP: 1000
+  VAL_STEP: 500
   SCHEDULER:
     TYPE: "ReduceLROnPlateau"
     FACTOR: 0.2
-    PATIENCE: 5
+    PATIENCE: 15
   WEIGHTS_FOLDER: "weights"

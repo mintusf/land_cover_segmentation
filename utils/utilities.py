@@ -3,6 +3,7 @@ from typing import List
 import os
 
 import numpy as np
+import torch
 from yacs.config import CfgNode
 
 from utils.raster_utils import get_stats
@@ -107,3 +108,14 @@ def get_sample_name(filename: str) -> str:
     """Get sample name from filename."""
     split = filename.split("_")
     return "_".join(split[:2] + split[3:])
+
+
+def get_gpu_count(cfg: CfgNode) -> int:
+    """Returns used GPUs count given config"""
+    if "cpu" in cfg.TRAIN.DEVICE:
+        devices = 1
+    elif "all" in cfg.TRAIN.DEVICE:
+        devices = torch.cuda.device_count()
+    else:
+        devices = len(cfg.TRAIN.DEVICE.split(":")[1].split(","))
+    return devices

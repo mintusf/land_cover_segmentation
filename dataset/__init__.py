@@ -7,7 +7,7 @@ from torchvision.transforms import Compose
 from config.default import CfgNode
 from dataset.patch_dataset import PatchDataset
 from dataset.transforms import get_transform
-from utils.utilities import build_dataset_stats_json_from_cfg
+from utils.utilities import build_dataset_stats_json_from_cfg, get_gpu_count
 
 
 def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
@@ -20,16 +20,16 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
 
     dataset = PatchDataset(cfg, mode, transforms)
 
-    batch_size = cfg.TRAIN.BATCH_SIZE
     num_workers = cfg.TRAIN.WORKERS
     shuffle = cfg.TRAIN.SHUFFLE
 
     dataloader = DataLoader(
         dataset,
-        batch_size=batch_size,
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU * get_gpu_count(cfg),
         num_workers=num_workers,
         shuffle=shuffle,
         worker_init_fn=random.seed(cfg.TRAIN.SEED),
+        drop_last=True,
     )
 
     return dataloader

@@ -1,3 +1,4 @@
+import argparse
 import os
 import torch
 
@@ -15,6 +16,19 @@ from dataset import get_dataloader
 from models import get_model
 
 
+def parser():
+    """Parse the arguments."""
+    parser = argparse.ArgumentParser(description="Train the model")
+    parser.add_argument(
+        "--cfg",
+        dest="cfg_path",
+        help="Path to the config file",
+        type=str,
+        default="config/firstrun.yml",
+    )
+    return parser.parse_args()
+
+
 def run_training(cfg_path: str) -> None:
     """Runs training for the model specified in the config file.
     Args:
@@ -24,6 +38,9 @@ def run_training(cfg_path: str) -> None:
     cfg = get_cfg_from_file(cfg_path)
 
     cfg_name = os.path.splitext(os.path.split(cfg_path)[-1])[0]
+
+    if cfg.TRAIN.WORKERS > 0:
+        torch.multiprocessing.set_start_method("spawn")
 
     # Load Dataloaders
     train_dataloader = get_dataloader(cfg, "train")
@@ -67,13 +84,13 @@ def run_training(cfg_path: str) -> None:
             if i % cfg.TRAIN.VERBOSE_STEP == 0:
                 current_loss = sum(losses) / len(losses)
                 losses = []
-                print(f"Training loss at {i + 1} batch: {current_loss}")
+                print(f"Training loss at {i + 1} batch {epoch} epoch: {current_loss}")
 
             # Val step if N batches passes
             if i % cfg.TRAIN.VAL_STEP == 0:
                 # validation step
                 val_loss = model_validation(model, criterion, val_dataloader)
-                print(f"Validation loss at {i + 1} batch: {val_loss}")
+                print(f"Validation loss at {i + 1} batch {epoch} epoch: {val_loss}")
                 scheduler.step(val_loss)
                 if i == 0:
                     best_val_loss = val_loss
@@ -83,6 +100,7 @@ def run_training(cfg_path: str) -> None:
                         cfg.TRAIN.WEIGHTS_FOLDER,
                         f"cfg_{cfg_name}_bestloss.pth",
                     )
+                    print("Saving checkpoint")
                     save_checkpoint(
                         model, epoch, optimizer, current_loss, cfg, save_path
                     )
@@ -91,9 +109,10 @@ def run_training(cfg_path: str) -> None:
         save_path = os.path.join(
             cfg.TRAIN.WEIGHTS_FOLDER, f"cfg_{cfg_name}_epoch_{epoch}.pth"
         )
+        print("Saving checkpoint")
         save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
 
 
 if __name__ == "__main__":
-    # torch.multiprocessing.set_start_method("spawn") # If multiple workers
-    run_training("config/firstrun_focal.yml")
+    args = parser()
+    run_training(args.cfg_path)
