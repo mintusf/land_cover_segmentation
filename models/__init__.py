@@ -31,9 +31,8 @@ def get_model(cfg: CfgNode) -> Module:
             gpus_count = torch.cuda.device_count()
             assert gpus_count > 1, "No multi-gpu support"
             devices = [i for i in range(gpus_count)]
-            model1 = DataParallel(model, device_ids=[0])
-            model = DataParallel(model, device_ids=devices)
-            del model1
+            model = DataParallel(model, device_ids=devices, output_device=devices[0])
+            model.to("cuda:0")
         else:
             devices = cfg.TRAIN.DEVICE.split(":")[1].split(",")
             if len(devices) == 1:
@@ -43,6 +42,7 @@ def get_model(cfg: CfgNode) -> Module:
                 model = DataParallel(
                     model, device_ids=devices, output_device=devices[0]
                 )
+                model.to(f"cuda:{devices[0]}")
     elif "cpu" in cfg.TRAIN.DEVICE:
         model.cpu()
     else:
