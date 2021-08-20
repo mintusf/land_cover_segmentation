@@ -109,6 +109,7 @@ def get_sample_name(filename: str) -> str:
     split = filename.split("_")
     return "_".join(split[:2] + split[3:])
 
+
 def get_gpu_count(cfg: CfgNode) -> int:
     """Returns used GPUs count given config"""
     if "cpu" in cfg.TRAIN.DEVICE:
