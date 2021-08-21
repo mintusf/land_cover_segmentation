@@ -69,13 +69,14 @@ class PatchDataset(Dataset):
             input_raster_path, bands=self.input_used_channels
         )
 
-        # Get target tensor
-        target_raster_path = get_raster_filepath(
-            self.dataset_root, sample_name, self.target_sensor_name
-        )
-        target_np = raster_to_np(target_raster_path)
-        transformed_mask = build_mask(target_np, self.mask_config)
-        target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
+        if self.mode != "test":
+            # Get target tensor
+            target_raster_path = get_raster_filepath(
+                self.dataset_root, sample_name, self.target_sensor_name
+            )
+            target_np = raster_to_np(target_raster_path)
+            transformed_mask = build_mask(target_np, self.mask_config)
+            target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
 
         if "cuda" in self.cfg.TRAIN.DEVICE:
             if "all" in self.cfg.TRAIN.DEVICE:
@@ -84,15 +85,20 @@ class PatchDataset(Dataset):
                 devices = self.cfg.TRAIN.DEVICE.split(":")[1].split(",")
                 device = devices[0]
             input_tensor = input_tensor.to(torch.device(f"cuda:{device}")).float()
-            target_tensor = target_tensor.to(torch.device(f"cuda:{device}"))
+            if self.mode != "test":
+                target_tensor = target_tensor.to(torch.device(f"cuda:{device}"))
         elif "cpu" in self.cfg.TRAIN.DEVICE:
             input_tensor = input_tensor.cpu().float()
-            target_tensor = target_tensor.cpu().long()
+            if self.mode != "test":
+                target_tensor = target_tensor.cpu().long()
         else:
             raise NotImplementedError
 
         # Return sample
-        sample = {"input": input_tensor, "target": target_tensor}
+        if self.mode != "test":
+            sample = {"input": input_tensor, "target": target_tensor}
+        else:
+            sample = {"input": input_tensor, "name": sample_name}
 
         # Tranform
         if self.transforms:
