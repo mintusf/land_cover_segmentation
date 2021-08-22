@@ -64,6 +64,10 @@ _C.TRAIN.SCHEDULER.FACTOR = 0.1
 _C.TRAIN.SCHEDULER.PATIENCE = 2
 _C.TRAIN.WEIGHTS_FOLDER = "tests/weights"
 
+_C.TEST = CfgNode()
+_C.TEST.DEVICE = "cpu"
+_C.TEST.WORKERS = 0
+_C.TEST.BATCH_SIZE_PER_DEVICE = 1
 
 def get_cfg_defaults():
     """Get a yacs CfgNode object with default values for my_project."""
