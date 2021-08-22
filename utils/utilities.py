@@ -110,12 +110,16 @@ def get_sample_name(filename: str) -> str:
     return "_".join(split[:2] + split[3:])
 
 
-def get_gpu_count(cfg: CfgNode) -> int:
+def get_gpu_count(cfg: CfgNode, mode: str) -> int:
     """Returns used GPUs count given config"""
-    if "cpu" in cfg.TRAIN.DEVICE:
+    if mode in ["train", "val"]:
+        device = cfg.TRAIN.DEVICE
+    else:
+        device = cfg.TEST.DEVICE
+    if "cpu" in device:
         devices = 1
-    elif "all" in cfg.TRAIN.DEVICE:
+    elif "all" in device:
         devices = torch.cuda.device_count()
     else:
-        devices = len(cfg.TRAIN.DEVICE.split(":")[1].split(","))
+        devices = len(device.split(":")[1].split(","))
     return devices
