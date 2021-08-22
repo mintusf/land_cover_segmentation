@@ -47,7 +47,7 @@ def run_training(cfg_path: str) -> None:
     val_dataloader = get_dataloader(cfg, "val")
 
     # load the model
-    model = get_model(cfg)
+    model = get_model(cfg, cfg.TRAIN.DEVICE)
 
     # load the optimizer
     optimizer = get_optimizer(model, cfg)
