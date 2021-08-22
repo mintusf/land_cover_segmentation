@@ -1,7 +1,9 @@
 import torch
+from typing import Tuple, Union
 import random
 
 import numpy as np
+from torch import Tensor
 from torch.nn import Module
 from torch.optim import Optimizer
 
@@ -52,7 +54,7 @@ def load_checkpoint(checkpoint_path: str):
     Args:
         checkpoint_path (str): Path to checkpoint file
     """
-    checkpoint = torch.load(checkpoint_path)
+    checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
 
     epoch = checkpoint["epoch"]
     weights = checkpoint["model_state_dict"]
@@ -90,27 +92,42 @@ def training_step(
     return loss
 
 
-def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> float:
+def model_validation(
+    model: Module, criterion: Module, val_dataloader: dict, return_tensors: bool = False
+) -> Union[float, Tuple[float, Tensor, Tensor]]:
     """Run a validation step on a whole val dataset and returns loss
     Args:
         model (Module): Model to validate
         criterion (Module): Loss function
         val_dataloader (dict): Validation dataloader
+        return_preds (bool, optional): Whether to return predictions
     Returns:
         float: Validation loss
     """
+
     model.eval()
     val_loss = 0
+    outputs_all = []
+    inputs_all = []
+    names_all = []
     for batch in val_dataloader:
-        inputs, labels = batch["input"], batch["target"]
+        inputs, labels, names = batch["input"], batch["target"], batch["name"]
 
         # Forward propagation
-        outputs = model(inputs)["out"]
+        output = model(inputs)["out"]
 
         # Calc loss
-        loss = criterion(outputs, labels)
+        loss = criterion(output, labels)
         val_loss += loss.item()
+
+        outputs_all.append(output)
+        inputs_all.append(inputs)
+        names_all.extend(names)
 
     # Average loss
     val_loss /= len(val_dataloader)
-    return val_loss
+
+    if return_tensors:
+        return val_loss, torch.cat(inputs_all, dim=0).detach(), torch.cat(outputs_all, dim=0).detach(), names_all
+    else:
+        return val_loss
