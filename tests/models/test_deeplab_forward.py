@@ -14,7 +14,7 @@ def test_deeplab_forward(test_config):
     assert channels_in == 4
     assert channels_out == 5
 
-    model = get_model(test_config)
+    model = get_model(test_config, test_config.TRAIN.DEVICE)
 
     transform = get_transform(test_config)
     transforms = Compose([transform])

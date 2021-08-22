@@ -21,7 +21,7 @@ def module_dict():
 
     cfg = get_cfg_from_file(test_config_path)
 
-    model = get_model(cfg)
+    model = get_model(cfg, cfg.TRAIN.DEVICE)
     optimizer = get_optimizer(model, cfg)
     criterion = get_loss(cfg)
     lr_scheduler = get_lr_scheduler(optimizer, cfg)

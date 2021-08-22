@@ -15,7 +15,7 @@ def test_get_loss(test_config):
 
 def test_get_optimizer(test_config):
 
-    model = get_model(test_config)
+    model = get_model(test_config, test_config.TRAIN.DEVICE)
     optimizer = get_optimizer(model, test_config)
 
     assert isinstance(optimizer, Optimizer)
@@ -23,7 +23,7 @@ def test_get_optimizer(test_config):
 
 def test_get_lr_scheduler(test_config):
 
-    model = get_model(test_config)
+    model = get_model(test_config, test_config.TRAIN.DEVICE)
     optimizer = get_optimizer(model, test_config)
 
     scheduler = get_lr_scheduler(optimizer, test_config)

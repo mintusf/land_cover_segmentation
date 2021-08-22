@@ -8,7 +8,7 @@ from train_utils import get_optimizer, save_checkpoint, load_checkpoint
 
 def test_checkpoint(test_config):
 
-    model = get_model(test_config)
+    model = get_model(test_config, test_config.TRAIN.DEVICE)
     optimizer = get_optimizer(model, test_config)
     epoch = 1
     loss = 1.0

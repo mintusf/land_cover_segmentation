@@ -7,7 +7,7 @@ from dataset.dataset_utils import get_channels_in_count, get_channels_out_count
 from models.deeplab import create_deeplab
 
 
-def get_model(cfg: CfgNode) -> Module:
+def get_model(cfg: CfgNode, device: str) -> Module:
     """Returns model Module
 
     Args:
@@ -26,24 +26,24 @@ def get_model(cfg: CfgNode) -> Module:
     else:
         raise NotImplementedError
 
-    if "cuda" in cfg.TRAIN.DEVICE:
-        if "all" in cfg.TRAIN.DEVICE:
+    if "cuda" in device:
+        if "all" in device:
             gpus_count = torch.cuda.device_count()
             assert gpus_count > 1, "No multi-gpu support"
             devices = [i for i in range(gpus_count)]
             model = DataParallel(model, device_ids=devices, output_device=devices[0])
             model.to("cuda:0")
         else:
-            devices = cfg.TRAIN.DEVICE.split(":")[1].split(",")
+            devices = device.split(":")[1].split(",")
             if len(devices) == 1:
-                model.to(torch.device(cfg.TRAIN.DEVICE))
+                model.to(torch.device(device))
             else:
                 devices = [int(d) for d in devices]
                 model = DataParallel(
                     model, device_ids=devices, output_device=devices[0]
                 )
                 model.to(f"cuda:{devices[0]}")
-    elif "cpu" in cfg.TRAIN.DEVICE:
+    elif "cpu" in device:
         model.cpu()
     else:
         raise NotImplementedError
