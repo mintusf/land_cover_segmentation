@@ -54,7 +54,7 @@ def load_checkpoint(checkpoint_path: str):
     Args:
         checkpoint_path (str): Path to checkpoint file
     """
-    checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+    checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
 
     epoch = checkpoint["epoch"]
     weights = checkpoint["model_state_dict"]
@@ -128,6 +128,11 @@ def model_validation(
     val_loss /= len(val_dataloader)
 
     if return_tensors:
-        return val_loss, torch.cat(inputs_all, dim=0).detach(), torch.cat(outputs_all, dim=0).detach(), names_all
+        return (
+            val_loss,
+            torch.cat(inputs_all, dim=0).detach(),
+            torch.cat(outputs_all, dim=0).detach(),
+            names_all,
+        )
     else:
         return val_loss

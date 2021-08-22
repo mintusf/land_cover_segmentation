@@ -77,7 +77,9 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
         dataset_root, sample_name, input_sensor_name
     )
     stats_dict = load_json(cfg.DATASET.INPUT.STATS_FILE)
-    img = convert_raster_for_vis(input_raster_path, stats_dict, all_channels, rgb_channels)
+    img = convert_raster_for_vis(
+        input_raster_path, stats_dict, all_channels, rgb_channels
+    )
 
     # Get mask
     target_raster_path = get_raster_filepath(

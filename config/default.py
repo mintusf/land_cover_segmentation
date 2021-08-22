@@ -69,6 +69,7 @@ _C.TEST.DEVICE = "cpu"
 _C.TEST.WORKERS = 0
 _C.TEST.BATCH_SIZE_PER_DEVICE = 1
 
+
 def get_cfg_defaults():
     """Get a yacs CfgNode object with default values for my_project."""
     # Return a clone so that the defaults will not be altered
