@@ -44,14 +44,13 @@ def raster_to_np(
     return img_np
 
 
-def convert_for_vis(
-    raster_path: str,
-    global_stats_dict: dict,
-    all_channels: Tuple[str],
-    bands_rgb: Tuple[int] = [3, 2, 1],
+def convert_np_for_vis(
+    img,
+    global_stats_dict,
+    all_channels,
+    bands_rgb,
     target_size: Tuple[int] = [256, 256],
-) -> np.array:
-    img = raster_to_np(raster_path, bands_rgb)
+):
     img = transpose_to_channels_first(img)
     img = cv2.resize(img, target_size)
 
@@ -64,6 +63,22 @@ def convert_for_vis(
     img = (img + 2) * 255 / 4
 
     img = img.astype(np.uint8)
+    return img
+
+
+def convert_raster_for_vis(
+    raster_path: str,
+    global_stats_dict: dict,
+    all_channels: Tuple[str],
+    bands_rgb: Tuple[int] = [3, 2, 1],
+    target_size: Tuple[int] = [256, 256],
+) -> np.array:
+    img = raster_to_np(raster_path, bands_rgb)
+
+    img = convert_np_for_vis(
+        img, global_stats_dict, all_channels, bands_rgb, target_size
+    )
+
     return img
 
 
