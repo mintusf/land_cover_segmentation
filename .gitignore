@@ -6,3 +6,5 @@ docker/setup.bs
 *.pth
 *.png
 setup.bs
+
+logs/*
