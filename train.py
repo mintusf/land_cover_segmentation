@@ -17,7 +17,7 @@ from dataset import get_dataloader
 from utils.logger import init_log
 from models import get_model
 
-init_log("global", "INFO")
+init_log("global", "info")
 logger = logging.getLogger("global")
 
 
