@@ -1,3 +1,5 @@
+IS_TEST: False
+
 MODEL:
   TYPE: DeepLab
 
