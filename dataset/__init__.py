@@ -18,7 +18,7 @@ def print_dataloader(dataloader: DataLoader):
     """Returns str of dataloader used by the logger"""
     s = ""
     s += f"Samples count: {len(dataloader.dataset)}\n"
-    s += f"Samples list: {dataloader.dataset.dataset_list}\n"
+    s += f"Samples list: {dataloader.dataset.dataset_list_path}\n"
     s += f"Batches count: {len(dataloader)}\n"
     s += f"Drop last: {dataloader.drop_last}\n"
     s += f"Transforms: {dataloader.dataset.transforms}\n"
