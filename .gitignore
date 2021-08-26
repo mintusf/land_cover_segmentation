@@ -9,3 +9,5 @@ setup.bs
 
 logs/*.log
 temp/
+
+.comet.config
