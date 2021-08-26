@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import torch
 
@@ -13,7 +14,11 @@ from train_utils import (
     get_lr_scheduler,
 )
 from dataset import get_dataloader
+from utils.logger import init_log
 from models import get_model
+
+init_log("global", "info")
+logger = logging.getLogger("global")
 
 
 def parser():
@@ -36,6 +41,8 @@ def run_training(cfg_path: str) -> None:
     """
 
     cfg = get_cfg_from_file(cfg_path)
+
+    logger.info("CONFIG:\n" + str(cfg) + "\n" * 3)
 
     cfg_name = os.path.splitext(os.path.split(cfg_path)[-1])[0]
 
@@ -66,6 +73,7 @@ def run_training(cfg_path: str) -> None:
             raise Exception("The checkpoint config is different from the config file.")
         model.load_state_dict(optimizer_state)
         optimizer.load_state_dict(weights)
+        logger.info(f"Checkpoint {cfg.TRAIN.RESUME_CHECKPOINT} loaded")
     else:
         start_epoch = 1
         criterion = get_loss(cfg)
@@ -84,13 +92,17 @@ def run_training(cfg_path: str) -> None:
             if i % cfg.TRAIN.VERBOSE_STEP == 0:
                 current_loss = sum(losses) / len(losses)
                 losses = []
-                print(f"Training loss at {i + 1} batch {epoch} epoch: {current_loss}")
+                logger.info(
+                    f"Training loss at epoch {epoch} batch {i + 1}: {current_loss:.4f}"
+                )
 
             # Val step if N batches passes
             if i % cfg.TRAIN.VAL_STEP == 0:
                 # validation step
                 val_loss = model_validation(model, criterion, val_dataloader)
-                print(f"Validation loss at {i + 1} batch {epoch} epoch: {val_loss}")
+                logger.info(
+                    f"Validation loss at epoch {epoch} batch {i+1}: {val_loss:.4f}"
+                )
                 scheduler.step(val_loss)
                 if i == 0:
                     best_val_loss = val_loss
@@ -100,16 +112,16 @@ def run_training(cfg_path: str) -> None:
                         cfg.TRAIN.WEIGHTS_FOLDER,
                         f"cfg_{cfg_name}_bestloss.pth",
                     )
-                    print("Saving checkpoint")
+                    logger.info("Saving checkpoint for the best val loss")
                     save_checkpoint(
                         model, epoch, optimizer, current_loss, cfg, save_path
                     )
 
         # save the weight
+        logger.info(f"Saving checkpoint at the end of epoch {epoch}")
         save_path = os.path.join(
             cfg.TRAIN.WEIGHTS_FOLDER, f"cfg_{cfg_name}_epoch_{epoch}.pth"
         )
-        print("Saving checkpoint")
         save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
 
 

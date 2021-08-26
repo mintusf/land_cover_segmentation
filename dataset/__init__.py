@@ -1,3 +1,4 @@
+import logging
 import os
 
 from numpy import random
@@ -8,6 +9,26 @@ from config.default import CfgNode
 from dataset.patch_dataset import PatchDataset
 from dataset.transforms import get_transform
 from utils.utilities import build_dataset_stats_json_from_cfg, get_gpu_count
+from utils.io_utils import load_yaml
+
+logger = logging.getLogger("global")
+
+
+def print_dataloader(dataloader: DataLoader):
+    """Returns str of dataloader used by the logger"""
+    s = ""
+    s += f"Samples count: {len(dataloader.dataset)}\n"
+    s += f"Samples list: {dataloader.dataset.dataset_list}\n"
+    s += f"Batches count: {len(dataloader)}\n"
+    s += f"Drop last: {dataloader.drop_last}\n"
+    s += f"Transforms: {dataloader.dataset.transforms}\n"
+    s += f"Masks config: {load_yaml(dataloader.dataset.cfg.DATASET.MASK.CONFIG)}"
+    s += f"Input sensor name: {dataloader.dataset.cfg.DATASET.INPUT.SENSOR}"
+    s += f"All channels: {dataloader.dataset.cfg.DATASET.INPUT.CHANNELS}"
+    s += f"Used channels: {dataloader.dataset.cfg.DATASET.INPUT.USED_CHANNELS}"
+    s += f"Used channels: {dataloader.dataset.cfg.DATASET.MASK.SENSOR}"
+    s += "\n"
+    return s
 
 
 def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
@@ -30,6 +51,10 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
         shuffle=shuffle,
         worker_init_fn=random.seed(cfg.TRAIN.SEED),
         drop_last=True,
+    )
+
+    logger.info(
+        f"\nDataloader used for {mode}:\n" + print_dataloader(dataloader) + "\n"
     )
 
     return dataloader

@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 import torch
@@ -5,14 +6,20 @@ import torch.nn as nn
 from torch.nn import CrossEntropyLoss
 import torch.nn.functional as F
 
+logger = logging.getLogger("global")
+
 
 def get_loss(cfg):
     if cfg.TRAIN.LOSS == "categorical_crossentropy":
-        return CrossEntropyLoss()
+        loss = CrossEntropyLoss()
     elif cfg.TRAIN.LOSS == "focal_loss":
-        return FocalLoss(alpha=1.0)
+        loss = FocalLoss(alpha=1.0)
     else:
         raise NotImplementedError(f"Loss {cfg.TRAIN.LOSS} is not implemented")
+
+    logger.info(f"Used loss: {loss}")
+
+    return loss
 
 
 # Focal loss is based on:
