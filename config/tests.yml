@@ -1,4 +1,4 @@
-IS_TEST: False
+IS_TEST: True
 
 MODEL:
   TYPE: DeepLab
