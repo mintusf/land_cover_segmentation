@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import comet_ml # import required
 import torch
 
 from config.default import get_cfg_from_file
