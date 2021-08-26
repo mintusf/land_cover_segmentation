@@ -4,7 +4,7 @@ MODEL:
   TYPE: DeepLab
 
 DATASET:
-  ROOT: "/data"
+  ROOT: "/data/seg_data"
   LIST_TRAIN: "config/dataset/lists/train.txt"
   LIST_VAL: "config/dataset/lists/val.txt"
   LIST_TEST: "config/dataset/lists/test.txt"
@@ -20,8 +20,8 @@ TRAIN:
   EPOCHS: 20
   RESUME_CHECKPOINT: ""
   BATCH_SIZE_PER_GPU: 16
-  DEVICE: "cuda:all"
-  WORKERS: 0
+  DEVICE: "cuda:0"
+  WORKERS: 4
   SHUFFLE: True
   SEED: 42
   LOSS: "focal_loss"
@@ -33,7 +33,7 @@ TRAIN:
   SCHEDULER:
     TYPE: "ReduceLROnPlateau"
     FACTOR: 0.2
-    PATIENCE: 15
+    PATIENCE: 10
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
   COMET_TAGS: ["experiment", "focal_loss"]
