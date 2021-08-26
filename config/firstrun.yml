@@ -33,3 +33,5 @@ TRAIN:
     FACTOR: 0.2
     PATIENCE: 15
   WEIGHTS_FOLDER: "weights"
+  USE_COMET: True
+  COMET_TAGS: ["experiment"]

@@ -29,3 +29,5 @@ TRAIN:
   VERBOSE_STEP: 1
   VAL_STEP: 1
   WEIGHTS_FOLDER: "tests/weights"
+  USE_COMET: False
+  COMET_TAGS: ["test"]
