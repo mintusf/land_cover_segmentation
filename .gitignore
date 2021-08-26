@@ -7,5 +7,5 @@ docker/setup.bs
 *.png
 setup.bs
 
-logs/*
+logs/*.log
 temp/
