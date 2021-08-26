@@ -8,3 +8,4 @@ docker/setup.bs
 setup.bs
 
 logs/*
+temp/
