@@ -21,7 +21,7 @@ def print_dataloader(dataloader: DataLoader):
     s += f"Samples list: {dataloader.dataset.dataset_list}\n"
     s += f"Batches count: {len(dataloader)}\n"
     s += f"Drop last: {dataloader.drop_last}\n"
-    s += f"Transforms: {dataloader.dataset.transform}\n"
+    s += f"Transforms: {dataloader.dataset.transforms}\n"
     s += f"Masks config: {load_yaml(dataloader.dataset.cfg.DATASET.MASK.CONFIG)}"
     s += f"Input sensor name: {dataloader.dataset.cfg.DATASET.INPUT.SENSOR}"
     s += f"All channels: {dataloader.dataset.cfg.DATASET.INPUT.CHANNELS}"
