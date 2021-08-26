@@ -97,9 +97,10 @@ def run_training(cfg_path: str) -> None:
                 logger.info(
                     f"Training loss at epoch {epoch} batch {i + 1}: {current_loss:.4f}"
                 )
-                experiment.log_metric(
-                    "train_loss", current_loss, step=i + 1, epoch=epoch
-                )
+                if experiment is not None:
+                    experiment.log_metric(
+                        "train_loss", current_loss, step=i + 1, epoch=epoch
+                    )
 
             # Val step if N batches passes
             if i + 1 % cfg.TRAIN.VAL_STEP == 0:
@@ -108,9 +109,8 @@ def run_training(cfg_path: str) -> None:
                 logger.info(
                     f"Validation loss at epoch {epoch} batch {i+1}: {val_loss:.4f}"
                 )
-                experiment.log_metric(
-                    "val_loss", val_loss, step=i + 1, epoch=epoch
-                )
+                if experiment is not None:
+                    experiment.log_metric("val_loss", val_loss, step=i + 1, epoch=epoch)
                 scheduler.step(val_loss)
                 if i == 0:
                     best_val_loss = val_loss
