@@ -64,7 +64,7 @@ _C.TRAIN.SCHEDULER.FACTOR = 0.1
 _C.TRAIN.SCHEDULER.PATIENCE = 2
 _C.TRAIN.WEIGHTS_FOLDER = "tests/weights"
 _C.TRAIN.USE_COMET = True
-_C.TRAIN.COMET_TAGS = ["experiment","cross_entropy","focal_loss"]
+_C.TRAIN.COMET_TAGS = ["experiment", "cross_entropy", "focal_loss"]
 
 
 def get_cfg_defaults():
