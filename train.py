@@ -51,7 +51,7 @@ def run_training(cfg_path: str) -> None:
     cfg_name = os.path.splitext(os.path.split(cfg_path)[-1])[0]
 
     if cfg.TRAIN.WORKERS > 0:
-        torch.multiprocessing.set_start_method("spawn")
+        torch.multiprocessing.set_start_method("spawn", force=True)
 
     # Load Dataloaders
     train_dataloader = get_dataloader(cfg, "train")
