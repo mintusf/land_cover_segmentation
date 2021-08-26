@@ -4,6 +4,7 @@ import os
 
 import numpy as np
 import torch
+from torch.utils.data import DataLoader
 from yacs.config import CfgNode
 
 from utils.raster_utils import get_stats
@@ -119,3 +120,10 @@ def get_gpu_count(cfg: CfgNode) -> int:
     else:
         devices = len(cfg.TRAIN.DEVICE.split(":")[1].split(","))
     return devices
+
+
+def is_intersection_empty(dataloader1: DataLoader, dataloader2: DataLoader) -> bool:
+    """Checks if no sample in both train and checked dataloader"""
+    samples1 = set(dataloader1.dataset.subgrids_list)
+    samples2 = set(dataloader2.dataset.subgrids_list)
+    return samples1.isdisjoint(samples2)

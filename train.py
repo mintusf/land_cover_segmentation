@@ -16,6 +16,7 @@ from train_utils import (
 from dataset import get_dataloader
 from utils.comet import init_comet_logging
 from utils.logger import init_log
+from utils.utilities import is_intersection_empty
 from models import get_model
 
 init_log("global", "info")
@@ -54,6 +55,8 @@ def run_training(cfg_path: str) -> None:
     # Load Dataloaders
     train_dataloader = get_dataloader(cfg, "train")
     val_dataloader = get_dataloader(cfg, "val")
+    if not cfg.IS_TEST:
+        assert is_intersection_empty(train_dataloader, val_dataloader)
 
     # load the model
     model = get_model(cfg)
