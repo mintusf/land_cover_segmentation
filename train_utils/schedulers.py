@@ -1,6 +1,12 @@
+import logging
+
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from yacs.config import CfgNode
+
+from utils.logger import init_log
+
+logger = logging.getLogger("global")
 
 
 def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode):
@@ -24,5 +30,7 @@ def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode):
         scheduler = None
     else:
         raise NotImplementedError
+
+    logger.info(f"Used scheduler: {scheduler}")
 
     return scheduler
