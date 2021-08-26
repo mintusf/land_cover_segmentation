@@ -14,6 +14,7 @@ from train_utils import (
     get_lr_scheduler,
 )
 from dataset import get_dataloader
+from utils.comet import init_comet_logging
 from utils.logger import init_log
 from models import get_model
 
@@ -41,6 +42,7 @@ def run_training(cfg_path: str) -> None:
     """
 
     cfg = get_cfg_from_file(cfg_path)
+    experiment = init_comet_logging(cfg_path)
 
     logger.info("CONFIG:\n" + str(cfg) + "\n" * 3)
 
@@ -89,19 +91,25 @@ def run_training(cfg_path: str) -> None:
             loss = training_step(model, optimizer, criterion, batch)
             losses.append(loss.cpu().item())
 
-            if i % cfg.TRAIN.VERBOSE_STEP == 0:
+            if i + 1 % cfg.TRAIN.VERBOSE_STEP == 0:
                 current_loss = sum(losses) / len(losses)
                 losses = []
                 logger.info(
                     f"Training loss at epoch {epoch} batch {i + 1}: {current_loss:.4f}"
                 )
+                experiment.log_metric(
+                    "train_loss", current_loss, step=i + 1, epoch=epoch
+                )
 
             # Val step if N batches passes
-            if i % cfg.TRAIN.VAL_STEP == 0:
+            if i + 1 % cfg.TRAIN.VAL_STEP == 0:
                 # validation step
                 val_loss = model_validation(model, criterion, val_dataloader)
                 logger.info(
                     f"Validation loss at epoch {epoch} batch {i+1}: {val_loss:.4f}"
+                )
+                experiment.log_metric(
+                    "val_loss", val_loss, step=i + 1, epoch=epoch
                 )
                 scheduler.step(val_loss)
                 if i == 0:
