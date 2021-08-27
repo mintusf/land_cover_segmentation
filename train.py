@@ -88,6 +88,7 @@ def run_training(cfg_path: str) -> None:
 
     # run the training loop
     losses = []
+    best_val_loss = None
     for epoch in range(start_epoch, epochs + 1):
         batch_no = 0
         for train_phase in range(cfg.TRAIN.VAL_PER_EPOCH):
@@ -127,7 +128,7 @@ def run_training(cfg_path: str) -> None:
                     "val_loss", val_loss, step=batch_no + 1, epoch=epoch
                 )
             scheduler.step(val_loss)
-            if batch_no == 0:
+            if best_val_loss is None:
                 best_val_loss = val_loss
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
