@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from yacs.config import CfgNode
 
 from utils.raster_utils import get_stats
-from utils.io_utils import get_lines_from_txt
+from utils.io_utils import get_lines_from_txt, load_yaml
 
 
 def split_sample_name(sample_name: str) -> str:
@@ -134,8 +134,7 @@ def get_single_dataloader(dataloader, cfg, idx, out_loaders_count):
 
     dataloader_single = DataLoader(
         subgrids_dataset,
-        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU
-        * get_gpu_count(cfg),
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU * get_gpu_count(cfg),
         num_workers=cfg.TRAIN.WORKERS,
         shuffle=cfg.TRAIN.SHUFFLE,
         drop_last=True,
@@ -149,3 +148,10 @@ def is_intersection_empty(dataloader1: DataLoader, dataloader2: DataLoader) -> b
     samples1 = set(dataloader1.dataset.dataset_list)
     samples2 = set(dataloader2.dataset.dataset_list)
     return samples1.isdisjoint(samples2)
+
+
+def get_class_labels(cfg: CfgNode) -> int:
+    """Returns the labels of classes"""
+    labels_config = load_yaml(cfg.DATASET.MASK.CONFIG)
+    class2label = labels_config["class2label"]
+    return class2label.values().tolist()
