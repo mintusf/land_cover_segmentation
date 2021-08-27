@@ -21,7 +21,7 @@ TRAIN:
   RESUME_CHECKPOINT: ""
   BATCH_SIZE_PER_GPU: 8
   DEVICE: "cuda:0"
-  WORKERS: 4
+  WORKERS: 2
   SHUFFLE: True
   SEED: 42
   LOSS: "focal_loss"
@@ -29,11 +29,11 @@ TRAIN:
   LR: 0.01
   WEIGHT_DECAY: 0.0001
   VERBOSE_STEP: 100
-  VAL_STEP: 500
+  VAL_PER_EPOCH: 6
   SCHEDULER:
     TYPE: "ReduceLROnPlateau"
     FACTOR: 0.2
-    PATIENCE: 10
+    PATIENCE: 4
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
   COMET_TAGS: ["experiment", "focal_loss"]

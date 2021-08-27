@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 from typing import List
 import os
@@ -120,6 +121,27 @@ def get_gpu_count(cfg: CfgNode) -> int:
     else:
         devices = len(cfg.TRAIN.DEVICE.split(":")[1].split(","))
     return devices
+
+
+def get_single_dataloader(dataloader, cfg, idx, out_loaders_count):
+    """Split a dataloader into two dataloaders"""
+    single_loader_samples = len(dataloader.dataset) // out_loaders_count
+
+    subgrids_dataset = deepcopy(dataloader.dataset)
+    subgrids_dataset.dataset_list = dataloader.dataset.dataset_list[
+        idx * single_loader_samples : (idx + 1) * single_loader_samples
+    ]
+
+    dataloader_single = DataLoader(
+        subgrids_dataset,
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU
+        * get_gpu_count(cfg),
+        num_workers=cfg.TRAIN.WORKERS,
+        shuffle=cfg.TRAIN.SHUFFLE,
+        drop_last=True,
+    )
+
+    return dataloader_single
 
 
 def is_intersection_empty(dataloader1: DataLoader, dataloader2: DataLoader) -> bool:
