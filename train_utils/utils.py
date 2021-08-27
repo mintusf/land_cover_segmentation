@@ -2,8 +2,10 @@ import torch
 import random
 
 import numpy as np
-from torch.nn import Module
+from torch.nn import Module, Softmax
+from torch import Tensor
 from torch.optim import Optimizer
+from torchmetrics.functional import precision_recall, confusion_matrix
 
 from config.default import CfgNode
 
@@ -90,28 +92,102 @@ def training_step(
     return loss
 
 
-def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> float:
-    """Run a validation step on a whole val dataset and returns loss
+def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> dict:
+    """Run a validation step on a whole val dataset and returns metrics
     Args:
         model (Module): Model to validate
         criterion (Module): Loss function
         val_dataloader (dict): Validation dataloader
     Returns:
-        float: Validation loss
+        dict: Metrics:
+              * precision
+              * recall
+              * f1
+              * confusion_matrix
+              * val_loss
     """
     with torch.no_grad():
         model.eval()
         val_loss = 0
+        outputs = []
+        targets = []
         for batch in val_dataloader:
             inputs, labels = batch["input"], batch["target"]
 
             # Forward propagation
-            outputs = model(inputs)["out"]
+            output = model(inputs)["out"]
+
+            outputs.append(output)
+            targets.append(labels)
 
             # Calc loss
-            loss = criterion(outputs, labels)
+            loss = criterion(output, labels)
             val_loss += loss.item()
 
         # Average loss
         val_loss /= len(val_dataloader)
-        return val_loss
+
+    s = Softmax(dim=1)
+    outputs = torch.cat(outputs, dim=0)
+    targets = torch.cat(targets, dim=0)
+
+    outputs = s(outputs)
+
+    num_classes = outputs.shape[1]
+    (precision_ave, recall_ave, f1_ave, confusion_matrix_whole,) = calc_metrics(
+        outputs,
+        targets,
+        num_classes,
+    )
+
+    metrics = {
+        "precision": precision_ave,
+        "recall": recall_ave,
+        "f1": f1_ave,
+        "confusion_matrix": confusion_matrix_whole,
+        "val_loss": val_loss,
+    }
+
+    return metrics
+
+
+def calc_metrics(outputs: Tensor, targets: Tensor, num_classes: int) -> tuple:
+    """Calculates segmentation metrics
+    Args:
+        outputs (Tensor): The model output, shape (N, C)
+        targets (Tensor): The ground truth labels, shape (N)
+        num_classes (int): Classes count
+    Returns:
+        tuple: contains metrics:
+               * average precision
+               * average recall
+               * average f1 score
+               * confusion matrix for all classes
+    """
+
+    precision_ave, recall_ave = precision_recall(
+        preds=outputs,
+        target=targets,
+        average=None,
+        num_classes=num_classes,
+        mdmc_average="global",
+    )
+
+    precision_ave = np.nan_to_num(precision_ave.cpu()).mean()
+    recall_ave = np.nan_to_num(recall_ave.cpu()).mean()
+
+    f1_score_ave = np.divide(
+        2 * precision_ave * recall_ave,
+        (precision_ave + recall_ave),
+    )
+
+    f1_score_ave = np.nan_to_num(f1_score_ave)
+
+    confusion_matrix_whole = confusion_matrix(outputs, targets, num_classes)
+
+    return (
+        np.float64(precision_ave),
+        np.float64(recall_ave),
+        np.float64(f1_score_ave),
+        confusion_matrix_whole,
+    )
