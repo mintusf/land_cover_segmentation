@@ -21,6 +21,12 @@ def init_log(name, level):
     """
     logger = logging.getLogger(name)
     logger.setLevel(LEVELS[level])
+    # terminal
+    ch = logging.StreamHandler()
+    ch.setLevel(LEVELS[level])
+    ch_formatter = logging.Formatter(fmt="%(levelname)s - %(message)s")
+    ch.setFormatter(ch_formatter)
+    logger.addHandler(ch)
 
     now = datetime.now()
     logfile = "./logs/" + now.strftime("%Y%m%d_%H-%M-%S") + ".log"
