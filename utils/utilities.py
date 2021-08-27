@@ -142,3 +142,10 @@ def get_single_dataloader(dataloader, dataloader_config, idx, out_loaders_count)
     )
 
     return dataloader_single
+
+
+def is_intersection_empty(dataloader1: DataLoader, dataloader2: DataLoader) -> bool:
+    """Checks if no sample in both train and checked dataloader"""
+    samples1 = set(dataloader1.dataset.dataset_list)
+    samples2 = set(dataloader2.dataset.dataset_list)
+    return samples1.isdisjoint(samples2)

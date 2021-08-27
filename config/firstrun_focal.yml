@@ -1,8 +1,10 @@
+IS_TEST: False
+
 MODEL:
   TYPE: DeepLab
 
 DATASET:
-  ROOT: "/data"
+  ROOT: "/data/seg_data"
   LIST_TRAIN: "config/dataset/lists/train.txt"
   LIST_VAL: "config/dataset/lists/val.txt"
   LIST_TEST: "config/dataset/lists/test.txt"
@@ -17,9 +19,9 @@ DATASET:
 TRAIN:
   EPOCHS: 20
   RESUME_CHECKPOINT: ""
-  BATCH_SIZE_PER_GPU: 16
-  DEVICE: "cuda:all"
-  WORKERS: 0
+  BATCH_SIZE_PER_GPU: 8
+  DEVICE: "cuda:0"
+  WORKERS: 4
   SHUFFLE: True
   SEED: 42
   LOSS: "focal_loss"

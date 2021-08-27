@@ -17,4 +17,4 @@ sudo apt-get update -y \
   && sudo rm -rf /var/lib/apt/lists/*
 
 # Create pipenv environment
-sudo pip install -r ./docker/requirements.txt
+sudo pip install -r ./env/requirements.txt

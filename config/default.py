@@ -3,6 +3,8 @@ from yacs.config import CfgNode
 
 _C = CfgNode()
 
+_C.IS_TEST = False
+
 _C.MODEL = CfgNode()
 _C.MODEL.TYPE = "DeepLab"
 
