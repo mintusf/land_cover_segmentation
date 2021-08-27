@@ -1,9 +1,11 @@
+from copy import deepcopy
 import json
 from typing import List
 import os
 
 import numpy as np
 import torch
+from torch.utils.data import DataLoader
 from yacs.config import CfgNode
 
 from utils.raster_utils import get_stats
@@ -119,3 +121,24 @@ def get_gpu_count(cfg: CfgNode) -> int:
     else:
         devices = len(cfg.TRAIN.DEVICE.split(":")[1].split(","))
     return devices
+
+
+def get_single_dataloader(dataloader, dataloader_config, idx, out_loaders_count):
+    """Split a dataloader into two dataloaders"""
+    single_loader_samples = len(dataloader.dataset) // out_loaders_count
+
+    subgrids_dataset = deepcopy(dataloader.dataset)
+    subgrids_dataset.subgrids_list = dataloader.dataset.subgrids_list[
+        idx * single_loader_samples : (idx + 1) * single_loader_samples
+    ]
+
+    dataloader_single = DataLoader(
+        subgrids_dataset,
+        batch_size=dataloader_config.BATCH_SIZE_PER_GPU
+        * get_gpu_count(dataloader_config.DEVICE),
+        num_workers=dataloader_config.NUM_WORKERS,
+        shuffle=dataloader_config.SHUFFLE,
+        drop_last=True,
+    )
+
+    return dataloader_single

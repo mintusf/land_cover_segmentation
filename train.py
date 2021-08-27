@@ -16,6 +16,7 @@ from train_utils import (
 from dataset import get_dataloader
 from utils.comet import init_comet_logging
 from utils.logger import init_log
+from utils.utilities import get_single_dataloader
 from models import get_model
 
 init_log("global", "info")
@@ -85,45 +86,54 @@ def run_training(cfg_path: str) -> None:
     # run the training loop
     losses = []
     for epoch in range(start_epoch, epochs + 1):
-        for i, batch in enumerate(train_dataloader):
+        batch_no = 0
+        for train_phase in range(cfg.TRAIN.VAL_PER_EPOCH):
+            train_dataloader_single = get_single_dataloader(
+                train_dataloader,
+                cfg,
+                train_phase,
+                cfg.TRAIN.VAL_PER_EPOCH,
+            )
 
-            # Train step
-            loss = training_step(model, optimizer, criterion, batch)
-            losses.append(loss.cpu().item())
+            for batch in train_dataloader_single:
 
-            if i + 1 % cfg.TRAIN.VERBOSE_STEP == 0:
-                current_loss = sum(losses) / len(losses)
-                losses = []
-                logger.info(
-                    f"Training loss at epoch {epoch} batch {i + 1}: {current_loss:.4f}"
+                # Train step
+                batch_no += 1
+                loss = training_step(model, optimizer, criterion, batch)
+                losses.append(loss.cpu().item())
+
+                if batch_no + 1 % cfg.TRAIN.VERBOSE_STEP == 0:
+                    current_loss = sum(losses) / len(losses)
+                    losses = []
+                    logger.info(
+                        f"Training loss epoch {epoch} "
+                        + "batch {batch_no + 1}: {current_loss:.4f}"
+                    )
+                    if experiment is not None:
+                        experiment.log_metric(
+                            "train_loss", current_loss, step=batch_no + 1, epoch=epoch
+                        )
+
+            # validation step
+            val_loss = model_validation(model, criterion, val_dataloader)
+            logger.info(
+                f"Validation loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}"
+            )
+            if experiment is not None:
+                experiment.log_metric(
+                    "val_loss", val_loss, step=batch_no + 1, epoch=epoch
                 )
-                if experiment is not None:
-                    experiment.log_metric(
-                        "train_loss", current_loss, step=i + 1, epoch=epoch
-                    )
-
-            # Val step if N batches passes
-            if i + 1 % cfg.TRAIN.VAL_STEP == 0:
-                # validation step
-                val_loss = model_validation(model, criterion, val_dataloader)
-                logger.info(
-                    f"Validation loss at epoch {epoch} batch {i+1}: {val_loss:.4f}"
+            scheduler.step(val_loss)
+            if batch_no == 0:
+                best_val_loss = val_loss
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                save_path = os.path.join(
+                    cfg.TRAIN.WEIGHTS_FOLDER,
+                    f"cfg_{cfg_name}_bestloss.pth",
                 )
-                if experiment is not None:
-                    experiment.log_metric("val_loss", val_loss, step=i + 1, epoch=epoch)
-                scheduler.step(val_loss)
-                if i == 0:
-                    best_val_loss = val_loss
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
-                    save_path = os.path.join(
-                        cfg.TRAIN.WEIGHTS_FOLDER,
-                        f"cfg_{cfg_name}_bestloss.pth",
-                    )
-                    logger.info("Saving checkpoint for the best val loss")
-                    save_checkpoint(
-                        model, epoch, optimizer, current_loss, cfg, save_path
-                    )
+                logger.info("Saving checkpoint for the best val loss")
+                save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
 
         # save the weight
         logger.info(f"Saving checkpoint at the end of epoch {epoch}")
