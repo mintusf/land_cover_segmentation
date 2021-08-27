@@ -20,9 +20,6 @@ from utils.logger import init_log
 from utils.utilities import is_intersection_empty
 from models import get_model
 
-init_log("global", "info")
-logger = logging.getLogger("global")
-
 
 def parser():
     """Parse the arguments."""
@@ -32,7 +29,7 @@ def parser():
         dest="cfg_path",
         help="Path to the config file",
         type=str,
-        default="config/firstrun.yml",
+        default="config/firstrun_focal.yml",
     )
     return parser.parse_args()
 
@@ -42,6 +39,9 @@ def run_training(cfg_path: str) -> None:
     Args:
         cfg_path (str): Path to the config file.
     """
+
+    init_log("global", "info")
+    logger = logging.getLogger("global")
 
     cfg = get_cfg_from_file(cfg_path)
     experiment = init_comet_logging(cfg_path)
@@ -95,7 +95,7 @@ def run_training(cfg_path: str) -> None:
             loss = training_step(model, optimizer, criterion, batch)
             losses.append(loss.cpu().item())
 
-            if i + 1 % cfg.TRAIN.VERBOSE_STEP == 0:
+            if (i + 1) % cfg.TRAIN.VERBOSE_STEP == 0:
                 current_loss = sum(losses) / len(losses)
                 losses = []
                 logger.info(
@@ -107,7 +107,7 @@ def run_training(cfg_path: str) -> None:
                     )
 
             # Val step if N batches passes
-            if i + 1 % cfg.TRAIN.VAL_STEP == 0:
+            if (i + 1) % cfg.TRAIN.VAL_STEP == 0:
                 # validation step
                 val_loss = model_validation(model, criterion, val_dataloader)
                 logger.info(
