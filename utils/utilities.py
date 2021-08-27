@@ -123,21 +123,21 @@ def get_gpu_count(cfg: CfgNode) -> int:
     return devices
 
 
-def get_single_dataloader(dataloader, dataloader_config, idx, out_loaders_count):
+def get_single_dataloader(dataloader, cfg, idx, out_loaders_count):
     """Split a dataloader into two dataloaders"""
     single_loader_samples = len(dataloader.dataset) // out_loaders_count
 
     subgrids_dataset = deepcopy(dataloader.dataset)
-    subgrids_dataset.subgrids_list = dataloader.dataset.subgrids_list[
+    subgrids_dataset.dataset_list = dataloader.dataset.dataset_list[
         idx * single_loader_samples : (idx + 1) * single_loader_samples
     ]
 
     dataloader_single = DataLoader(
         subgrids_dataset,
-        batch_size=dataloader_config.BATCH_SIZE_PER_GPU
-        * get_gpu_count(dataloader_config.DEVICE),
-        num_workers=dataloader_config.NUM_WORKERS,
-        shuffle=dataloader_config.SHUFFLE,
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU
+        * get_gpu_count(cfg),
+        num_workers=cfg.TRAIN.WORKERS,
+        shuffle=cfg.TRAIN.SHUFFLE,
         drop_last=True,
     )
 
