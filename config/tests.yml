@@ -27,7 +27,7 @@ TRAIN:
   LR: 0.001
   WEIGHT_DECAY: 0.0005
   VERBOSE_STEP: 1
-  VAL_STEP: 1
+  VAL_PER_EPOCH: 1
   WEIGHTS_FOLDER: "tests/weights"
   USE_COMET: False
   COMET_TAGS: ["test"]
