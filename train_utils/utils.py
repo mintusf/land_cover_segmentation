@@ -99,18 +99,19 @@ def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> 
     Returns:
         float: Validation loss
     """
-    model.eval()
-    val_loss = 0
-    for batch in val_dataloader:
-        inputs, labels = batch["input"], batch["target"]
+    with torch.no_grad():
+        model.eval()
+        val_loss = 0
+        for batch in val_dataloader:
+            inputs, labels = batch["input"], batch["target"]
 
-        # Forward propagation
-        outputs = model(inputs)["out"]
+            # Forward propagation
+            outputs = model(inputs)["out"]
 
-        # Calc loss
-        loss = criterion(outputs, labels)
-        val_loss += loss.item()
+            # Calc loss
+            loss = criterion(outputs, labels)
+            val_loss += loss.item()
 
-    # Average loss
-    val_loss /= len(val_dataloader)
-    return val_loss
+        # Average loss
+        val_loss /= len(val_dataloader)
+        return val_loss
