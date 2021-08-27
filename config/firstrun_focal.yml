@@ -21,7 +21,7 @@ TRAIN:
   RESUME_CHECKPOINT: ""
   BATCH_SIZE_PER_GPU: 8
   DEVICE: "cuda:0"
-  WORKERS: 8
+  WORKERS: 2
   SHUFFLE: True
   SEED: 42
   LOSS: "focal_loss"
