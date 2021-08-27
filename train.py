@@ -111,7 +111,7 @@ def run_training(cfg_path: str) -> None:
                     losses = []
                     logger.info(
                         f"Training loss epoch {epoch} "
-                        + "batch {batch_no + 1}: {current_loss:.4f}"
+                        + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
                     if experiment is not None:
                         experiment.log_metric(
