@@ -15,6 +15,7 @@ black = "==21.7b0"
 flake8 = "==3.9.2"
 rasterio = "==1.2.6"
 comet-ml = "==3.15.0"
+torchmetrics = "==0.5.0"
 
 [dev-packages]
 

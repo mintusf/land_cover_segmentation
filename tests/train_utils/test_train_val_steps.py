@@ -1,3 +1,4 @@
+import numpy as np
 from torch import Tensor
 
 from train_utils import training_step, model_validation
@@ -23,6 +24,7 @@ def test_val_step(module_dict):
 
     val_dataloader = module_dict["val_dataloader"]
 
-    loss = model_validation(model, criterion, val_dataloader)
+    metrics = model_validation(model, criterion, val_dataloader)
 
-    assert isinstance(loss, float)
+    assert isinstance(metrics["val_loss"], float)
+    assert isinstance(metrics["precision"], float)

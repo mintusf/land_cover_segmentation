@@ -119,7 +119,8 @@ def run_training(cfg_path: str) -> None:
                         )
 
             # validation step
-            val_loss = model_validation(model, criterion, val_dataloader)
+            val_metrics = model_validation(model, criterion, val_dataloader)
+            val_loss = val_metrics["val_loss"]
             logger.info(
                 f"Validation loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}"
             )
