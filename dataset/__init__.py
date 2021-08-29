@@ -46,7 +46,7 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
 
     dataloader = DataLoader(
         dataset,
-        batch_size=cfg.TRAIN.BATCH_SIZE_PER_GPU * get_gpu_count(cfg),
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg),
         num_workers=num_workers,
         shuffle=shuffle,
         worker_init_fn=random.seed(cfg.TRAIN.SEED),
