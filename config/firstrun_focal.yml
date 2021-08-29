@@ -17,11 +17,11 @@ DATASET:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/default.yml"
 TRAIN:
-  EPOCHS: 20
+  EPOCHS: 5
   RESUME_CHECKPOINT: ""
   BATCH_SIZE_PER_GPU: 8
-  DEVICE: "cuda:0"
-  WORKERS: 2
+  DEVICE: "cuda:0,1,2"
+  WORKERS: 8
   SHUFFLE: True
   SEED: 42
   LOSS: "focal_loss"
@@ -33,7 +33,7 @@ TRAIN:
   SCHEDULER:
     TYPE: "ReduceLROnPlateau"
     FACTOR: 0.2
-    PATIENCE: 4
+    PATIENCE: 2
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
   COMET_TAGS: ["experiment", "focal_loss"]
