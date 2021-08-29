@@ -13,7 +13,7 @@ from utils.utilities import get_raster_filepath
 
 
 class PatchDataset(Dataset):
-    def __init__(self, cfg: CfgNode, mode: str, infer_list: str, transforms=None):
+    def __init__(self, cfg: CfgNode, mode: str, infer_list: str = "", transforms=None):
         """Patch Dataset initialization
 
         Args:
@@ -33,9 +33,9 @@ class PatchDataset(Dataset):
         elif mode == "val":
             self.dataset_list_path = cfg.DATASET.LIST_VAL
         elif mode == "test":
-            self.dataset_list = cfg.DATASET.LIST_TEST
+            self.dataset_list_path = cfg.DATASET.LIST_TEST
         elif mode == "infer":
-            self.dataset_list = infer_list
+            self.dataset_list_path = infer_list
         else:
             raise ValueError(f"Unknown mode: {mode}")
 
