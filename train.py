@@ -111,7 +111,7 @@ def run_training(cfg_path: str) -> None:
                     current_loss = sum(losses) / len(losses)
                     losses = []
                     logger.info(
-                        f"TrainW loss epoch {epoch} "
+                        f"Train loss epoch {epoch} "
                         + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
                     log_metrics_comet(
