@@ -139,7 +139,7 @@ def get_single_dataloader(dataloader, cfg, idx, out_loaders_count):
     dataloader_single = DataLoader(
         subgrids_dataset,
         batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE
-        * get_gpu_count(cfg, cfg.TRAIN.DEVICE),
+        * get_gpu_count(cfg, "train"),
         num_workers=cfg.TRAIN.WORKERS,
         shuffle=cfg.TRAIN.SHUFFLE,
         drop_last=True,
