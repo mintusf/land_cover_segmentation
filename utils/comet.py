@@ -4,7 +4,7 @@ from comet_ml import Experiment
 import numpy as np
 
 from config.default import get_cfg_from_file, CfgNode
-from utils.utilities import get_class_labels
+from utils.utilities import get_class_labels, get_train_step
 
 
 def init_comet_logging(cfg_path: str) -> Experiment:
@@ -29,13 +29,18 @@ def init_comet_logging(cfg_path: str) -> Experiment:
 
 def log_metrics_comet(cfg, metrics, experiment, epoch, batch_no):
 
+    if experiment is None:
+        return False
+
+    step = get_train_step(cfg, batch_no, epoch - 1)
+
     for metric_str, value in metrics.items():
         if "confusion_matrix" not in metric_str:
-            experiment.log_metric(metric_str, value, step=batch_no, epoch=epoch)
+            experiment.log_metric(metric_str, value, step=step, epoch=epoch)
         else:
             labels = get_class_labels(cfg)
             experiment.log_confusion_matrix(
-                matrix=value.int().tolist(),
+                matrix=(value / 1000).int().tolist(),
                 title=metric_str + " (Count in 1K)",
                 max_example_per_cell=200000,
                 labels=labels,
