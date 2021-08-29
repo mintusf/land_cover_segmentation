@@ -138,7 +138,8 @@ def get_single_dataloader(dataloader, cfg, idx, out_loaders_count):
 
     dataloader_single = DataLoader(
         subgrids_dataset,
-        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg),
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE
+        * get_gpu_count(cfg, cfg.TRAIN.DEVICE),
         num_workers=cfg.TRAIN.WORKERS,
         shuffle=cfg.TRAIN.SHUFFLE,
         drop_last=True,
@@ -158,7 +159,7 @@ def get_class_labels(cfg: CfgNode) -> int:
     """Returns the labels of classes"""
     labels_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     class2label = labels_config["class2label"]
-    return (class2label.values())
+    return class2label.values()
 
 
 def get_train_step(cfg: CfgNode, batch_no: int, epoch: int) -> int:
