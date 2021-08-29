@@ -4,6 +4,7 @@ LABEL maintainer="fmintus <mintusf@gmail.com>"
 # install requirements
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends \
+    sudo \
     bzip2 \
     git \
     python3\
@@ -31,8 +32,8 @@ ARG USER_ID
 ARG GROUP_ID
 RUN addgroup --gid $GROUP_ID user
 RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID user
-RUN passwd -d user
 RUN usermod -aG sudo user
+RUN passwd -d user
 USER user
 
 RUN ["/bin/bash"]

@@ -1,4 +1,8 @@
+import logging
+
 from torch.optim import Adam
+
+logger = logging.getLogger("global")
 
 
 def get_optimizer(model, cfg):
@@ -8,5 +12,7 @@ def get_optimizer(model, cfg):
         )
     else:
         raise NotImplementedError
+
+    logger.info(f"Used optimizer: {optimizer}")
 
     return optimizer

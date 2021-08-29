@@ -29,15 +29,17 @@ class PatchDataset(Dataset):
         self.target_sensor_name = cfg.DATASET.MASK.SENSOR
 
         if mode == "train":
-            self.dataset_list = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
+            self.dataset_list_path = cfg.DATASET.LIST_TRAIN
         elif mode == "val":
-            self.dataset_list = get_lines_from_txt(cfg.DATASET.LIST_VAL)
+            self.dataset_list_path = cfg.DATASET.LIST_VAL
         elif mode == "test":
-            self.dataset_list = get_lines_from_txt(cfg.DATASET.LIST_TEST)
+            self.dataset_list = cfg.DATASET.LIST_TEST
         elif mode == "infer":
-            self.dataset_list = get_lines_from_txt(infer_list)
+            self.dataset_list = infer_list
         else:
             raise ValueError(f"Unknown mode: {mode}")
+
+        self.dataset_list = get_lines_from_txt(self.dataset_list_path)
 
         self.transforms = transforms
         self.device = cfg.TRAIN.DEVICE if mode in ["train", "val"] else cfg.TEST.DEVICE

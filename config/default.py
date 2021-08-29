@@ -3,6 +3,8 @@ from yacs.config import CfgNode
 
 _C = CfgNode()
 
+_C.IS_TEST = False
+
 _C.MODEL = CfgNode()
 _C.MODEL.TYPE = "DeepLab"
 
@@ -57,12 +59,14 @@ _C.TRAIN.OPTIMIZER = "adam"
 _C.TRAIN.LR = 0.001
 _C.TRAIN.WEIGHT_DECAY = 0.0005
 _C.TRAIN.VERBOSE_STEP = 10
-_C.TRAIN.VAL_STEP = 100
+_C.TRAIN.VAL_PER_EPOCH = 6
 _C.TRAIN.SCHEDULER = CfgNode()
 _C.TRAIN.SCHEDULER.TYPE = "ReduceLROnPlateau"
 _C.TRAIN.SCHEDULER.FACTOR = 0.1
-_C.TRAIN.SCHEDULER.PATIENCE = 2
+_C.TRAIN.SCHEDULER.PATIENCE = 4
 _C.TRAIN.WEIGHTS_FOLDER = "tests/weights"
+_C.TRAIN.USE_COMET = True
+_C.TRAIN.COMET_TAGS = ["experiment", "cross_entropy", "focal_loss"]
 
 _C.TEST = CfgNode()
 _C.TEST.DEVICE = "cpu"

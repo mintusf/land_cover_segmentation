@@ -1,5 +1,7 @@
 import argparse
+import logging
 import os
+import comet_ml  # import required
 import torch
 
 from config.default import get_cfg_from_file
@@ -11,8 +13,12 @@ from train_utils import (
     training_step,
     model_validation,
     get_lr_scheduler,
+    validate_metrics,
 )
 from dataset import get_dataloader
+from utils.comet import init_comet_logging, log_metrics_comet
+from utils.logger import init_log
+from utils.utilities import get_single_dataloader, is_intersection_empty
 from models import get_model
 
 
@@ -24,7 +30,7 @@ def parser():
         dest="cfg_path",
         help="Path to the config file",
         type=str,
-        default="config/firstrun.yml",
+        default="config/firstrun_focal.yml",
     )
     return parser.parse_args()
 
@@ -35,16 +41,24 @@ def run_training(cfg_path: str) -> None:
         cfg_path (str): Path to the config file.
     """
 
+    init_log("global", "info")
+    logger = logging.getLogger("global")
+
     cfg = get_cfg_from_file(cfg_path)
+    experiment = init_comet_logging(cfg_path)
+
+    logger.info("CONFIG:\n" + str(cfg) + "\n" * 3)
 
     cfg_name = os.path.splitext(os.path.split(cfg_path)[-1])[0]
 
     if cfg.TRAIN.WORKERS > 0:
-        torch.multiprocessing.set_start_method("spawn")
+        torch.multiprocessing.set_start_method("spawn", force=True)
 
     # Load Dataloaders
     train_dataloader = get_dataloader(cfg, "train")
     val_dataloader = get_dataloader(cfg, "val")
+    if not cfg.IS_TEST:
+        assert is_intersection_empty(train_dataloader, val_dataloader)
 
     # load the model
     model = get_model(cfg, cfg.TRAIN.DEVICE)
@@ -66,6 +80,7 @@ def run_training(cfg_path: str) -> None:
             raise Exception("The checkpoint config is different from the config file.")
         model.load_state_dict(optimizer_state)
         optimizer.load_state_dict(weights)
+        logger.info(f"Checkpoint {cfg.TRAIN.RESUME_CHECKPOINT} loaded")
     else:
         start_epoch = 1
         criterion = get_loss(cfg)
@@ -74,42 +89,56 @@ def run_training(cfg_path: str) -> None:
 
     # run the training loop
     losses = []
+    best_val_metrics = {}
     for epoch in range(start_epoch, epochs + 1):
-        for i, batch in enumerate(train_dataloader):
+        batch_no = 0
+        for train_phase in range(cfg.TRAIN.VAL_PER_EPOCH):
+            train_dataloader_single = get_single_dataloader(
+                train_dataloader,
+                cfg,
+                train_phase,
+                cfg.TRAIN.VAL_PER_EPOCH,
+            )
 
-            # Train step
-            loss = training_step(model, optimizer, criterion, batch)
-            losses.append(loss.cpu().item())
+            for batch in train_dataloader_single:
 
-            if i % cfg.TRAIN.VERBOSE_STEP == 0:
-                current_loss = sum(losses) / len(losses)
-                losses = []
-                print(f"Training loss at {i + 1} batch {epoch} epoch: {current_loss}")
+                # Train step
+                batch_no += 1
+                loss = training_step(model, optimizer, criterion, batch)
+                losses.append(loss.cpu().item())
 
-            # Val step if N batches passes
-            if i % cfg.TRAIN.VAL_STEP == 0:
-                # validation step
-                val_loss = model_validation(model, criterion, val_dataloader)
-                print(f"Validation loss at {i + 1} batch {epoch} epoch: {val_loss}")
-                scheduler.step(val_loss)
-                if i == 0:
-                    best_val_loss = val_loss
-                if val_loss < best_val_loss:
-                    best_val_loss = val_loss
-                    save_path = os.path.join(
-                        cfg.TRAIN.WEIGHTS_FOLDER,
-                        f"cfg_{cfg_name}_bestloss.pth",
+                if (batch_no + 1) % cfg.TRAIN.VERBOSE_STEP == 0:
+                    current_loss = sum(losses) / len(losses)
+                    losses = []
+                    logger.info(
+                        f"Train loss epoch {epoch} "
+                        + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
-                    print("Saving checkpoint")
-                    save_checkpoint(
-                        model, epoch, optimizer, current_loss, cfg, save_path
+                    log_metrics_comet(
+                        cfg, {"train_loss": current_loss}, experiment, epoch, batch_no
                     )
+
+            # validation step
+            val_metrics = model_validation(model, criterion, val_dataloader)
+            val_loss = val_metrics["val_loss"]
+            logger.info(f"Val loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}")
+            scheduler.step(val_loss)
+            log_metrics_comet(cfg, val_metrics, experiment, epoch, batch_no)
+            validate_metrics(
+                val_metrics,
+                best_val_metrics,
+                cfg_path,
+                model,
+                epoch,
+                optimizer,
+                current_loss,
+            )
 
         # save the weight
+        logger.info(f"Saving checkpoint at the end of epoch {epoch}")
         save_path = os.path.join(
             cfg.TRAIN.WEIGHTS_FOLDER, f"cfg_{cfg_name}_epoch_{epoch}.pth"
         )
-        print("Saving checkpoint")
         save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
 
 

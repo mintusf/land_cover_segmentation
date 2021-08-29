@@ -1,3 +1,5 @@
+IS_TEST: False
+
 MODEL:
   TYPE: DeepLab
 
@@ -27,12 +29,14 @@ TRAIN:
   LR: 0.01
   WEIGHT_DECAY: 0.0001
   VERBOSE_STEP: 100
-  VAL_STEP: 1000
+  VAL_PER_EPOCH: 6
   SCHEDULER:
     TYPE: "ReduceLROnPlateau"
     FACTOR: 0.2
-    PATIENCE: 15
+    PATIENCE: 4
   WEIGHTS_FOLDER: "weights"
+  USE_COMET: True
+  COMET_TAGS: ["experiment"]
 TEST:
   DEVICE: "cpu"
   WORKERS: 0

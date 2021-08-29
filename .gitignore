@@ -6,3 +6,8 @@ docker/setup.bs
 *.pth
 *.png
 setup.bs
+
+logs/*.log
+temp/
+
+.comet.config

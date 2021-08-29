@@ -1,8 +1,10 @@
+IS_TEST: False
+
 MODEL:
   TYPE: DeepLab
 
 DATASET:
-  ROOT: "/data"
+  ROOT: "/data/seg_data"
   LIST_TRAIN: "config/dataset/lists/train.txt"
   LIST_VAL: "config/dataset/lists/val.txt"
   LIST_TEST: "config/dataset/lists/test_0822.txt"
@@ -15,11 +17,11 @@ DATASET:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/default.yml"
 TRAIN:
-  EPOCHS: 20
+  EPOCHS: 5
   RESUME_CHECKPOINT: ""
-  BATCH_SIZE_PER_GPU: 16
-  DEVICE: "cuda:all"
-  WORKERS: 0
+  BATCH_SIZE_PER_GPU: 8
+  DEVICE: "cuda:0,1,2"
+  WORKERS: 8
   SHUFFLE: True
   SEED: 42
   LOSS: "focal_loss"
@@ -27,12 +29,14 @@ TRAIN:
   LR: 0.01
   WEIGHT_DECAY: 0.0001
   VERBOSE_STEP: 100
-  VAL_STEP: 500
+  VAL_PER_EPOCH: 6
   SCHEDULER:
     TYPE: "ReduceLROnPlateau"
     FACTOR: 0.2
-    PATIENCE: 15
+    PATIENCE: 2
   WEIGHTS_FOLDER: "weights"
+  USE_COMET: True
+  COMET_TAGS: ["experiment", "focal_loss"]
 TEST:
   DEVICE: "cpu"
   WORKERS: 0
