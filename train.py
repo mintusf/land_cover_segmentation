@@ -114,10 +114,9 @@ def run_training(cfg_path: str) -> None:
                         f"Training loss epoch {epoch} "
                         + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
-                    if experiment is not None:
-                        experiment.log_metric(
-                            "train_loss", current_loss, step=batch_no + 1, epoch=epoch
-                        )
+                    log_metrics_comet(
+                        cfg, {"train_loss": current_loss}, experiment, epoch, batch_no
+                    )
 
             # validation step
             val_metrics = model_validation(model, criterion, val_dataloader)
@@ -125,12 +124,8 @@ def run_training(cfg_path: str) -> None:
             logger.info(
                 f"Validation loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}"
             )
-            if experiment is not None:
-                experiment.log_metric(
-                    "val_loss", val_loss, step=batch_no + 1, epoch=epoch
-                )
             scheduler.step(val_loss)
-            log_metrics_comet(val_metrics, experiment, epoch)
+            log_metrics_comet(cfg, val_metrics, experiment, epoch, batch_no)
             validate_metrics(
                 val_metrics,
                 best_val_metrics,
