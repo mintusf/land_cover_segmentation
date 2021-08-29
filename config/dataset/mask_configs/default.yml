@@ -1,4 +1,4 @@
-maskname2int: 
+maskname2int:
   IGBP: 0
   LCCS_LC: 1
   LCCS_LU: 2

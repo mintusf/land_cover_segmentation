@@ -7,7 +7,7 @@ DATASET:
   ROOT: "/data/seg_data"
   LIST_TRAIN: "config/dataset/lists/train.txt"
   LIST_VAL: "config/dataset/lists/val.txt"
-  LIST_TEST: "config/dataset/lists/test_0822.txt"
+  LIST_TEST: "config/dataset/lists/test.txt"
   INPUT:
     SENSOR: s2
     USED_CHANNELS: [1,2,3,4]
@@ -38,6 +38,6 @@ TRAIN:
   USE_COMET: True
   COMET_TAGS: ["experiment", "focal_loss"]
 TEST:
-  DEVICE: "cpu"
+  DEVICE: "cuda:0"
   WORKERS: 0
-  BATCH_SIZE_PER_DEVICE: 1
+  BATCH_SIZE_PER_DEVICE: 8
