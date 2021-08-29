@@ -39,7 +39,7 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
     transform = get_transform(cfg)
     transforms = Compose([transform])
 
-    dataset = PatchDataset(cfg, mode, transforms)
+    dataset = PatchDataset(cfg, mode, transforms=transforms)
 
     if mode == ["train", "val"]:
         num_workers = cfg.TRAIN.WORKERS
