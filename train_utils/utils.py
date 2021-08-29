@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Dict, Union
 
 import torch
 import random
@@ -200,9 +201,25 @@ def calc_metrics(outputs: Tensor, targets: Tensor, num_classes: int) -> tuple:
 
 
 def validate_metrics(
-    current_metrics, best_metrics, cfg_path, model, epoch, optimizer, current_loss
-):
+    current_metrics: Dict[str, Union[float, Tensor]],
+    best_metrics: Dict[str, Union[float, Tensor]],
+    cfg_path: str,
+    model: Module,
+    epoch: int,
+    optimizer: Optimizer,
+    current_loss: float,
+) -> None:
+    """Validate metrics and save checkpoint if best
 
+    Args:
+        current_metrics (Dict[str, Union[float, Tensor]]): Current metrics
+        best_metrics (Dict[str, Union[float, Tensor]]): Best metrics
+        cfg_path (str): Path to config file
+        model (Module): Model to save
+        epoch (int): Epoch number
+        optimizer (Optimizer): Optimizer to save
+        current_loss (float): Current train loss
+    """
     cfg = get_cfg_from_file(cfg_path)
     cfg_name = os.path.basename(cfg_path).split(".")[0]
     for metric_str, value in current_metrics.items():
