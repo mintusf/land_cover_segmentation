@@ -159,7 +159,7 @@ def get_class_labels(cfg: CfgNode) -> int:
     """Returns the labels of classes"""
     labels_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     class2label = labels_config["class2label"]
-    return class2label.values()
+    return list(class2label.values())
 
 
 def get_train_step(cfg: CfgNode, batch_no: int, epoch: int) -> int:
@@ -168,7 +168,7 @@ def get_train_step(cfg: CfgNode, batch_no: int, epoch: int) -> int:
     batches_per_epoch = cfg.TRAIN.VAL_PER_EPOCH * (
         train_dataset_len
         // cfg.TRAIN.VAL_PER_EPOCH
-        // (cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg))
+        // (cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, "train"))
     )
     step = batch_no + epoch * batches_per_epoch
     return step
