@@ -75,7 +75,7 @@ def run_training(cfg_path: str) -> None:
             optimizer_state,
             current_loss,
             checkpoint_cfg,
-        ) = load_checkpoint(cfg, model)
+        ) = load_checkpoint(cfg, cfg.TRAIN.DEVICE)
         if checkpoint_cfg != cfg:
             raise Exception("The checkpoint config is different from the config file.")
         model.load_state_dict(optimizer_state)

@@ -22,7 +22,7 @@ def test_checkpoint(test_config):
         loaded_optimizer,
         loaded_loss,
         loaded_cfg,
-    ) = load_checkpoint(save_path)
+    ) = load_checkpoint(save_path, test_config.TRAIN.DEVICE)
 
     assert loaded_epoch == epoch
 

@@ -56,12 +56,16 @@ def save_checkpoint(
     )
 
 
-def load_checkpoint(checkpoint_path: str):
+def load_checkpoint(checkpoint_path: str, device: str):
     """Load checkpoint from file.
     Args:
         checkpoint_path (str): Path to checkpoint file
+        device (str): Device to load checkpoint on
     """
-    checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
+    if "cpu" in device:
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
+    else:
+        checkpoint = torch.load(checkpoint_path)
 
     epoch = checkpoint["epoch"]
     weights = checkpoint["model_state_dict"]

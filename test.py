@@ -28,7 +28,7 @@ def parser():
         "--checkpoint",
         help="Path to the config file",
         type=str,
-        default="/workspace/weights/cfg_firstrun_focal_epoch_6.pth",
+        default="/workspace/weights/from_aws/cfg_firstrun_focal_bestloss.pth",
     )
 
     parser.add_argument(
@@ -61,9 +61,12 @@ def run_testings(
 ):
 
     # Build the model
-    _, weights, _, _, _ = load_checkpoint(checkpoint)
     cfg = get_cfg_from_file(cfg_path)
-    model = get_model(cfg, cfg.TEST.DEVICE)
+    device = cfg.TEST.DEVICE
+
+    _, weights, _, _, _ = load_checkpoint(checkpoint, device)
+
+    model = get_model(cfg, device)
     weights = rename_ordered_dict(weights)
     model.load_state_dict(weights)
     criterion = get_loss(cfg)
