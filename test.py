@@ -1,5 +1,6 @@
 import argparse
 import os
+from utils.utilities import get_gpu_count
 
 import cv2
 import torch
@@ -47,10 +48,19 @@ def parser():
     return parser.parse_args()
 
 
-def rename_ordered_dict(ordered_dict):
+def rename_ordered_dict_from_parallel(ordered_dict):
     old_keys = list(ordered_dict.keys())
     for key in old_keys:
         key_new = key.replace("module.", "")
+        ordered_dict[key_new] = ordered_dict.pop(key)
+
+    return ordered_dict
+
+
+def rename_ordered_dict_to_parallel(ordered_dict):
+    old_keys = list(ordered_dict.keys())
+    for key in old_keys:
+        key_new = "module." + key
         ordered_dict[key_new] = ordered_dict.pop(key)
 
     return ordered_dict
@@ -64,18 +74,21 @@ def run_testings(
     cfg = get_cfg_from_file(cfg_path)
     device = cfg.TEST.DEVICE
 
+    if cfg.TEST.WORKERS > 0:
+        torch.multiprocessing.set_start_method("spawn", force=True)
+
     _, weights, _, _, _ = load_checkpoint(checkpoint, device)
 
     model = get_model(cfg, device)
-    weights = rename_ordered_dict(weights)
+    if get_gpu_count(cfg, mode="train") > 1 and get_gpu_count(cfg, mode="test") == 1:
+        weights = rename_ordered_dict_from_parallel(weights)
+    if get_gpu_count(cfg, mode="train") == 1 and get_gpu_count(cfg, mode="test") > 1:
+        weights = rename_ordered_dict_to_parallel(weights)
     model.load_state_dict(weights)
     criterion = get_loss(cfg)
 
     dataloader = get_dataloader(cfg, "test")
     mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
-    stats_dict = load_json(cfg.DATASET.INPUT.STATS_FILE)
-    all_channels = cfg.DATASET.INPUT.CHANNELS
-    rgb_channels = [3, 2, 1]
 
     if not os.path.isdir(destination):
         os.makedirs(destination)
@@ -85,20 +98,20 @@ def run_testings(
     )
 
     preds = torch.argmax(preds, dim=1)
-    print(f"Loss on test set: {loss:.3f}")
+    print(f"Loss on test set: {loss['val_loss']}")
+    print(f"Recall on test set: {loss['recall']}")
+    print(f"Precision on test set: {loss['precision']}")
+    print(f"F1 score on test set: {loss['f1']}")
 
     if add_alphablend:
         for idx in range(inputs.shape[0]):
             input_img = inputs[idx].cpu().numpy()
             input_img = input_img[(1, 2, 3), :, :]
-            input_img = convert_np_for_vis(
-                input_img, stats_dict, all_channels, rgb_channels
-            )
+            input_img = convert_np_for_vis(input_img)
             mask = preds[idx].cpu().numpy()
             name = names[idx]
-            alphablend_path = f"alphablend/{name}_alphablend.png"
+            alphablend_path = os.path.join(destination, f"{name}_alphablend.png")
             alphablended = create_alphablend(input_img, mask, mask_config)
-            alphablended = cv2.cvtColor(alphablended, cv2.COLOR_RGB2BGR)
             cv2.imwrite(alphablend_path, alphablended)
 
 
