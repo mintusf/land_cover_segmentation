@@ -111,7 +111,7 @@ def run_training(cfg_path: str) -> None:
                     current_loss = sum(losses) / len(losses)
                     losses = []
                     logger.info(
-                        f"Training loss epoch {epoch} "
+                        f"TrainW loss epoch {epoch} "
                         + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
                     log_metrics_comet(
@@ -121,9 +121,7 @@ def run_training(cfg_path: str) -> None:
             # validation step
             val_metrics = model_validation(model, criterion, val_dataloader)
             val_loss = val_metrics["val_loss"]
-            logger.info(
-                f"Validation loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}"
-            )
+            logger.info(f"Val loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}")
             scheduler.step(val_loss)
             log_metrics_comet(cfg, val_metrics, experiment, epoch, batch_no)
             validate_metrics(
