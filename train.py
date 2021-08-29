@@ -13,9 +13,10 @@ from train_utils import (
     training_step,
     model_validation,
     get_lr_scheduler,
+    validate_metrics,
 )
 from dataset import get_dataloader
-from utils.comet import init_comet_logging
+from utils.comet import init_comet_logging, log_metrics_comet
 from utils.logger import init_log
 from utils.utilities import get_single_dataloader, is_intersection_empty
 from models import get_model
@@ -88,7 +89,7 @@ def run_training(cfg_path: str) -> None:
 
     # run the training loop
     losses = []
-    best_val_loss = None
+    best_val_metrics = {}
     for epoch in range(start_epoch, epochs + 1):
         batch_no = 0
         for train_phase in range(cfg.TRAIN.VAL_PER_EPOCH):
@@ -110,35 +111,28 @@ def run_training(cfg_path: str) -> None:
                     current_loss = sum(losses) / len(losses)
                     losses = []
                     logger.info(
-                        f"Training loss epoch {epoch} "
+                        f"Train loss epoch {epoch} "
                         + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
-                    if experiment is not None:
-                        experiment.log_metric(
-                            "train_loss", current_loss, step=batch_no + 1, epoch=epoch
-                        )
+                    log_metrics_comet(
+                        cfg, {"train_loss": current_loss}, experiment, epoch, batch_no
+                    )
 
             # validation step
             val_metrics = model_validation(model, criterion, val_dataloader)
             val_loss = val_metrics["val_loss"]
-            logger.info(
-                f"Validation loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}"
-            )
-            if experiment is not None:
-                experiment.log_metric(
-                    "val_loss", val_loss, step=batch_no + 1, epoch=epoch
-                )
+            logger.info(f"Val loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}")
             scheduler.step(val_loss)
-            if best_val_loss is None:
-                best_val_loss = val_loss
-            if val_loss < best_val_loss:
-                best_val_loss = val_loss
-                save_path = os.path.join(
-                    cfg.TRAIN.WEIGHTS_FOLDER,
-                    f"cfg_{cfg_name}_bestloss.pth",
-                )
-                logger.info("Saving checkpoint for the best val loss")
-                save_checkpoint(model, epoch, optimizer, current_loss, cfg, save_path)
+            log_metrics_comet(cfg, val_metrics, experiment, epoch, batch_no)
+            validate_metrics(
+                val_metrics,
+                best_val_metrics,
+                cfg_path,
+                model,
+                epoch,
+                optimizer,
+                current_loss,
+            )
 
         # save the weight
         logger.info(f"Saving checkpoint at the end of epoch {epoch}")

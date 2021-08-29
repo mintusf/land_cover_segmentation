@@ -1,3 +1,7 @@
+import logging
+import os
+from typing import Dict, Union
+
 import torch
 import random
 
@@ -7,7 +11,10 @@ from torch import Tensor
 from torch.optim import Optimizer
 from torchmetrics.functional import precision_recall, confusion_matrix
 
-from config.default import CfgNode
+from config.default import CfgNode, get_cfg_from_file
+
+
+logger = logging.getLogger("global")
 
 
 def set_seeds(cfg: CfgNode) -> None:
@@ -191,3 +198,47 @@ def calc_metrics(outputs: Tensor, targets: Tensor, num_classes: int) -> tuple:
         np.float64(f1_score_ave),
         confusion_matrix_whole,
     )
+
+
+def validate_metrics(
+    current_metrics: Dict[str, Union[float, Tensor]],
+    best_metrics: Dict[str, Union[float, Tensor]],
+    cfg_path: str,
+    model: Module,
+    epoch: int,
+    optimizer: Optimizer,
+    current_loss: float,
+) -> None:
+    """Validate metrics and save checkpoint if best
+
+    Args:
+        current_metrics (Dict[str, Union[float, Tensor]]): Current metrics
+        best_metrics (Dict[str, Union[float, Tensor]]): Best metrics
+        cfg_path (str): Path to config file
+        model (Module): Model to save
+        epoch (int): Epoch number
+        optimizer (Optimizer): Optimizer to save
+        current_loss (float): Current train loss
+    """
+    cfg = get_cfg_from_file(cfg_path)
+    cfg_name = os.path.basename(cfg_path).split(".")[0]
+    for metric_str, value in current_metrics.items():
+        if "confusion_matrix" in metric_str:
+            continue
+        if metric_str not in best_metrics:
+            update = True
+        else:
+            best_metric = best_metrics[metric_str]
+            if metric_str in ["val_loss"]:
+                update = value < best_metric
+            else:
+                update = value > best_metric
+
+        if update:
+            best_metrics[metric_str] = value
+            save_path = os.path.join(
+                cfg.TRAIN.WEIGHTS_FOLDER,
+                f"cfg_{cfg_name}_best_{metric_str}.pth",
+            )
+            logger.info(f"Saving checkpoint for the best {metric_str}")
+            save_checkpoint(model, epoch, optimizer, current_loss, cfg_path, save_path)
