@@ -159,11 +159,11 @@ def get_class_labels(cfg: CfgNode) -> int:
 
 def get_train_step(cfg: CfgNode, batch_no: int, epoch: int) -> int:
     """Returns the train step for a given epoch and batch number"""
-    train_dataset_len = len(get_lines_from_txt(cfg.DATASET.TRAIN_LIST))
+    train_dataset_len = len(get_lines_from_txt(cfg.DATASET.LIST_TRAIN))
     batches_per_epoch = cfg.TRAIN.VAL_PER_EPOCH * (
         train_dataset_len
         // cfg.TRAIN.VAL_PER_EPOCH
-        // (cfg.BATCH_SIZE_PER_GPU * get_gpu_count(cfg.DEVICE))
+        // (cfg.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg.DEVICE))
     )
     step = batch_no + epoch * batches_per_epoch
     return step
