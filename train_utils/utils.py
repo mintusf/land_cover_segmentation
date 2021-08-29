@@ -133,14 +133,14 @@ def model_validation(
             # Forward propagation
             output = model(inputs)["out"]
 
-            inputs_all.append(inputs)
-            outputs.append(output)
-            targets.append(labels)
-            names.extend(batch["name"])
-
             # Calc loss
             loss = criterion(output, labels)
             val_loss += loss.item()
+
+            inputs_all.append(inputs.cpu())
+            outputs.append(output.cpu())
+            targets.append(labels.cpu())
+            names.extend(batch["name"])
 
         # Average loss
         val_loss /= len(val_dataloader)
