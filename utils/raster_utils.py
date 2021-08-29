@@ -46,22 +46,13 @@ def raster_to_np(
 
 def convert_np_for_vis(
     img,
-    global_stats_dict,
-    all_channels,
-    bands_rgb,
     target_size: Tuple[int] = [256, 256],
 ):
     img = transpose_to_channels_first(img)
     img = cv2.resize(img, target_size)
 
-    means = [global_stats_dict["means"][all_channels[channel]] for channel in bands_rgb]
-    stds = [global_stats_dict["stds"][all_channels[channel]] for channel in bands_rgb]
-
-    for channel in range(img.shape[2]):
-        img[:, :, channel] = (img[:, :, channel] - means[channel]) / stds[channel]
-
+    img = np.clip(img, -2, 2)
     img = (img + 2) * 255 / 4
-
     img = img.astype(np.uint8)
     return img
 
