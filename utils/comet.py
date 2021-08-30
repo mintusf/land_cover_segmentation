@@ -53,7 +53,7 @@ def log_metrics_comet(
             else:
                 labels = get_class_labels(cfg)
                 experiment.log_confusion_matrix(
-                    matrix=(value / 1000).int().tolist(),
+                    matrix=(value / 1000).astype(np.int32).tolist(),
                     title=metric_str + " (Count in 1K)",
                     max_example_per_cell=200000,
                     labels=labels,
