@@ -154,7 +154,7 @@ def get_class_labels(cfg: CfgNode) -> int:
     """Returns the labels of classes"""
     labels_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     class2label = labels_config["class2label"]
-    return class2label.values().tolist()
+    return list(class2label.values())
 
 
 def get_train_step(cfg: CfgNode, batch_no: int, epoch: int) -> int:
