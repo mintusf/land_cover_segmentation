@@ -117,7 +117,7 @@ def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> 
         model.eval()
         val_loss = 0
         s = Softmax(dim=1)
-        num_classes = len(val_dataloader.mask_config["class2label"])
+        num_classes = len(val_dataloader.dataset.mask_config["class2label"])
         confusion_matrix_whole = np.zeros((num_classes, num_classes))
         for batch in val_dataloader:
             inputs, labels = batch["input"], batch["target"]
@@ -132,7 +132,7 @@ def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> 
             # Calc metrics
             outputs = s(outputs)
             confusion_matrix_batch = confusion_matrix(outputs, labels, num_classes)
-            confusion_matrix_whole += confusion_matrix_batch
+            confusion_matrix_whole += confusion_matrix_batch.cpu().numpy()
 
         # Average loss
         val_loss /= len(val_dataloader)
@@ -165,15 +165,15 @@ def calc_metrics(confusion_matrix: Tensor) -> Tuple:
     # Calculate metrics
     recall_list = np.array(
         [
-            confusion_matrix[i, i].cpu().numpy()
-            / torch.sum(confusion_matrix[:, i]).cpu().numpy()
+            confusion_matrix[i, i]
+            / np.sum(confusion_matrix[:, i])
             for i in range(confusion_matrix.shape[0])
         ]
     )
     precision_list = np.array(
         [
-            confusion_matrix[i, i].cpu().numpy()
-            / torch.sum(confusion_matrix[i, :]).cpu().numpy()
+            confusion_matrix[i, i]
+            / np.sum(confusion_matrix[i, :])
             for i in range(confusion_matrix.shape[0])
         ]
     )
@@ -235,5 +235,5 @@ def validate_metrics(
                 cfg.TRAIN.WEIGHTS_FOLDER,
                 f"cfg_{cfg_name}_best_{metric_str}.pth",
             )
-            logger.info(f"Saving checkpoint for the best {metric_str}")
+            logger.info(f"Saving checkpoint for the best {metric_str}: {value:.4f}")
             save_checkpoint(model, epoch, optimizer, current_loss, cfg_path, save_path)
