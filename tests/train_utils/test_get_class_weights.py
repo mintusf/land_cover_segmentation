@@ -1,4 +1,6 @@
+import numpy as np
 import pandas as pd
+from torch import Tensor
 
 from train_utils.losses import get_class_weights
 
@@ -22,4 +24,5 @@ def test_get_class_weights():
 
     weights = get_class_weights(samples_list, class2label, target_metadata)
 
-    assert weights == weights_target
+    assert isinstance(weights, Tensor)
+    np.testing.assert_almost_equal(weights, weights_target, decimal=6)
