@@ -57,6 +57,8 @@ def run_training(cfg_path: str) -> None:
     # Load Dataloaders
     train_dataloader = get_dataloader(cfg, "train")
     val_dataloader = get_dataloader(cfg, "val")
+    _ = get_dataloader(cfg, "test")
+
     if not cfg.IS_TEST:
         assert is_intersection_empty(train_dataloader, val_dataloader)
 

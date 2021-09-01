@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from torch.utils.data.dataloader import DataLoader
 
 from config.default import CfgNode
 from utils.io_utils import load_yaml
@@ -71,3 +73,21 @@ def get_channels_out_count(cfg: CfgNode) -> int:
     """Returns the number of output channels given config"""
     labels_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     return len(labels_config["class2label"])
+
+
+def get_classes_counts_from_df(
+    dataloader: DataLoader, target_metadata_path: str
+) -> dict:
+    """Returns the number of classes given config"""
+    samples_list = dataloader.dataset.dataset_list
+
+    class2label = dataloader.dataset.mask_config["class2label"]
+
+    target_metadata = pd.read_csv(target_metadata_path)
+
+    dataloader_samples_metadata = target_metadata[
+        target_metadata["sample"].isin(samples_list)
+    ]
+    counts = dataloader_samples_metadata[list(class2label.values())].sum()
+
+    return counts
