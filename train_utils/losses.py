@@ -8,12 +8,29 @@ import torch.nn as nn
 from torch.nn import CrossEntropyLoss
 import torch.nn.functional as F
 
+from utils.io_utils import get_lines_from_txt, load_yaml
+
 logger = logging.getLogger("global")
 
 
 def get_loss(cfg):
+
+    # Get weights
+    if cfg.TRAIN.LOSS.USE_WEIGHTS:
+        if cfg.TRAIN.LOSS.TYPE not in ["categorical_crossentropy"]:
+            logger.info(f"Loss {cfg.TRAIN.LOSS.TYPE} does not support weights")
+            weights = None
+        else:
+            samples_list = get_lines_from_txt(cfg.DATASET.TRAIN_LIST)
+            class2label = load_yaml(cfg.DATASET.MASK.CONFIG)["class2label"]
+            target_metadata = pd.read_csv(cfg.DATASET.LABELS_COUNT_CSV)
+            weights = get_class_weights(samples_list, class2label, target_metadata)
+            logger.info(f"Used weights: {weights}")
+    else:
+        weights = None
+
     if cfg.TRAIN.LOSS.TYPE == "categorical_crossentropy":
-        loss = CrossEntropyLoss()
+        loss = CrossEntropyLoss(weight=weights)
     elif cfg.TRAIN.LOSS.TYPE == "focal_loss":
         loss = FocalLoss(alpha=1.0)
     else:
@@ -196,7 +213,7 @@ class FocalLoss(nn.Module):
 
 def get_class_weights(
     samples_list: List[str], class2label: Dict[int, str], target_metadata: pd.DataFrame
-) -> list:
+) -> Tensor:
     """Returns class weights for a given dataset.
 
     Args:
@@ -205,7 +222,7 @@ def get_class_weights(
         target_metadata (pd.DataFrame): A dataframe containing the target metadata.
 
     Returns:
-        list: List with classes' weights.
+        Tensor: Tensor with classes' weights.
     """
     samples_metadata = target_metadata[target_metadata["sample"].isin(samples_list)]
     classes_counts = samples_metadata[list(class2label.values())].sum()
@@ -213,4 +230,4 @@ def get_class_weights(
 
     weights = [1 / count for count in classes_counts]
 
-    return weights
+    return Tensor(weights)
