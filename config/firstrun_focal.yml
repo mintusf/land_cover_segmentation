@@ -24,7 +24,9 @@ TRAIN:
   WORKERS: 8
   SHUFFLE: True
   SEED: 42
-  LOSS: "focal_loss"
+  LOSS:
+    TYPE: "focal_loss"
+    USE_WEIGTHS: False
   OPTIMIZER: "adam"
   LR: 0.01
   WEIGHT_DECAY: 0.0001

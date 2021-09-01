@@ -24,7 +24,9 @@ TRAIN:
   WORKERS: 0
   SHUFFLE: True
   SEED: 42
-  LOSS: "categorical_crossentropy"
+  LOSS:
+    TYPE: "categorical_crossentropy"
+    USE_WEIGTHS: False
   OPTIMIZER: "adam"
   LR: 0.001
   WEIGHT_DECAY: 0.0005
