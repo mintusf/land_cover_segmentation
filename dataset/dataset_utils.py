@@ -75,7 +75,9 @@ def get_channels_out_count(cfg: CfgNode) -> int:
     return len(labels_config["class2label"])
 
 
-def get_classes_counts_from_df(dataloader: DataLoader, target_metadata_path: str) -> dict:
+def get_classes_counts_from_df(
+    dataloader: DataLoader, target_metadata_path: str
+) -> dict:
     """Returns the number of classes given config"""
     samples_list = dataloader.dataset.dataset_list
 
