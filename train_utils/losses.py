@@ -21,10 +21,21 @@ def get_loss(cfg):
             logger.info(f"Loss {cfg.TRAIN.LOSS.TYPE} does not support weights")
             weights = None
         else:
-            samples_list = get_lines_from_txt(cfg.DATASET.TRAIN_LIST)
+            samples_list = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
             class2label = load_yaml(cfg.DATASET.MASK.CONFIG)["class2label"]
             target_metadata = pd.read_csv(cfg.DATASET.LABELS_COUNT_CSV)
             weights = get_class_weights(samples_list, class2label, target_metadata)
+
+            if "cuda" in cfg.TRAIN.DEVICE:
+                if "all" in cfg.TRAIN.DEVICE:
+                    device = 0
+                else:
+                    devices = cfg.TRAIN.DEVICE.split(":")[1].split(",")
+                    device = devices[0]
+                device = torch.device(f"cuda:{device}")
+            elif "cpu" in cfg.TRAIN.DEVICE:
+                device = torch.device("cpu")
+
             logger.info(f"Used weights: {weights}")
     else:
         weights = None
