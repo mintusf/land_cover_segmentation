@@ -1,6 +1,7 @@
 import logging
-from typing import Optional
+from typing import Optional, List, Dict
 
+import pandas as pd
 import torch
 from torch import Tensor
 import torch.nn as nn
@@ -191,3 +192,25 @@ class FocalLoss(nn.Module):
         return focal_loss(
             input, target, self.alpha, self.gamma, self.reduction, self.eps
         )
+
+
+def get_class_weights(
+    samples_list: List[str], class2label: Dict[int, str], target_metadata: pd.DataFrame
+) -> list:
+    """Returns class weights for a given dataset.
+
+    Args:
+        samples_list (List[str]): List of samples in the dataset.
+        class2label (Dict[int, str]): A dictionary mapping class indices to labels.
+        target_metadata (pd.DataFrame): A dataframe containing the target metadata.
+
+    Returns:
+        list: List with classes' weights.
+    """
+    samples_metadata = target_metadata[target_metadata["sample"].isin(samples_list)]
+    classes_counts = samples_metadata[list(class2label.values())].sum()
+    classes_counts = [classes_counts[class2label[i]] for i in range(len(class2label))]
+
+    weights = [1 / count for count in classes_counts]
+
+    return weights
