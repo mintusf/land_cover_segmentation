@@ -58,10 +58,10 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
         f"\nDataloader used for {mode}:\n" + print_dataloader(dataloader) + "\n"
     )
 
-    counts_train = get_classes_counts_from_df(
-        dataloader, "/data/seg_data/training_labels.csv"
-    )
-
-    logger.info(f"Train counts: {counts_train}")
+    if not cfg.IS_TEST:
+        counts = get_classes_counts_from_df(
+            dataloader, "/data/seg_data/training_labels.csv"
+        )
+        logger.info(f"Train counts: {counts}")
 
     return dataloader
