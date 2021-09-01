@@ -36,6 +36,8 @@ def get_loss(cfg):
             elif "cpu" in cfg.TRAIN.DEVICE:
                 device = torch.device("cpu")
 
+            weights = weights.to(device)
+
             logger.info(f"Used weights: {weights}")
     else:
         weights = None
