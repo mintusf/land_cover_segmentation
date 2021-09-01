@@ -38,6 +38,7 @@ _C.DATASET.MASK.SENSOR = "lc"
 _C.DATASET.MASK.CONFIG = os.path.join(
     "config", "dataset", "mask_configs", "default.yml"
 )
+_C.DATASET.LABELS_COUNT_CSV = "/data/seg_data/training_labels.csv"
 
 _C.TRAIN = CfgNode()
 _C.TRAIN.EPOCHS = 100

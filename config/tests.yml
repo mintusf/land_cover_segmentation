@@ -16,6 +16,7 @@ DATASET:
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/test.yml"
+  LABELS_COUNT_CSV: "/data/seg_data/training_labels.csv"
 TRAIN:
   EPOCHS: 2
   RESUME_CHECKPOINT: ""
