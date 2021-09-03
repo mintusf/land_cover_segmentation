@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 from config.default import CfgNode
+from dataset.dataset_utils import get_classes_counts_from_df
 from dataset.patch_dataset import PatchDataset
 from dataset.transforms import get_transform
 from utils.utilities import build_dataset_stats_json_from_cfg, get_gpu_count
@@ -62,5 +63,11 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
     logger.info(
         f"\nDataloader used for {mode}:\n" + print_dataloader(dataloader) + "\n"
     )
+
+    if not cfg.IS_TEST:
+        counts = get_classes_counts_from_df(
+            dataloader, "/data/seg_data/training_labels.csv"
+        )
+        logger.info(f"Train counts: {counts}")
 
     return dataloader

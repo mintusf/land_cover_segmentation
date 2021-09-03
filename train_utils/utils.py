@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, Union
+from typing import Dict, Tuple, Union
 
 import torch
 import random
@@ -123,41 +123,33 @@ def model_validation(
     with torch.no_grad():
         model.eval()
         val_loss = 0
-        outputs = []
-        targets = []
         inputs_all = []
         names = []
+        s = Softmax(dim=1)
+        num_classes = len(val_dataloader.dataset.mask_config["class2label"])
+        confusion_matrix_whole = np.zeros((num_classes, num_classes))
         for batch in val_dataloader:
             inputs, labels = batch["input"], batch["target"]
+            inputs_all.append(inputs.cpu())
+            names.append(batch["name"])
 
             # Forward propagation
-            output = model(inputs)["out"]
+            outputs = model(inputs)["out"]
 
             # Calc loss
-            loss = criterion(output, labels)
+            loss = criterion(outputs, labels)
             val_loss += loss.item()
 
-            inputs_all.append(inputs.cpu())
-            outputs.append(output.cpu())
-            targets.append(labels.cpu())
-            names.extend(batch["name"])
+            # Calc metrics
+            outputs = s(outputs)
+            confusion_matrix_batch = confusion_matrix(outputs, labels, num_classes)
+            confusion_matrix_whole += confusion_matrix_batch.cpu().numpy()
 
         # Average loss
         val_loss /= len(val_dataloader)
 
-    s = Softmax(dim=1)
-    inputs_all = torch.cat(inputs_all, dim=0)
-    outputs = torch.cat(outputs, dim=0)
-    targets = torch.cat(targets, dim=0)
-
-    outputs = s(outputs)
-
-    num_classes = outputs.shape[1]
-    (precision_ave, recall_ave, f1_ave, confusion_matrix_whole,) = calc_metrics(
-        outputs,
-        targets,
-        num_classes,
-    )
+        # Calcualte recall precision and f1
+        recall_ave, precision_ave, f1_ave = calc_metrics(confusion_matrix_whole)
 
     metrics = {
         "precision": precision_ave,
@@ -178,30 +170,33 @@ def model_validation(
         return metrics
 
 
-def calc_metrics(outputs: Tensor, targets: Tensor, num_classes: int) -> tuple:
+def calc_metrics(confusion_matrix: Tensor) -> Tuple:
     """Calculates segmentation metrics
     Args:
-        outputs (Tensor): The model output, shape (N, C)
-        targets (Tensor): The ground truth labels, shape (N)
-        num_classes (int): Classes count
+        confusion_matrix (Tensor): Confusion matrix
     Returns:
         tuple: contains metrics:
                * average precision
                * average recall
                * average f1 score
-               * confusion matrix for all classes
     """
 
-    precision_ave, recall_ave = precision_recall(
-        preds=outputs,
-        target=targets,
-        average=None,
-        num_classes=num_classes,
-        mdmc_average="global",
+    # Calculate metrics
+    recall_list = np.array(
+        [
+            confusion_matrix[i, i] / np.sum(confusion_matrix[:, i])
+            for i in range(confusion_matrix.shape[0])
+        ]
+    )
+    precision_list = np.array(
+        [
+            confusion_matrix[i, i] / np.sum(confusion_matrix[i, :])
+            for i in range(confusion_matrix.shape[0])
+        ]
     )
 
-    precision_ave = np.nan_to_num(precision_ave.cpu()).mean()
-    recall_ave = np.nan_to_num(recall_ave.cpu()).mean()
+    recall_ave = np.mean(np.nan_to_num(recall_list))
+    precision_ave = np.mean(np.nan_to_num(precision_list))
 
     f1_score_ave = np.divide(
         2 * precision_ave * recall_ave,
@@ -210,13 +205,10 @@ def calc_metrics(outputs: Tensor, targets: Tensor, num_classes: int) -> tuple:
 
     f1_score_ave = np.nan_to_num(f1_score_ave)
 
-    confusion_matrix_whole = confusion_matrix(outputs, targets, num_classes)
-
     return (
         np.float64(precision_ave),
         np.float64(recall_ave),
         np.float64(f1_score_ave),
-        confusion_matrix_whole,
     )
 
 
@@ -260,5 +252,5 @@ def validate_metrics(
                 cfg.TRAIN.WEIGHTS_FOLDER,
                 f"cfg_{cfg_name}_best_{metric_str}.pth",
             )
-            logger.info(f"Saving checkpoint for the best {metric_str}")
+            logger.info(f"Saving checkpoint for the best {metric_str}: {value:.4f}")
             save_checkpoint(model, epoch, optimizer, current_loss, cfg_path, save_path)

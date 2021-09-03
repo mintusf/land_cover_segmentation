@@ -138,8 +138,7 @@ def get_single_dataloader(dataloader, cfg, idx, out_loaders_count):
 
     dataloader_single = DataLoader(
         subgrids_dataset,
-        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE
-        * get_gpu_count(cfg, "train"),
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, "train"),
         num_workers=cfg.TRAIN.WORKERS,
         shuffle=cfg.TRAIN.SHUFFLE,
         drop_last=True,
@@ -155,11 +154,12 @@ def is_intersection_empty(dataloader1: DataLoader, dataloader2: DataLoader) -> b
     return samples1.isdisjoint(samples2)
 
 
-def get_class_labels(cfg: CfgNode) -> int:
+def get_class_labels_ordered(cfg: CfgNode) -> int:
     """Returns the labels of classes"""
     labels_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     class2label = labels_config["class2label"]
-    return list(class2label.values())
+    labels = [class2label[i] for i in range(len(class2label))]
+    return labels
 
 
 def get_train_step(cfg: CfgNode, batch_no: int, epoch: int) -> int:

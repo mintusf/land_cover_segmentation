@@ -1,21 +1,53 @@
 import logging
-from typing import Optional
+from typing import Optional, List, Dict
 
+import pandas as pd
 import torch
+from torch import Tensor
 import torch.nn as nn
 from torch.nn import CrossEntropyLoss
 import torch.nn.functional as F
+
+from utils.io_utils import get_lines_from_txt, load_yaml
 
 logger = logging.getLogger("global")
 
 
 def get_loss(cfg):
-    if cfg.TRAIN.LOSS == "categorical_crossentropy":
-        loss = CrossEntropyLoss()
-    elif cfg.TRAIN.LOSS == "focal_loss":
+
+    # Get weights
+    if cfg.TRAIN.LOSS.USE_WEIGHTS:
+        if cfg.TRAIN.LOSS.TYPE not in ["categorical_crossentropy"]:
+            logger.info(f"Loss {cfg.TRAIN.LOSS.TYPE} does not support weights")
+            weights = None
+        else:
+            samples_list = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
+            class2label = load_yaml(cfg.DATASET.MASK.CONFIG)["class2label"]
+            target_metadata = pd.read_csv(cfg.DATASET.LABELS_COUNT_CSV)
+            weights = get_class_weights(samples_list, class2label, target_metadata)
+
+            if "cuda" in cfg.TRAIN.DEVICE:
+                if "all" in cfg.TRAIN.DEVICE:
+                    device = 0
+                else:
+                    devices = cfg.TRAIN.DEVICE.split(":")[1].split(",")
+                    device = devices[0]
+                device = torch.device(f"cuda:{device}")
+            elif "cpu" in cfg.TRAIN.DEVICE:
+                device = torch.device("cpu")
+
+            weights = weights.to(device)
+
+            logger.info(f"Used weights: {weights}")
+    else:
+        weights = None
+
+    if cfg.TRAIN.LOSS.TYPE == "categorical_crossentropy":
+        loss = CrossEntropyLoss(weight=weights)
+    elif cfg.TRAIN.LOSS.TYPE == "focal_loss":
         loss = FocalLoss(alpha=1.0)
     else:
-        raise NotImplementedError(f"Loss {cfg.TRAIN.LOSS} is not implemented")
+        raise NotImplementedError(f"Loss {cfg.TRAIN.LOSS.TYPE} is not implemented")
 
     logger.info(f"Used loss: {loss}")
 
@@ -190,3 +222,25 @@ class FocalLoss(nn.Module):
         return focal_loss(
             input, target, self.alpha, self.gamma, self.reduction, self.eps
         )
+
+
+def get_class_weights(
+    samples_list: List[str], class2label: Dict[int, str], target_metadata: pd.DataFrame
+) -> Tensor:
+    """Returns class weights for a given dataset.
+
+    Args:
+        samples_list (List[str]): List of samples in the dataset.
+        class2label (Dict[int, str]): A dictionary mapping class indices to labels.
+        target_metadata (pd.DataFrame): A dataframe containing the target metadata.
+
+    Returns:
+        Tensor: Tensor with classes' weights.
+    """
+    samples_metadata = target_metadata[target_metadata["sample"].isin(samples_list)]
+    classes_counts = samples_metadata[list(class2label.values())].sum()
+    classes_counts = [classes_counts[class2label[i]] for i in range(len(class2label))]
+
+    weights = [1 / count for count in classes_counts]
+
+    return Tensor(weights)

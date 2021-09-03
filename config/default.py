@@ -38,6 +38,7 @@ _C.DATASET.MASK.SENSOR = "lc"
 _C.DATASET.MASK.CONFIG = os.path.join(
     "config", "dataset", "mask_configs", "default.yml"
 )
+_C.DATASET.LABELS_COUNT_CSV = "/data/seg_data/training_labels.csv"
 
 _C.TRAIN = CfgNode()
 _C.TRAIN.EPOCHS = 100
@@ -54,7 +55,9 @@ _C.TRAIN.DEVICE = "cuda:0"
 _C.TRAIN.WORKERS = 8
 _C.TRAIN.SHUFFLE = True
 _C.TRAIN.SEED = 42
-_C.TRAIN.LOSS = "categorical_crossentropy"
+_C.TRAIN.LOSS = CfgNode()
+_C.TRAIN.LOSS.TYPE = "categorical_crossentropy"
+_C.TRAIN.LOSS.USE_WEIGHTS = False
 _C.TRAIN.OPTIMIZER = "adam"
 _C.TRAIN.LR = 0.001
 _C.TRAIN.WEIGHT_DECAY = 0.0005

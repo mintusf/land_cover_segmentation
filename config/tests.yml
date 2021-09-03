@@ -16,6 +16,7 @@ DATASET:
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/test.yml"
+  LABELS_COUNT_CSV: "/data/seg_data/training_labels.csv"
 TRAIN:
   EPOCHS: 2
   RESUME_CHECKPOINT: ""
@@ -24,7 +25,9 @@ TRAIN:
   WORKERS: 0
   SHUFFLE: True
   SEED: 42
-  LOSS: "categorical_crossentropy"
+  LOSS:
+    TYPE: "categorical_crossentropy"
+    USE_WEIGHTS: False
   OPTIMIZER: "adam"
   LR: 0.001
   WEIGHT_DECAY: 0.0005
