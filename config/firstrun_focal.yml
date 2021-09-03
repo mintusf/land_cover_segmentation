@@ -16,6 +16,7 @@ DATASET:
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/default.yml"
+  LABELS_COUNT_CSV: "/data/seg_data/training_labels.csv"
 TRAIN:
   EPOCHS: 5
   RESUME_CHECKPOINT: ""
@@ -24,7 +25,9 @@ TRAIN:
   WORKERS: 8
   SHUFFLE: True
   SEED: 42
-  LOSS: "focal_loss"
+  LOSS:
+    TYPE: "focal_loss"
+    USE_WEIGHTS: False
   OPTIMIZER: "adam"
   LR: 0.01
   WEIGHT_DECAY: 0.0001
