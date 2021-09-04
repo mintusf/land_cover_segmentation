@@ -3,17 +3,38 @@ import os
 import pytest
 
 from config.default import get_cfg_from_file
-from train_utils import get_loss, get_optimizer, get_lr_scheduler
+from train_utils import get_loss, get_optimizer, get_lr_scheduler, save_checkpoint
 from models import get_model
 from dataset import get_dataloader
 
 test_config_path = os.path.join("config", "tests.yml")
+checkpoint_save_path = os.path.join("tests", "train_utils", "test_checkpoint")
 
 
 @pytest.fixture(scope="session")
 def test_config():
     cfg = get_cfg_from_file(test_config_path)
     return cfg
+
+
+@pytest.fixture(scope="session")
+def test_checkpoint(test_config):
+
+    model = get_model(test_config, test_config.TRAIN.DEVICE)
+    optimizer = get_optimizer(model, test_config)
+    epoch = 1
+    loss = 1.0
+
+    save_checkpoint(model, epoch, optimizer, loss, test_config, checkpoint_save_path)
+
+    return {
+        "path": checkpoint_save_path,
+        "epoch": epoch,
+        "loss": loss,
+        "weights": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "cfg_path": test_config,
+    }
 
 
 @pytest.fixture(scope="session")
@@ -38,6 +59,7 @@ def module_dict():
         "transforms": transforms,
         "train_dataloader": train_dataloader,
         "val_dataloader": val_dataloader,
+        "cfg_path": test_config_path,
     }
 
     return out_dict
@@ -48,3 +70,4 @@ def pytest_sessionfinish():
     assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
     os.remove(cfg.DATASET.INPUT.STATS_FILE)
     os.remove("tests/utils/test_vis.png")
+    os.remove(checkpoint_save_path)
