@@ -9,7 +9,7 @@ import numpy as np
 from torch import Tensor
 from torch.nn import Module, Softmax
 from torch.optim import Optimizer
-from torchmetrics.functional import precision_recall, confusion_matrix
+from torchmetrics.functional import confusion_matrix
 
 from config.default import CfgNode, get_cfg_from_file
 

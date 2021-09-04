@@ -9,10 +9,7 @@ from config.default import get_cfg_from_file
 from dataset import get_dataloader
 from models import get_model
 from train_utils import load_checkpoint, get_loss, model_validation
-from utils.io_utils import load_yaml, load_json
-from utils.raster_utils import convert_np_for_vis
-from utils.visualization_utils import create_alphablend
-from utils.utilities import split_sample_name
+from utils.io_utils import load_yaml
 
 
 def parser():
