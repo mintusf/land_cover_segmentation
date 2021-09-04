@@ -85,6 +85,22 @@ class PatchDataset(Dataset):
             input_raster_path, bands=self.input_used_channels
         )
 
+        if "cuda" in self.device:
+            if "all" in self.device:
+                device = 0
+            else:
+                devices = self.device.split(":")[1].split(",")
+                device = devices[0]
+            device = torch.device(f"cuda:{device}")
+        elif "cpu" in self.device:
+            device = torch.device("cpu")
+        else:
+            raise NotImplementedError
+
+        input_tensor = input_tensor.to(device).float()
+
+        sample = {"input": input_tensor, "name": sample_name}
+
         if self.mode != "infer":
             # Get target tensor
             target_raster_path = get_raster_filepath(
@@ -93,32 +109,8 @@ class PatchDataset(Dataset):
             target_np = raster_to_np(target_raster_path)
             transformed_mask = build_mask(target_np, self.mask_config)
             target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
-
-        if "cuda" in self.device:
-            if "all" in self.device:
-                device = 0
-            else:
-                devices = self.device.split(":")[1].split(",")
-                device = devices[0]
-            input_tensor = input_tensor.to(torch.device(f"cuda:{device}")).float()
-            if self.mode != "infer":
-                target_tensor = target_tensor.to(torch.device(f"cuda:{device}"))
-        elif "cpu" in self.device:
-            input_tensor = input_tensor.cpu().float()
-            if self.mode != "infer":
-                target_tensor = target_tensor.cpu().long()
-        else:
-            raise NotImplementedError
-
-        # Return sample
-        if self.mode != "infer":
-            sample = {
-                "input": input_tensor,
-                "target": target_tensor,
-                "name": sample_name,
-            }
-        else:
-            sample = {"input": input_tensor, "name": sample_name}
+            target_tensor = target_tensor.to(device).long()
+            sample["target"] = target_tensor
 
         # Tranform
         if self.transforms:
