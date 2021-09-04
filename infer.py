@@ -9,6 +9,10 @@ from torch.nn import Module
 from config.default import get_cfg_from_file
 from dataset import get_dataloader
 from models import get_model
+from models.models_utils import (
+    rename_ordered_dict_from_parallel,
+    rename_ordered_dict_to_parallel,
+)
 from train_utils import load_checkpoint
 from utils.raster_utils import convert_np_for_vis
 from utils.visualization_utils import create_alphablend
@@ -56,24 +60,6 @@ def parser():
     )
 
     return parser.parse_args()
-
-
-def rename_ordered_dict_from_parallel(ordered_dict):
-    old_keys = list(ordered_dict.keys())
-    for key in old_keys:
-        key_new = key.replace("module.", "")
-        ordered_dict[key_new] = ordered_dict.pop(key)
-
-    return ordered_dict
-
-
-def rename_ordered_dict_to_parallel(ordered_dict):
-    old_keys = list(ordered_dict.keys())
-    for key in old_keys:
-        key_new = "module." + key
-        ordered_dict[key_new] = ordered_dict.pop(key)
-
-    return ordered_dict
 
 
 def get_alphablend_path(name, alphablend_destination):
