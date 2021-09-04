@@ -12,6 +12,7 @@ from train_utils import load_checkpoint, get_loss, model_validation
 from utils.io_utils import load_yaml, load_json
 from utils.raster_utils import convert_np_for_vis
 from utils.visualization_utils import create_alphablend
+from utils.utilities import split_sample_name
 
 
 def parser():
@@ -22,21 +23,21 @@ def parser():
         "--cfg",
         help="Path to the config file defining testing",
         type=str,
-        default="/workspace/config/firstrun_focal.yml",
+        default="/data/land_cover_tracking/config/weighted_loss.yml",
     )
 
     parser.add_argument(
         "--checkpoint",
         help="Path to the config file",
         type=str,
-        default="/workspace/weights/from_aws/cfg_firstrun_focal_bestloss.pth",
+        default="/data/land_cover_tracking/weights/cfg_weighted_loss_best_f1.pth",
     )
 
     parser.add_argument(
         "--destination",
         help="Path to the folder or text file containing list of images",
         type=str,
-        default="/data/masks",
+        default="/data/seg_data/masks",
     )
 
     parser.add_argument(
@@ -104,13 +105,17 @@ def run_testings(
     print(f"F1 score on test set: {loss['f1']}")
 
     if add_alphablend:
-        for idx in range(inputs.shape[0]):
-            input_img = inputs[idx].cpu().numpy()
+        for idx in range(len(inputs)):
+            input_img = inputs[idx].numpy()
             input_img = input_img[(1, 2, 3), :, :]
             input_img = convert_np_for_vis(input_img)
             mask = preds[idx].cpu().numpy()
             name = names[idx]
-            alphablend_path = os.path.join(destination, f"{name}_alphablend.png")
+            roi_folder, area, _ = split_sample_name(name)
+            alphablend_folder = os.path.join(destination, roi_folder, area)
+            if not os.path.isdir(alphablend_folder):
+                os.makedirs(alphablend_folder)
+            alphablend_path = os.path.join(alphablend_folder, f"{name}_alphablend.png")
             alphablended = create_alphablend(input_img, mask, mask_config)
             cv2.imwrite(alphablend_path, alphablended)
 
