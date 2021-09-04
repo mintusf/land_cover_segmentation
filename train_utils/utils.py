@@ -104,7 +104,11 @@ def training_step(
 
 
 def model_validation(
-    model: Module, criterion: Module, val_dataloader: dict, return_tensors: bool = False
+    model: Module,
+    criterion: Module,
+    val_dataloader: dict,
+    return_tensors: bool = False,
+    return_ave: bool = True,
 ) -> dict:
     """Run a validation step on a whole val dataset and returns metrics
     Args:
@@ -112,6 +116,8 @@ def model_validation(
         criterion (Module): Loss function
         val_dataloader (dict): Validation dataloader
         return_preds (bool, optional): Whether to return predictions
+        return_tensors (bool, optional): Whether to return tensors
+        return_ave (bool, optional): Whether to return average metrics
     Returns:
         dict: Metrics:
               * precision
@@ -125,16 +131,18 @@ def model_validation(
         val_loss = 0
         inputs_all = []
         names = []
+        outputs_all = []
         s = Softmax(dim=1)
         num_classes = len(val_dataloader.dataset.mask_config["class2label"])
         confusion_matrix_whole = np.zeros((num_classes, num_classes))
         for batch in val_dataloader:
             inputs, labels = batch["input"], batch["target"]
-            inputs_all.append(inputs.cpu())
-            names.append(batch["name"])
+            inputs_all.extend(inputs.cpu())
+            names.extend(batch["name"])
 
             # Forward propagation
             outputs = model(inputs)["out"]
+            outputs_all.extend(outputs.cpu())
 
             # Calc loss
             loss = criterion(outputs, labels)
@@ -149,7 +157,9 @@ def model_validation(
         val_loss /= len(val_dataloader)
 
         # Calcualte recall precision and f1
-        recall_ave, precision_ave, f1_ave = calc_metrics(confusion_matrix_whole)
+        recall_ave, precision_ave, f1_ave = calc_metrics(
+            confusion_matrix_whole, return_ave
+        )
 
     metrics = {
         "precision": precision_ave,
@@ -162,18 +172,19 @@ def model_validation(
     if return_tensors:
         return (
             metrics,
-            inputs_all.detach(),
-            outputs.detach(),
+            inputs_all,
+            torch.stack(outputs_all),
             names,
         )
     else:
         return metrics
 
 
-def calc_metrics(confusion_matrix: Tensor) -> Tuple:
+def calc_metrics(confusion_matrix: Tensor, return_ave: bool = True) -> Tuple:
     """Calculates segmentation metrics
     Args:
         confusion_matrix (Tensor): Confusion matrix
+        return_ave (bool, optional): Whether to return average metrics
     Returns:
         tuple: contains metrics:
                * average precision
@@ -195,19 +206,20 @@ def calc_metrics(confusion_matrix: Tensor) -> Tuple:
         ]
     )
 
-    recall_ave = np.mean(np.nan_to_num(recall_list))
-    precision_ave = np.mean(np.nan_to_num(precision_list))
+    if return_ave:
+        recall = np.mean(np.nan_to_num(recall_list))
+        precision = np.mean(np.nan_to_num(precision_list))
 
     f1_score_ave = np.divide(
-        2 * precision_ave * recall_ave,
-        (precision_ave + recall_ave),
+        2 * precision * recall,
+        (precision + recall),
     )
 
     f1_score_ave = np.nan_to_num(f1_score_ave)
 
     return (
-        np.float64(precision_ave),
-        np.float64(recall_ave),
+        np.float64(precision),
+        np.float64(recall),
         np.float64(f1_score_ave),
     )
 
