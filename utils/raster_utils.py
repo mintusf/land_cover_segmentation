@@ -137,3 +137,28 @@ def get_stats(file: str) -> Tuple[np.array]:
     image_stds = np.std(img_np, axis=(1, 2))
     image_means = np.mean(img_np, axis=(1, 2))
     return image_means, image_stds
+
+
+def np_to_raster(img_np: np.array, ref_img: str, savepath: str):
+    """Convert np.array to raster and save
+    Args:
+        img_np (np.array): Image to be saved
+        ref_img (str): Referenced raster
+        savepath (str): Output raster savepath (tif format is recommended)
+    """
+    with rio.open(ref_img) as src:
+        transform = src.transform
+        size = (src.height, src.width)
+
+    with rio.open(
+        savepath,
+        "w",
+        driver="GTiff",
+        dtype=img_np.dtype,
+        height=size[0],
+        width=size[1],
+        count=3,
+        crs=src.crs,
+        transform=transform,
+    ) as dst:
+        dst.write(img_np)
