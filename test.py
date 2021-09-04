@@ -2,7 +2,6 @@ import argparse
 import os
 from utils.utilities import get_gpu_count
 
-import cv2
 import pandas as pd
 import torch
 
@@ -95,11 +94,8 @@ def run_testings(
     if not os.path.isdir(destination):
         os.makedirs(destination)
 
-    metrics, inputs, preds, names = model_validation(
-        model, criterion, dataloader, return_tensors=True, return_ave=False
-    )
+    metrics = model_validation(model, criterion, dataloader, return_ave=False)
 
-    preds = torch.argmax(preds, dim=1)
     print(f"Loss on test set: {metrics['val_loss']}")
 
     labels = [mask_config["class2label"][i] for i in sorted(mask_config["class2label"])]
@@ -112,21 +108,6 @@ def run_testings(
         index=labels,
     )
     print(metrics_df)
-
-    if add_alphablend:
-        for idx in range(len(inputs)):
-            input_img = inputs[idx].numpy()
-            input_img = input_img[(1, 2, 3), :, :]
-            input_img = convert_np_for_vis(input_img)
-            mask = preds[idx].cpu().numpy()
-            name = names[idx]
-            roi_folder, area, _ = split_sample_name(name)
-            alphablend_folder = os.path.join(destination, roi_folder, area)
-            if not os.path.isdir(alphablend_folder):
-                os.makedirs(alphablend_folder)
-            alphablend_path = os.path.join(alphablend_folder, f"{name}_alphablend.png")
-            alphablended = create_alphablend(input_img, mask, mask_config)
-            cv2.imwrite(alphablend_path, alphablended)
 
 
 if __name__ == "__main__":
