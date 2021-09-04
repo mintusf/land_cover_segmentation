@@ -1,5 +1,4 @@
 import argparse
-import os
 from utils.utilities import get_gpu_count
 
 import pandas as pd
@@ -8,6 +7,10 @@ import torch
 from config.default import get_cfg_from_file
 from dataset import get_dataloader
 from models import get_model
+from models.models_utils import (
+    rename_ordered_dict_from_parallel,
+    rename_ordered_dict_to_parallel,
+)
 from train_utils import load_checkpoint, get_loss, model_validation
 from utils.io_utils import load_yaml
 
@@ -31,24 +34,6 @@ def parser():
     )
 
     return parser.parse_args()
-
-
-def rename_ordered_dict_from_parallel(ordered_dict):
-    old_keys = list(ordered_dict.keys())
-    for key in old_keys:
-        key_new = key.replace("module.", "")
-        ordered_dict[key_new] = ordered_dict.pop(key)
-
-    return ordered_dict
-
-
-def rename_ordered_dict_to_parallel(ordered_dict):
-    old_keys = list(ordered_dict.keys())
-    for key in old_keys:
-        key_new = "module." + key
-        ordered_dict[key_new] = ordered_dict.pop(key)
-
-    return ordered_dict
 
 
 def run_testings(cfg_path: str, checkpoint: str):
