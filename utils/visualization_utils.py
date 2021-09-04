@@ -31,23 +31,20 @@ def apply_single_mask(
     return out
 
 
-def create_alphablend(img: np.array, mask: np.array, config: dict) -> np.array:
+def create_alphablend(
+    img: np.array, mask: np.array, alpha: float, colors_dict: dict
+) -> np.array:
     """A method to create alphablend image
 
     Args:
         img (np.array): Input image
         mask (np.array): Mask
-        config (dict): Mask config
+        alpha (float): Alpha value
+        colors_dict (dict): Dictionary matching class id to color
 
     Returns:
         np.array: Alphablend image
     """
-    classes_mask = np.unique(mask)
-    classes = list(config["class2label"].keys())
-    assert not (set(classes_mask) - set(classes))
-
-    alpha = config["alpha"]
-    colors_dict = config["colors"]
 
     for class_int, color in colors_dict.items():
         class_mask = np.where(mask == class_int, 1, 0)
@@ -84,7 +81,9 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     mask = build_mask(target_np, mask_config)
 
     # Create alphablend
-    alphablend = create_alphablend(img, mask, mask_config)
+    alpha = mask_config["alpha"]
+    colors_dict = mask_config["colors"]
+    alphablend = create_alphablend(img, mask, alpha, colors_dict)
 
     # Save
     alphablend = cv2.cvtColor(alphablend, cv2.COLOR_RGB2BGR)
