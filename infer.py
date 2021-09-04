@@ -1,9 +1,12 @@
 import argparse
-from typing import List
+from typing import List, Tuple
 import os
 
 import cv2
+import numpy as np
 import torch
+from torch import Tensor
+from torch.utils.data import DataLoader
 from torch.nn import Module
 
 from config.default import get_cfg_from_file
@@ -62,7 +65,17 @@ def parser():
     return parser.parse_args()
 
 
-def get_alphablend_path(name, alphablend_destination):
+def get_alphablend_path(name: str, alphablend_destination: str) -> str:
+    """Returns a path for alphablended sample.
+        Creates directory if doesn't exist
+
+    Args:
+        name (str): Sample name
+        alphablend_destination (str): Alphablend root directory
+
+    Returns:
+        str: Path to alphablended sample
+    """
     roi_folder, area, _ = split_sample_name(name)
     alphablend_folder = os.path.join(alphablend_destination, roi_folder, area)
     if not os.path.isdir(alphablend_folder):
@@ -72,7 +85,18 @@ def get_alphablend_path(name, alphablend_destination):
     return alphablend_path
 
 
-def prepare_tensors_for_vis(input_img, mask):
+def prepare_tensors_for_vis(
+    input_img: Tensor, mask: Tensor
+) -> Tuple[np.array, np.array]:
+    """Prepares input and mask for visualization
+
+    Args:
+        input_img (Tensor): Input img tensor
+        mask (Tensor): Predicted mask tensor
+
+    Returns:
+        Tuple[np.array, np.array]: Input and mask for visualization
+    """
     input_img = input_img.cpu().numpy()
     input_img = input_img[(1, 2, 3), :, :]
     input_img = convert_np_for_vis(input_img)
@@ -82,32 +106,45 @@ def prepare_tensors_for_vis(input_img, mask):
 
 
 def generate_save_alphablend(
-    input_img, mask, name, mask_config, alphablend_destination
+    input_img: Tensor,
+    mask: Tensor,
+    name: str,
+    mask_config: dict,
+    alphablend_destination: str,
 ):
+    """Generates and saves alphablend
+
+    Args:
+        input_img (Tensor): Input img tensor
+        mask (Tensor): Predicted mask tensor
+        name (str): Sample name
+        mask_config (dict): Mask config
+        alphablend_destination (str): Root path to save alphablend
+    """
     input_img, mask = prepare_tensors_for_vis(input_img, mask)
     alphablended = create_alphablend(input_img, mask, mask_config)
     alphablend_path = get_alphablend_path(name, alphablend_destination)
     cv2.imwrite(alphablend_path, alphablended)
 
-    return alphablended
-
 
 def infer(
     model: Module,
-    dataloader: dict,
+    dataloader: DataLoader,
     output_types: List[str],
-    alphablend_destination,
-) -> dict:
+    destination: str,
+):
     """Evaluates test dataset and saves predictions if needed
 
     Args:
-        model (Module): [description]
-        dataloader (dict): [description]
-        output_types (List[str]): [description]
-        alphablend_destination ([type]): [description]
+        model (Module): Model to use for inference
+        dataloader (DataLoader): Dataloader for inference
+        output_types (List[str]): List of output types.
+                                  Supported types:
+                                    * alphablend (img and predicted mask)
+        destination (str): Path to save results
 
     Returns:
-        dict: [description]
+        dict: Generates and saves predictions in desired format
     """
     with torch.no_grad():
         model.eval()
@@ -124,7 +161,7 @@ def infer(
 
                 if "alphablend" in output_types:
                     generate_save_alphablend(
-                        input_img, mask, name, mask_config, alphablend_destination
+                        input_img, mask, name, mask_config, destination
                     )
 
 
