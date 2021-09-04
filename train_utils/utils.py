@@ -9,7 +9,7 @@ import numpy as np
 from torch import Tensor
 from torch.nn import Module, Softmax
 from torch.optim import Optimizer
-from torchmetrics.functional import precision_recall, confusion_matrix
+from torchmetrics.functional import confusion_matrix
 
 from config.default import CfgNode, get_cfg_from_file
 
@@ -107,7 +107,6 @@ def model_validation(
     model: Module,
     criterion: Module,
     val_dataloader: dict,
-    return_tensors: bool = False,
     return_ave: bool = True,
 ) -> dict:
     """Run a validation step on a whole val dataset and returns metrics
@@ -129,20 +128,14 @@ def model_validation(
     with torch.no_grad():
         model.eval()
         val_loss = 0
-        inputs_all = []
-        names = []
-        outputs_all = []
         s = Softmax(dim=1)
         num_classes = len(val_dataloader.dataset.mask_config["class2label"])
         confusion_matrix_whole = np.zeros((num_classes, num_classes))
         for batch in val_dataloader:
             inputs, labels = batch["input"], batch["target"]
-            inputs_all.extend(inputs.cpu())
-            names.extend(batch["name"])
 
             # Forward propagation
             outputs = model(inputs)["out"]
-            outputs_all.extend(outputs.cpu())
 
             # Calc loss
             loss = criterion(outputs, labels)
@@ -169,15 +162,7 @@ def model_validation(
         "val_loss": val_loss,
     }
 
-    if return_tensors:
-        return (
-            metrics,
-            inputs_all,
-            torch.stack(outputs_all),
-            names,
-        )
-    else:
-        return metrics
+    return metrics
 
 
 def calc_metrics(confusion_matrix: Tensor, return_ave: bool = True) -> Tuple:
