@@ -32,7 +32,17 @@ def print_dataloader(dataloader: DataLoader):
     return s
 
 
-def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
+def get_dataloader(cfg: CfgNode, samples_list: str) -> DataLoader:
+    """Builds and returns a dataloader for the dataset.
+
+    Args:
+        cfg (CfgNode): Config object.
+        samples_list (str): Either a path to a text file containing the
+                                list of samples or one of ["train", "val", "test"].
+
+    Returns:
+        DataLoader: [description]
+    """
 
     if not os.path.isfile(cfg.DATASET.INPUT.STATS_FILE):
         build_dataset_stats_json_from_cfg(cfg)
@@ -40,22 +50,30 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
     transform = get_transform(cfg)
     transforms = Compose([transform])
 
-    dataset = PatchDataset(cfg, mode, transforms)
+    dataset = PatchDataset(cfg, samples_list, transforms=transforms)
 
-    num_workers = cfg.TRAIN.WORKERS
-    shuffle = cfg.TRAIN.SHUFFLE
+    if samples_list in ["train", "val"]:
+        num_workers = cfg.TRAIN.WORKERS
+        shuffle = cfg.TRAIN.SHUFFLE
+        batch_size = cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, samples_list)
+        drop_last = True
+    else:
+        num_workers = cfg.TEST.WORKERS
+        shuffle = False
+        batch_size = cfg.TEST.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, samples_list)
+        drop_last = False
 
     dataloader = DataLoader(
         dataset,
-        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg),
+        batch_size=batch_size,
         num_workers=num_workers,
         shuffle=shuffle,
         worker_init_fn=random.seed(cfg.TRAIN.SEED),
-        drop_last=True,
+        drop_last=drop_last,
     )
 
     logger.info(
-        f"\nDataloader used for {mode}:\n" + print_dataloader(dataloader) + "\n"
+        f"\nDataloader used for {samples_list}:\n" + print_dataloader(dataloader) + "\n"
     )
 
     if not cfg.IS_TEST:

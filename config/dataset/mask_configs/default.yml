@@ -34,7 +34,7 @@ class2label:
   0: "other"
 
 # Visualization
-alpha: 0.6
+alpha: 0.3
 colors:
   1: [200, 200, 200]
   2: [195, 255, 84]

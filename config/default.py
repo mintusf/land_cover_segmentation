@@ -71,6 +71,11 @@ _C.TRAIN.WEIGHTS_FOLDER = "tests/weights"
 _C.TRAIN.USE_COMET = True
 _C.TRAIN.COMET_TAGS = ["experiment", "cross_entropy", "focal_loss"]
 
+_C.TEST = CfgNode()
+_C.TEST.DEVICE = "cpu"
+_C.TEST.WORKERS = 0
+_C.TEST.BATCH_SIZE_PER_DEVICE = 1
+
 
 def get_cfg_defaults():
     """Get a yacs CfgNode object with default values for my_project."""

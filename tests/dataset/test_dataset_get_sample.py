@@ -5,7 +5,7 @@ from dataset import PatchDataset
 
 def test_dataset_get_sample(test_config):
 
-    dataset = PatchDataset(test_config, mode="train")
+    dataset = PatchDataset(test_config, samples_list="train")
 
     sample = dataset[0]
 

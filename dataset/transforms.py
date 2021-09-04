@@ -35,14 +35,16 @@ class NormalizeSample(object):
         Returns:
             Dict[torch.Tensor]: sample with normalized raster
         """
-        sample_input, sample_target = sample["input"], sample["target"]
+        sample_input = sample["input"]
 
         for channel in range(sample_input.shape[0]):
             sample_input[channel, :, :] = (
                 sample_input[channel, :, :] - self.dataset_mean[channel]
             ) / self.dataset_std[channel]
 
-        return {"input": sample_input, "target": sample_target}
+        sample["input"] = sample_input
+
+        return sample
 
 
 def get_transform(cfg: CfgNode) -> NormalizeSample:

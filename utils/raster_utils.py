@@ -44,34 +44,55 @@ def raster_to_np(
     return img_np
 
 
-def convert_for_vis(
-    raster_path: str,
-    global_stats_dict: dict,
-    all_channels: Tuple[str],
-    bands_rgb: Tuple[int] = [3, 2, 1],
+def convert_np_for_vis(
+    img: np.array,
     target_size: Tuple[int] = [256, 256],
 ) -> np.array:
-    img = raster_to_np(raster_path, bands_rgb)
+    """Convert np.array to open-cv format.
+
+    Args:
+        img (np.array): np.array to be converted
+        target_size (Tuple[int], optional): Size of returned image.
+                                            Defaults to [256, 256].
+
+    Returns:
+        [np.array]: Converted np.array
+    """
     img = transpose_to_channels_first(img)
     img = cv2.resize(img, target_size)
 
-    means = [global_stats_dict["means"][all_channels[channel]] for channel in bands_rgb]
-    stds = [global_stats_dict["stds"][all_channels[channel]] for channel in bands_rgb]
-
-    for channel in range(img.shape[2]):
-        img[:, :, channel] = (img[:, :, channel] - means[channel]) / stds[channel]
-
+    img = np.clip(img, -2, 2)
     img = (img + 2) * 255 / 4
-
     img = img.astype(np.uint8)
     return img
 
 
+def convert_raster_for_vis(
+    raster_path: str,
+    bands_rgb: Tuple[int] = [3, 2, 1],
+) -> np.array:
+    """Given path to raster and RGB bands, converts and returns saveable image.
+
+    Args:
+        raster_path (str): Path to the raster
+        bands_rgb (Tuple[int], optional): Indication of RGB bands.
+                                          Defaults to [3, 2, 1].
+
+    Returns:
+        np.array: Image converted to np.array saveable with open-cv
+    """
+    img = raster_to_np(raster_path, bands_rgb)
+
+    img = convert_np_for_vis(img)
+
+    return img
+
+
 def transpose_to_channels_first(np_arrray: np.array) -> np.array:
-    """Expand np.array to 3-dimensions."""
+    """Transpose np.array to open-cv format"""
     if np_arrray.ndim == 3:
-        img_np = np.transpose(np_arrray, [1, 2, 0])
-    return img_np
+        np_arrray = np.transpose(np_arrray, [1, 2, 0])
+    return np_arrray
 
 
 def np_to_torch(img_np: np.array, dtype=torch.float) -> torch.Tensor:

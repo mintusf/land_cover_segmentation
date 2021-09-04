@@ -6,8 +6,8 @@ import torch
 import random
 
 import numpy as np
-from torch.nn import Module, Softmax
 from torch import Tensor
+from torch.nn import Module, Softmax
 from torch.optim import Optimizer
 from torchmetrics.functional import precision_recall, confusion_matrix
 
@@ -56,12 +56,16 @@ def save_checkpoint(
     )
 
 
-def load_checkpoint(checkpoint_path: str):
+def load_checkpoint(checkpoint_path: str, device: str):
     """Load checkpoint from file.
     Args:
         checkpoint_path (str): Path to checkpoint file
+        device (str): Device to load checkpoint on
     """
-    checkpoint = torch.load(checkpoint_path)
+    if "cpu" in device:
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device("cpu"))
+    else:
+        checkpoint = torch.load(checkpoint_path)
 
     epoch = checkpoint["epoch"]
     weights = checkpoint["model_state_dict"]
@@ -99,12 +103,21 @@ def training_step(
     return loss
 
 
-def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> dict:
+def model_validation(
+    model: Module,
+    criterion: Module,
+    val_dataloader: dict,
+    return_tensors: bool = False,
+    return_ave: bool = True,
+) -> dict:
     """Run a validation step on a whole val dataset and returns metrics
     Args:
         model (Module): Model to validate
         criterion (Module): Loss function
         val_dataloader (dict): Validation dataloader
+        return_tensors (bool, optional): Whether to return tensors
+        return_ave (bool, optional): Whether to return average metrics.
+                                     Metrics for each class returned if False.
     Returns:
         dict: Metrics:
               * precision
@@ -116,14 +129,20 @@ def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> 
     with torch.no_grad():
         model.eval()
         val_loss = 0
+        inputs_all = []
+        names = []
+        outputs_all = []
         s = Softmax(dim=1)
         num_classes = len(val_dataloader.dataset.mask_config["class2label"])
         confusion_matrix_whole = np.zeros((num_classes, num_classes))
         for batch in val_dataloader:
             inputs, labels = batch["input"], batch["target"]
+            inputs_all.extend(inputs.cpu())
+            names.extend(batch["name"])
 
             # Forward propagation
             outputs = model(inputs)["out"]
+            outputs_all.extend(outputs.cpu())
 
             # Calc loss
             loss = criterion(outputs, labels)
@@ -138,7 +157,9 @@ def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> 
         val_loss /= len(val_dataloader)
 
         # Calcualte recall precision and f1
-        recall_ave, precision_ave, f1_ave = calc_metrics(confusion_matrix_whole)
+        recall_ave, precision_ave, f1_ave = calc_metrics(
+            confusion_matrix_whole, return_ave
+        )
 
     metrics = {
         "precision": precision_ave,
@@ -148,13 +169,22 @@ def model_validation(model: Module, criterion: Module, val_dataloader: dict) -> 
         "val_loss": val_loss,
     }
 
-    return metrics
+    if return_tensors:
+        return (
+            metrics,
+            inputs_all,
+            torch.stack(outputs_all),
+            names,
+        )
+    else:
+        return metrics
 
 
-def calc_metrics(confusion_matrix: Tensor) -> Tuple:
+def calc_metrics(confusion_matrix: Tensor, return_ave: bool = True) -> Tuple:
     """Calculates segmentation metrics
     Args:
         confusion_matrix (Tensor): Confusion matrix
+        return_ave (bool, optional): Whether to return average metrics
     Returns:
         tuple: contains metrics:
                * average precision
@@ -163,34 +193,36 @@ def calc_metrics(confusion_matrix: Tensor) -> Tuple:
     """
 
     # Calculate metrics
-    recall_list = np.array(
+    recall = np.array(
         [
-            confusion_matrix[i, i]
-            / np.sum(confusion_matrix[:, i])
+            confusion_matrix[i, i] / np.sum(confusion_matrix[:, i])
             for i in range(confusion_matrix.shape[0])
         ]
     )
-    precision_list = np.array(
+    precision = np.array(
         [
-            confusion_matrix[i, i]
-            / np.sum(confusion_matrix[i, :])
+            confusion_matrix[i, i] / np.sum(confusion_matrix[i, :])
             for i in range(confusion_matrix.shape[0])
         ]
     )
 
-    recall_ave = np.mean(np.nan_to_num(recall_list))
-    precision_ave = np.mean(np.nan_to_num(precision_list))
+    recall = np.nan_to_num(recall)
+    precision = np.nan_to_num(precision)
+
+    if return_ave:
+        recall = np.mean(recall)
+        precision = np.mean(precision)
 
     f1_score_ave = np.divide(
-        2 * precision_ave * recall_ave,
-        (precision_ave + recall_ave),
+        2 * precision * recall,
+        (precision + recall),
     )
 
     f1_score_ave = np.nan_to_num(f1_score_ave)
 
     return (
-        np.float64(precision_ave),
-        np.float64(recall_ave),
+        np.float64(precision),
+        np.float64(recall),
         np.float64(f1_score_ave),
     )
 

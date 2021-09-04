@@ -112,14 +112,18 @@ def get_sample_name(filename: str) -> str:
     return "_".join(split[:2] + split[3:])
 
 
-def get_gpu_count(cfg: CfgNode) -> int:
-    """Returns used GPUs count given config"""
-    if "cpu" in cfg.TRAIN.DEVICE:
+def get_gpu_count(cfg: CfgNode, mode: str) -> int:
+    """Returns used GPUs count given config and mode"""
+    if mode in ["train", "val"]:
+        device = cfg.TRAIN.DEVICE
+    else:
+        device = cfg.TEST.DEVICE
+    if "cpu" in device:
         devices = 1
-    elif "all" in cfg.TRAIN.DEVICE:
+    elif "all" in device:
         devices = torch.cuda.device_count()
     else:
-        devices = len(cfg.TRAIN.DEVICE.split(":")[1].split(","))
+        devices = len(device.split(":")[1].split(","))
     return devices
 
 
@@ -134,7 +138,7 @@ def get_single_dataloader(dataloader, cfg, idx, out_loaders_count):
 
     dataloader_single = DataLoader(
         subgrids_dataset,
-        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg),
+        batch_size=cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, "train"),
         num_workers=cfg.TRAIN.WORKERS,
         shuffle=cfg.TRAIN.SHUFFLE,
         drop_last=True,
@@ -164,7 +168,7 @@ def get_train_step(cfg: CfgNode, batch_no: int, epoch: int) -> int:
     batches_per_epoch = cfg.TRAIN.VAL_PER_EPOCH * (
         train_dataset_len
         // cfg.TRAIN.VAL_PER_EPOCH
-        // (cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg))
+        // (cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, "train"))
     )
     step = batch_no + epoch * batches_per_epoch
     return step

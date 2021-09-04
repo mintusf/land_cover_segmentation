@@ -7,7 +7,7 @@ import numpy as np
 from config.default import CfgNode
 from dataset.dataset_utils import build_mask
 from utils.io_utils import load_yaml, load_json
-from utils.raster_utils import convert_for_vis, raster_to_np
+from utils.raster_utils import convert_raster_for_vis, raster_to_np
 from utils.utilities import get_raster_filepath
 
 
@@ -68,16 +68,13 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     dataset_root = cfg.DATASET.ROOT
     mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     input_sensor_name = cfg.DATASET.INPUT.SENSOR
-    all_channels = cfg.DATASET.INPUT.CHANNELS
-    rgb_channels = [3, 2, 1]
     target_sensor_name = cfg.DATASET.MASK.SENSOR
 
     # Get image
     input_raster_path = get_raster_filepath(
         dataset_root, sample_name, input_sensor_name
     )
-    stats_dict = load_json(cfg.DATASET.INPUT.STATS_FILE)
-    img = convert_for_vis(input_raster_path, stats_dict, all_channels, rgb_channels)
+    img = convert_raster_for_vis(input_raster_path)
 
     # Get mask
     target_raster_path = get_raster_filepath(
