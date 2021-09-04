@@ -20,6 +20,8 @@ class PatchDataset(Dataset):
             cfg (CfgNode): Config
             samples_list (str): Either a path to a text file containing the
                                 list of samples or one of ["train", "val", "test"].
+                                If a path, Dataset is used in inference mode and
+                                only input is generated.
             transforms (callable, optional): Optional transform to be applied
         """
         self.cfg = cfg
