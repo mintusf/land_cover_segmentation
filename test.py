@@ -43,7 +43,7 @@ def parser():
 
     parser.add_argument(
         "--add_alphablend",
-        action="store_false",
+        action="store_true",
         help="Whether alphablend should be generated",
     )
 
