@@ -113,7 +113,7 @@ def get_sample_name(filename: str) -> str:
 
 
 def get_gpu_count(cfg: CfgNode, mode: str) -> int:
-    """Returns used GPUs count given config"""
+    """Returns used GPUs count given config and mode"""
     if mode in ["train", "val"]:
         device = cfg.TRAIN.DEVICE
     else:
