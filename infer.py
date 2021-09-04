@@ -44,7 +44,7 @@ def parser():
         "--samples_list",
         help="Path to the list of samples for inference",
         type=str,
-        default="/data/land_cover_tracking/config/dataset/lists/test copy.txt",
+        default="/data/land_cover_tracking/config/dataset/lists/test.txt",
     )
 
     parser.add_argument(
