@@ -33,19 +33,6 @@ def parser():
         default="/data/land_cover_tracking/weights/cfg_weighted_loss_best_f1.pth",
     )
 
-    parser.add_argument(
-        "--destination",
-        help="Path to the folder or text file containing list of images",
-        type=str,
-        default="/data/seg_data/masks",
-    )
-
-    parser.add_argument(
-        "--add_alphablend",
-        action="store_true",
-        help="Whether alphablend should be generated",
-    )
-
     return parser.parse_args()
 
 
@@ -67,9 +54,7 @@ def rename_ordered_dict_to_parallel(ordered_dict):
     return ordered_dict
 
 
-def run_testings(
-    cfg_path: str, checkpoint: str, destination: str, add_alphablend: bool
-):
+def run_testings(cfg_path: str, checkpoint: str):
 
     # Build the model
     cfg = get_cfg_from_file(cfg_path)
@@ -91,9 +76,6 @@ def run_testings(
     dataloader = get_dataloader(cfg, "test")
     mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
 
-    if not os.path.isdir(destination):
-        os.makedirs(destination)
-
     metrics = model_validation(model, criterion, dataloader, return_ave=False)
 
     print(f"Loss on test set: {metrics['val_loss']}")
@@ -112,4 +94,4 @@ def run_testings(
 
 if __name__ == "__main__":
     args = parser()
-    run_testings(args.cfg, args.checkpoint, args.destination, args.add_alphablend)
+    run_testings(args.cfg, args.checkpoint)
