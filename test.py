@@ -3,6 +3,7 @@ import os
 from utils.utilities import get_gpu_count
 
 import cv2
+import pandas as pd
 import torch
 
 from config.default import get_cfg_from_file
@@ -94,15 +95,23 @@ def run_testings(
     if not os.path.isdir(destination):
         os.makedirs(destination)
 
-    loss, inputs, preds, names = model_validation(
-        model, criterion, dataloader, return_tensors=True
+    metrics, inputs, preds, names = model_validation(
+        model, criterion, dataloader, return_tensors=True, return_ave=False
     )
 
     preds = torch.argmax(preds, dim=1)
-    print(f"Loss on test set: {loss['val_loss']}")
-    print(f"Recall on test set: {loss['recall']}")
-    print(f"Precision on test set: {loss['precision']}")
-    print(f"F1 score on test set: {loss['f1']}")
+    print(f"Loss on test set: {metrics['val_loss']}")
+
+    labels = [mask_config["class2label"][i] for i in sorted(mask_config["class2label"])]
+    metrics_df = pd.DataFrame(
+        {
+            "recall": metrics["recall"],
+            "precision": metrics["precision"],
+            "f1": metrics["f1"],
+        },
+        index=labels,
+    )
+    print(metrics_df)
 
     if add_alphablend:
         for idx in range(len(inputs)):
