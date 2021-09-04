@@ -71,8 +71,8 @@ def convert_raster_for_vis(
 def transpose_to_channels_first(np_arrray: np.array) -> np.array:
     """Expand np.array to 3-dimensions."""
     if np_arrray.ndim == 3:
-        img_np = np.transpose(np_arrray, [1, 2, 0])
-    return img_np
+        np_arrray = np.transpose(np_arrray, [1, 2, 0])
+    return np_arrray
 
 
 def np_to_torch(img_np: np.array, dtype=torch.float) -> torch.Tensor:
