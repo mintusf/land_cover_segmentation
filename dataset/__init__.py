@@ -33,6 +33,15 @@ def print_dataloader(dataloader: DataLoader):
 
 
 def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
+    """Builds and returns a dataloader for the dataset.
+
+    Args:
+        cfg (CfgNode): Config object.
+        mode (str): Mode from ["train", "val", "test", "infer"]
+
+    Returns:
+        DataLoader: [description]
+    """
 
     if not os.path.isfile(cfg.DATASET.INPUT.STATS_FILE):
         build_dataset_stats_json_from_cfg(cfg)
@@ -46,10 +55,14 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
         num_workers = cfg.TRAIN.WORKERS
         shuffle = cfg.TRAIN.SHUFFLE
         batch_size = cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, mode)
-    else:
+        drop_last = True
+    elif mode in ["test", "infer"]:
         num_workers = cfg.TEST.WORKERS
         shuffle = False
         batch_size = cfg.TEST.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, mode)
+        drop_last = False
+    else:
+        raise ValueError(f"Unknown mode: {mode}")
 
     dataloader = DataLoader(
         dataset,
@@ -57,7 +70,7 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
         num_workers=num_workers,
         shuffle=shuffle,
         worker_init_fn=random.seed(cfg.TRAIN.SEED),
-        drop_last=True,
+        drop_last=drop_last,
     )
 
     logger.info(
