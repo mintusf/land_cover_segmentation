@@ -193,22 +193,25 @@ def calc_metrics(confusion_matrix: Tensor, return_ave: bool = True) -> Tuple:
     """
 
     # Calculate metrics
-    recall_list = np.array(
+    recall = np.array(
         [
             confusion_matrix[i, i] / np.sum(confusion_matrix[:, i])
             for i in range(confusion_matrix.shape[0])
         ]
     )
-    precision_list = np.array(
+    precision = np.array(
         [
             confusion_matrix[i, i] / np.sum(confusion_matrix[i, :])
             for i in range(confusion_matrix.shape[0])
         ]
     )
 
+    recall = np.nan_to_num(recall)
+    precision = np.nan_to_num(precision)
+
     if return_ave:
-        recall = np.mean(np.nan_to_num(recall_list))
-        precision = np.mean(np.nan_to_num(precision_list))
+        recall = np.mean(recall)
+        precision = np.mean(precision)
 
     f1_score_ave = np.divide(
         2 * precision * recall,
