@@ -16,7 +16,7 @@ def test_dataset_init(test_config):
     transform = get_transform(test_config)
     transforms = Compose([transform])
 
-    dataset = PatchDataset(test_config, mode="train", transforms=transforms)
+    dataset = PatchDataset(test_config, samples_list="train", transforms=transforms)
 
     # Calculate stats of transformed dataset
     samples = []

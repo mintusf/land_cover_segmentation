@@ -13,11 +13,14 @@ from utils.utilities import get_raster_filepath
 
 
 class PatchDataset(Dataset):
-    def __init__(self, cfg: CfgNode, mode: str, infer_list: str = "", transforms=None):
+    def __init__(self, cfg: CfgNode, samples_list: str, transforms=None):
         """Patch Dataset initialization
 
         Args:
             cfg (CfgNode): Config
+            samples_list (str): Either a path to a text file containing the
+                                list of samples or one of ["train", "val", "test"].
+            transforms (callable, optional): Optional transform to be applied
         """
         self.cfg = cfg
 
@@ -28,23 +31,27 @@ class PatchDataset(Dataset):
         self.input_used_channels = cfg.DATASET.INPUT.USED_CHANNELS
         self.target_sensor_name = cfg.DATASET.MASK.SENSOR
 
-        if mode == "train":
+        if samples_list == "train":
             self.dataset_list_path = cfg.DATASET.LIST_TRAIN
-        elif mode == "val":
+        elif samples_list == "val":
             self.dataset_list_path = cfg.DATASET.LIST_VAL
-        elif mode == "test":
+        elif samples_list == "test":
             self.dataset_list_path = cfg.DATASET.LIST_TEST
-        elif mode == "infer":
-            self.dataset_list_path = infer_list
         else:
-            raise ValueError(f"Unknown mode: {mode}")
+            assert os.path.isfile(
+                samples_list
+            ), f"Invalid samples list path {samples_list}"
+            self.dataset_list_path = samples_list
+            samples_list = "infer"
+
+        self.mode = samples_list
 
         self.dataset_list = get_lines_from_txt(self.dataset_list_path)
 
         self.transforms = transforms
-        self.device = cfg.TRAIN.DEVICE if mode in ["train", "val"] else cfg.TEST.DEVICE
-
-        self.mode = mode
+        self.device = (
+            cfg.TRAIN.DEVICE if self.mode in ["train", "val"] else cfg.TEST.DEVICE
+        )
 
     def __len__(self) -> int:
         """Get length of dataset

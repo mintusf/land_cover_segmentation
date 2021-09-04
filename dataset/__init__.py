@@ -32,12 +32,13 @@ def print_dataloader(dataloader: DataLoader):
     return s
 
 
-def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
+def get_dataloader(cfg: CfgNode, samples_list: str) -> DataLoader:
     """Builds and returns a dataloader for the dataset.
 
     Args:
         cfg (CfgNode): Config object.
-        mode (str): Mode from ["train", "val", "test", "infer"]
+        samples_list (str): Either a path to a text file containing the
+                                list of samples or one of ["train", "val", "test"].
 
     Returns:
         DataLoader: [description]
@@ -49,20 +50,18 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
     transform = get_transform(cfg)
     transforms = Compose([transform])
 
-    dataset = PatchDataset(cfg, mode, transforms=transforms)
+    dataset = PatchDataset(cfg, samples_list, transforms=transforms)
 
-    if mode in ["train", "val"]:
+    if samples_list in ["train", "val"]:
         num_workers = cfg.TRAIN.WORKERS
         shuffle = cfg.TRAIN.SHUFFLE
-        batch_size = cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, mode)
+        batch_size = cfg.TRAIN.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, samples_list)
         drop_last = True
-    elif mode in ["test", "infer"]:
+    else:
         num_workers = cfg.TEST.WORKERS
         shuffle = False
-        batch_size = cfg.TEST.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, mode)
+        batch_size = cfg.TEST.BATCH_SIZE_PER_DEVICE * get_gpu_count(cfg, samples_list)
         drop_last = False
-    else:
-        raise ValueError(f"Unknown mode: {mode}")
 
     dataloader = DataLoader(
         dataset,
@@ -74,7 +73,7 @@ def get_dataloader(cfg: CfgNode, mode: str) -> DataLoader:
     )
 
     logger.info(
-        f"\nDataloader used for {mode}:\n" + print_dataloader(dataloader) + "\n"
+        f"\nDataloader used for {samples_list}:\n" + print_dataloader(dataloader) + "\n"
     )
 
     if not cfg.IS_TEST:
