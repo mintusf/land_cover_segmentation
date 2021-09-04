@@ -115,9 +115,9 @@ def model_validation(
         model (Module): Model to validate
         criterion (Module): Loss function
         val_dataloader (dict): Validation dataloader
-        return_preds (bool, optional): Whether to return predictions
         return_tensors (bool, optional): Whether to return tensors
-        return_ave (bool, optional): Whether to return average metrics
+        return_ave (bool, optional): Whether to return average metrics.
+                                     Metrics for each class returned if False.
     Returns:
         dict: Metrics:
               * precision
