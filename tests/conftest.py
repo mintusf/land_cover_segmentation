@@ -1,6 +1,7 @@
 from dataset.transforms import get_transform
 import os
 import pytest
+from shutil import rmtree
 
 from config.default import get_cfg_from_file
 from train_utils import get_loss, get_optimizer, get_lr_scheduler, save_checkpoint
@@ -9,6 +10,7 @@ from dataset import get_dataloader
 
 test_config_path = os.path.join("config", "tests.yml")
 checkpoint_save_path = os.path.join("tests", "train_utils", "test_checkpoint")
+infer_directory = os.path.join("tests", "test_masks")
 
 
 @pytest.fixture(scope="session")
@@ -60,6 +62,7 @@ def module_dict():
         "train_dataloader": train_dataloader,
         "val_dataloader": val_dataloader,
         "cfg_path": test_config_path,
+        "infer_directory": infer_directory,
     }
 
     return out_dict
@@ -71,3 +74,4 @@ def pytest_sessionfinish():
     os.remove(cfg.DATASET.INPUT.STATS_FILE)
     os.remove("tests/utils/test_vis.png")
     os.remove(checkpoint_save_path)
+    rmtree(infer_directory)
