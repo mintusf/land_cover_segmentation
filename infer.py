@@ -54,7 +54,8 @@ def parser():
         "--outputs",
         nargs="+",
         default=["alphablend", "raster", "alphablended_raster"],
-        help="What kind of outputs to generate",
+        help="What kind of outputs to generate "
+        + "from ['alphablend','raster','alphablended_raster']",
     )
 
     return parser.parse_args()
