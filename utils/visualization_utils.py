@@ -1,13 +1,14 @@
-import os
-import sys
+from typing import Tuple
 
 import cv2
 import numpy as np
 
+from torch import Tensor
+
 from config.default import CfgNode
 from dataset.dataset_utils import build_mask
-from utils.io_utils import load_yaml, load_json
-from utils.raster_utils import convert_raster_for_vis, raster_to_np
+from utils.io_utils import load_yaml
+from utils.raster_utils import convert_raster_for_vis, raster_to_np, convert_np_for_vis
 from utils.utilities import get_raster_filepath
 
 
@@ -88,3 +89,23 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     # Save
     alphablend = cv2.cvtColor(alphablend, cv2.COLOR_RGB2BGR)
     cv2.imwrite(savepath, alphablend)
+
+
+def prepare_tensors_for_vis(
+    input_img: Tensor, mask: Tensor
+) -> Tuple[np.array, np.array]:
+    """Prepares input and mask for visualization
+
+    Args:
+        input_img (Tensor): Input img tensor
+        mask (Tensor): Predicted mask tensor
+
+    Returns:
+        Tuple[np.array, np.array]: Input and mask for visualization
+    """
+    input_img = input_img.cpu().numpy()
+    input_img = input_img[(1, 2, 3), :, :]
+    input_img = convert_np_for_vis(input_img)
+
+    mask = mask.cpu().numpy()
+    return input_img, mask
