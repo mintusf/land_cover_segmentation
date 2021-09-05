@@ -4,6 +4,22 @@
 ## Summary
 Land cover detection using Sentinel satellite data with instance segmentation (WIP).
 
+## Folders and scripts structure:
+* assets: images for README
+* config: training configs, dataset configs
+* data_analysis: EDA notebooks
+* env: scripts to build docker environment
+* logs: training logs
+* models: models implementation
+* tests: code tests
+* tools: visualization tool
+* train_utils: utils for training
+* utils: I/O, visualization, raster utils
+* weights: for weights
+* train.py: used for training
+* test.py: used for evaluating test set
+* infer.py: used for inference (raster or alphablend)
+
 ## Dataset
 Reference:
 * https://github.com/chrieke/awesome-satellite-imagery-datasets/blob/master/README.md
