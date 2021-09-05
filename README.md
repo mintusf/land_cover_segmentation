@@ -1,28 +1,46 @@
 ![CI pipeline](https://github.com/mintusf/land_cover_tracking/actions/workflows/unittests.yml/badge.svg?branch=main)
 ![Flake8 check](https://github.com/mintusf/land_cover_tracking/actions/workflows/flake8.yml/badge.svg?branch=main)
 
-### Summary
-Using Sentinel-2 data to detect percentage of various land types (WIP).
+## Summary
+Land cover detection using Sentinel satellite data with instance segmentation (WIP).
 
-### Dataset
-Used for searching:
+## Dataset
+Reference:
 * https://github.com/chrieke/awesome-satellite-imagery-datasets/blob/master/README.md
 * https://www.isprs-ann-photogramm-remote-sens-spatial-inf-sci.net/IV-2-W7/153/2019/isprs-annals-IV-2-W7-153-2019.pdf
 
-Used datasets:
-* only water: [LINK](https://www.kaggle.com/franciscoescobar/satellite-images-of-water-bodies) DONE
+### Used datasets:
+SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
+* Spatial resolution: 10m
+* Patch size: 256 x 256
+* Classes: 33 (converted to 12)
+* Input channels: "B2", "B3", "B4", "B5" of Sentinel L2C
+
+### Other datasets:
+* only water: [LINK](https://www.kaggle.com/franciscoescobar/satellite-images-of-water-bodies)
 * surface & cloud: [LINK](https://zenodo.org/record/4172871#.YQYu_44zZPY)
 * surface (only Africa): [LINK](https://registry.mlhub.earth/10.34911/rdnt.d2ce8i/)
 * only Slovenia: [LINK](http://eo-learn.sentinel-hub.com/)
 * big Europe: [LINK](http://bigearth.net/#about)
-* whole world: [LINK](https://mediatum.ub.tum.de/1474000)
+
+## Models
+* Model: DeepLab v3
 
 
-| Name | Sensor | GR (m) | Geographical area | Dataset size (GB) | Subgrid size (pxl x pxl) | Classes count |
-|-|-|-|-|-|-|-|
-| Satellite-images-of-water-bodies | Sentinel-2 | ? | ? | 0.25 | various (up to 3000x3000)  | 1 [water] |
-| Sentinel-2 Cloud Mask Catalogue | 2018 Level-1C Sentinel-2 | 20 |  | 15.3 (half without clouds) | 1022 x 1022 | 11 [est/jungle, snow/ice, agricultural, urban/developed, coastal, hills/mountains, desert/barren, shrublands/plains, wetland/bog/marsh, open_water, enclosed_water] + clouds |
-| LandCoverNet | Sentinel-2 L2A | 10 | Africa | 82 | 256 x 256 | 7 [water, artificial bare ground, natural bare ground, snow/ice, woody vegetation, cultivated vegetation, semi natural vegetation] |
-| [Example dataset of EOPatches for Slovenia 2019](http://eo-learn.sentinel-hub.com/) | Sentinel-2 L1C | 10 | Slovenia | 11 | 1000 x 1000 | 9 [cultivated land, forest, grassland, shrubland, water, wetlands, tundra, artificial surface, bareland] |
-| BigEarthNet | Sentinel-2 L2A | 10 | Europe | 120 x 120 | CLASSIFICATION ! |
-| SEN12MS | Sentinel-2 L2A | 10 | Whole world | 510 | 256 x 256 | 33 |
+## Results
+
+**Confusion matrix:**
+
+![Confusion_matrix](assets/Confusion_matrix.PNG)
+
+
+**Generated masks example**
+
+| urban | water | agriculture | wetlands | open_forest | deep_forest |
+|-|-|-|-|-|-|
+| ![urban](assets/urban.PNG) | ![water](assets/water.PNG) | ![agriculture](assets/agriculture.PNG) | ![wetlands](assets/wetlands.PNG) | ![open_forest](assets/open_forest.PNG) | ![deep_forest](assets/deep_forest.PNG) |
+
+![Results1](assets/results1.PNG)
+![Results2](assets/results2.PNG)
+![Results3](assets/results3.PNG)
+![Results4](assets/results4.PNG)
