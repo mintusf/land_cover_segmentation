@@ -1,0 +1,898 @@
+2021-09-01 11:42:43,438 - global - INFO - CONFIG:
+DATASET:
+  INPUT:
+    CHANNELS: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8a', 'B9', 'B10', 'B11', 'B12']
+    SENSOR: s2
+    STATS_FILE: config/dataset/stats/default.json
+    USED_CHANNELS: [1, 2, 3, 4]
+  LABELS_COUNT_CSV: /data/seg_data/training_labels.csv
+  LIST_TEST: config/dataset/lists/test.txt
+  LIST_TRAIN: config/dataset/lists/train.txt
+  LIST_VAL: config/dataset/lists/val.txt
+  MASK:
+    CONFIG: config/dataset/mask_configs/default.yml
+    SENSOR: lc
+  ROOT: /data/seg_data
+IS_TEST: False
+MODEL:
+  TYPE: DeepLab
+TRAIN:
+  BATCH_SIZE_PER_DEVICE: 8
+  COMET_TAGS: ['experiment', 'crossentropy', 'weighted_loss']
+  DEVICE: cuda:0
+  EPOCHS: 5
+  LOSS:
+    TYPE: categorical_crossentropy
+    USE_WEIGHTS: True
+  LR: 0.01
+  OPTIMIZER: adam
+  RESUME_CHECKPOINT: 
+  SCHEDULER:
+    FACTOR: 0.2
+    PATIENCE: 2
+    TYPE: ReduceLROnPlateau
+  SEED: 42
+  SHUFFLE: True
+  USE_COMET: True
+  VAL_PER_EPOCH: 6
+  VERBOSE_STEP: 100
+  WEIGHTS_FOLDER: weights
+  WEIGHT_DECAY: 0.0001
+  WORKERS: 4
+
+
+
+2021-09-01 11:42:43,477 - global - INFO - 
+Dataloader used for train:
+Samples count: 161320
+Samples list: config/dataset/lists/train.txt
+Batches count: 20165
+Drop last: True
+Transforms: Compose(
+    <dataset.transforms.NormalizeSample object at 0x7f54db33e4c0>
+)
+Masks config: {'maskname2int': {'IGBP': 0, 'LCCS_LC': 1, 'LCCS_LU': 2, 'LCCS_SH': 3}, 'channels_priority': ['LCCS_LU', 'LCCS_SH'], 'selected_masks': {'LCCS_LU': {1: [9], 2: [25, 35, 36]}, 'LCCS_SH': {3: [1], 4: [2], 5: [3], 6: [10], 7: [20], 8: [27, 50], 9: [30], 10: [40], 11: [51], 0: [0]}}, 'class2label': {1: 'urban', 2: 'agricultural', 3: 'barren', 4: 'snow', 5: 'water', 6: 'dense_forest', 7: 'open_forest', 8: 'wetlands', 9: 'grasslands', 10: 'shrublands', 11: 'tundra', 0: 'other'}, 'alpha': 0.6, 'colors': {1: [200, 200, 200], 2: [195, 255, 84], 3: [255, 211, 92], 4: [255, 255, 255], 5: [60, 38, 201], 6: [2, 110, 40], 7: [6, 143, 54], 8: [100, 143, 16], 9: [151, 166, 22], 10: [186, 201, 157], 11: [9, 69, 15], 0: [0, 0, 0]}}Input sensor name: s2All channels: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8a', 'B9', 'B10', 'B11', 'B12']Used channels: [1, 2, 3, 4]Used channels: lc
+
+
+2021-09-01 11:42:44,057 - global - INFO - Train counts: urban           1.147542e+09
+agricultural    1.989138e+09
+barren          5.723797e+08
+snow            9.824200e+04
+water           6.666736e+08
+dense_forest    1.166134e+09
+open_forest     2.503534e+09
+wetlands        1.157266e+08
+grasslands      1.732259e+09
+shrublands      6.540678e+08
+tundra          2.367735e+07
+other           1.037844e+06
+dtype: float64
+2021-09-01 11:42:44,061 - global - INFO - 
+Dataloader used for val:
+Samples count: 9805
+Samples list: config/dataset/lists/val.txt
+Batches count: 1225
+Drop last: True
+Transforms: Compose(
+    <dataset.transforms.NormalizeSample object at 0x7f54603ab040>
+)
+Masks config: {'maskname2int': {'IGBP': 0, 'LCCS_LC': 1, 'LCCS_LU': 2, 'LCCS_SH': 3}, 'channels_priority': ['LCCS_LU', 'LCCS_SH'], 'selected_masks': {'LCCS_LU': {1: [9], 2: [25, 35, 36]}, 'LCCS_SH': {3: [1], 4: [2], 5: [3], 6: [10], 7: [20], 8: [27, 50], 9: [30], 10: [40], 11: [51], 0: [0]}}, 'class2label': {1: 'urban', 2: 'agricultural', 3: 'barren', 4: 'snow', 5: 'water', 6: 'dense_forest', 7: 'open_forest', 8: 'wetlands', 9: 'grasslands', 10: 'shrublands', 11: 'tundra', 0: 'other'}, 'alpha': 0.6, 'colors': {1: [200, 200, 200], 2: [195, 255, 84], 3: [255, 211, 92], 4: [255, 255, 255], 5: [60, 38, 201], 6: [2, 110, 40], 7: [6, 143, 54], 8: [100, 143, 16], 9: [151, 166, 22], 10: [186, 201, 157], 11: [9, 69, 15], 0: [0, 0, 0]}}Input sensor name: s2All channels: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8a', 'B9', 'B10', 'B11', 'B12']Used channels: [1, 2, 3, 4]Used channels: lc
+
+
+2021-09-01 11:42:44,567 - global - INFO - Train counts: urban            47273518.0
+agricultural     74405379.0
+barren            1023479.0
+snow                 8532.0
+water            74331179.0
+dense_forest     88106750.0
+open_forest     129027947.0
+wetlands         11268752.0
+grasslands      124518480.0
+shrublands       81481954.0
+tundra           11134418.0
+other                  92.0
+dtype: float64
+2021-09-01 11:42:44,571 - global - INFO - 
+Dataloader used for test:
+Samples count: 9537
+Samples list: config/dataset/lists/test.txt
+Batches count: 1192
+Drop last: True
+Transforms: Compose(
+    <dataset.transforms.NormalizeSample object at 0x7f5460031c40>
+)
+Masks config: {'maskname2int': {'IGBP': 0, 'LCCS_LC': 1, 'LCCS_LU': 2, 'LCCS_SH': 3}, 'channels_priority': ['LCCS_LU', 'LCCS_SH'], 'selected_masks': {'LCCS_LU': {1: [9], 2: [25, 35, 36]}, 'LCCS_SH': {3: [1], 4: [2], 5: [3], 6: [10], 7: [20], 8: [27, 50], 9: [30], 10: [40], 11: [51], 0: [0]}}, 'class2label': {1: 'urban', 2: 'agricultural', 3: 'barren', 4: 'snow', 5: 'water', 6: 'dense_forest', 7: 'open_forest', 8: 'wetlands', 9: 'grasslands', 10: 'shrublands', 11: 'tundra', 0: 'other'}, 'alpha': 0.6, 'colors': {1: [200, 200, 200], 2: [195, 255, 84], 3: [255, 211, 92], 4: [255, 255, 255], 5: [60, 38, 201], 6: [2, 110, 40], 7: [6, 143, 54], 8: [100, 143, 16], 9: [151, 166, 22], 10: [186, 201, 157], 11: [9, 69, 15], 0: [0, 0, 0]}}Input sensor name: s2All channels: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8a', 'B9', 'B10', 'B11', 'B12']Used channels: [1, 2, 3, 4]Used channels: lc
+
+
+2021-09-01 11:42:45,070 - global - INFO - Train counts: urban            64998666.0
+agricultural     53240956.0
+barren           46265214.0
+snow                    0.0
+water            31231362.0
+dense_forest     86699449.0
+open_forest     162444356.0
+wetlands          2802638.0
+grasslands      121393678.0
+shrublands       55918839.0
+tundra              21580.0
+other                  94.0
+dtype: float64
+2021-09-01 11:42:46,722 - global - INFO - 
+Model:
+Using model: DeepLab
+Input channels: 4
+Output classes: 12
+
+
+
+2021-09-01 11:42:50,284 - global - INFO - Used optimizer: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.01
+    weight_decay: 0.0001
+)
+2021-09-01 11:42:50,285 - global - INFO - Used scheduler: <torch.optim.lr_scheduler.ReduceLROnPlateau object at 0x7f541c337f70>
+2021-09-01 11:42:50,875 - global - INFO - Used weights: tensor([9.6354e-07, 8.7143e-10, 5.0273e-10, 1.7471e-09, 1.0179e-05, 1.5000e-09,
+        8.5753e-10, 3.9944e-10, 8.6411e-09, 5.7728e-10, 1.5289e-09, 4.2234e-08],
+       device='cuda:0')
+2021-09-01 11:42:50,876 - global - INFO - Used loss: CrossEntropyLoss()
+2021-09-01 11:44:54,647 - global - INFO - Train loss epoch 1 batch 100: 2.3346
+2021-09-01 11:46:55,638 - global - INFO - Train loss epoch 1 batch 200: 1.8949
+2021-09-01 11:48:58,577 - global - INFO - Train loss epoch 1 batch 300: 1.9289
+2021-09-01 11:51:01,079 - global - INFO - Train loss epoch 1 batch 400: 2.0274
+2021-09-01 11:53:03,516 - global - INFO - Train loss epoch 1 batch 500: 1.8194
+2021-09-01 11:55:05,940 - global - INFO - Train loss epoch 1 batch 600: 1.9113
+2021-09-01 11:57:07,860 - global - INFO - Train loss epoch 1 batch 700: 1.9109
+2021-09-01 11:59:09,909 - global - INFO - Train loss epoch 1 batch 800: 1.8769
+2021-09-01 12:01:12,016 - global - INFO - Train loss epoch 1 batch 900: 1.7747
+2021-09-01 12:03:13,820 - global - INFO - Train loss epoch 1 batch 1000: 1.7740
+2021-09-01 12:05:15,597 - global - INFO - Train loss epoch 1 batch 1100: 1.7392
+2021-09-01 12:07:17,046 - global - INFO - Train loss epoch 1 batch 1200: 1.7341
+2021-09-01 12:09:18,455 - global - INFO - Train loss epoch 1 batch 1300: 1.7656
+2021-09-01 12:11:19,744 - global - INFO - Train loss epoch 1 batch 1400: 1.6988
+2021-09-01 12:13:20,548 - global - INFO - Train loss epoch 1 batch 1500: 1.7570
+2021-09-01 12:15:21,068 - global - INFO - Train loss epoch 1 batch 1600: 1.6682
+2021-09-01 12:17:21,343 - global - INFO - Train loss epoch 1 batch 1700: 1.7125
+2021-09-01 12:19:21,270 - global - INFO - Train loss epoch 1 batch 1800: 1.6529
+2021-09-01 12:21:21,277 - global - INFO - Train loss epoch 1 batch 1900: 1.6467
+2021-09-01 12:23:21,177 - global - INFO - Train loss epoch 1 batch 2000: 1.8115
+2021-09-01 12:25:20,939 - global - INFO - Train loss epoch 1 batch 2100: 1.6273
+2021-09-01 12:27:20,476 - global - INFO - Train loss epoch 1 batch 2200: 1.7665
+2021-09-01 12:29:19,949 - global - INFO - Train loss epoch 1 batch 2300: 1.7531
+2021-09-01 12:31:19,348 - global - INFO - Train loss epoch 1 batch 2400: 1.6665
+2021-09-01 12:33:18,536 - global - INFO - Train loss epoch 1 batch 2500: 1.6160
+2021-09-01 12:35:17,483 - global - INFO - Train loss epoch 1 batch 2600: 1.6862
+2021-09-01 12:37:16,259 - global - INFO - Train loss epoch 1 batch 2700: 1.6732
+2021-09-01 12:39:14,999 - global - INFO - Train loss epoch 1 batch 2800: 1.6488
+2021-09-01 12:41:13,771 - global - INFO - Train loss epoch 1 batch 2900: 1.6415
+2021-09-01 12:43:12,428 - global - INFO - Train loss epoch 1 batch 3000: 1.6846
+2021-09-01 12:45:10,689 - global - INFO - Train loss epoch 1 batch 3100: 1.6402
+2021-09-01 12:47:08,812 - global - INFO - Train loss epoch 1 batch 3200: 1.6141
+2021-09-01 12:49:06,630 - global - INFO - Train loss epoch 1 batch 3300: 1.5764
+2021-09-01 12:56:35,736 - global - INFO - Val loss at epoch 1 batch 3361: 3.1633
+2021-09-01 12:56:35,796 - global - INFO - Saving checkpoint for the best precision: 0.0980
+2021-09-01 12:56:36,686 - global - INFO - Saving checkpoint for the best recall: 0.1235
+2021-09-01 12:56:37,558 - global - INFO - Saving checkpoint for the best f1: 0.1093
+2021-09-01 12:56:38,477 - global - INFO - Saving checkpoint for the best val_loss: 3.1633
+2021-09-01 12:57:36,993 - global - INFO - Train loss epoch 1 batch 3400: 1.7971
+2021-09-01 12:59:34,816 - global - INFO - Train loss epoch 1 batch 3500: 1.8863
+2021-09-01 13:01:32,689 - global - INFO - Train loss epoch 1 batch 3600: 1.7536
+2021-09-01 13:03:30,517 - global - INFO - Train loss epoch 1 batch 3700: 1.7091
+2021-09-01 13:05:27,968 - global - INFO - Train loss epoch 1 batch 3800: 1.6908
+2021-09-01 13:07:25,377 - global - INFO - Train loss epoch 1 batch 3900: 1.7685
+2021-09-01 13:09:22,812 - global - INFO - Train loss epoch 1 batch 4000: 1.7052
+2021-09-01 13:11:20,207 - global - INFO - Train loss epoch 1 batch 4100: 1.6518
+2021-09-01 13:13:17,595 - global - INFO - Train loss epoch 1 batch 4200: 1.6475
+2021-09-01 13:15:14,964 - global - INFO - Train loss epoch 1 batch 4300: 1.5984
+2021-09-01 13:17:12,223 - global - INFO - Train loss epoch 1 batch 4400: 1.5396
+2021-09-01 13:19:09,502 - global - INFO - Train loss epoch 1 batch 4500: 1.4916
+2021-09-01 13:21:06,820 - global - INFO - Train loss epoch 1 batch 4600: 1.6035
+2021-09-01 13:23:03,956 - global - INFO - Train loss epoch 1 batch 4700: 1.5631
+2021-09-01 13:25:01,204 - global - INFO - Train loss epoch 1 batch 4800: 1.5051
+2021-09-01 13:26:58,339 - global - INFO - Train loss epoch 1 batch 4900: 1.4479
+2021-09-01 13:28:55,301 - global - INFO - Train loss epoch 1 batch 5000: 1.4698
+2021-09-01 13:30:52,189 - global - INFO - Train loss epoch 1 batch 5100: 1.5174
+2021-09-01 13:32:49,214 - global - INFO - Train loss epoch 1 batch 5200: 1.4047
+2021-09-01 13:34:46,160 - global - INFO - Train loss epoch 1 batch 5300: 1.5046
+2021-09-01 13:36:42,729 - global - INFO - Train loss epoch 1 batch 5400: 1.5141
+2021-09-01 13:38:39,484 - global - INFO - Train loss epoch 1 batch 5500: 1.4886
+2021-09-01 13:40:36,441 - global - INFO - Train loss epoch 1 batch 5600: 1.4105
+2021-09-01 13:42:33,118 - global - INFO - Train loss epoch 1 batch 5700: 1.4383
+2021-09-01 13:44:29,753 - global - INFO - Train loss epoch 1 batch 5800: 1.4770
+2021-09-01 13:46:26,168 - global - INFO - Train loss epoch 1 batch 5900: 1.5352
+2021-09-01 13:48:22,606 - global - INFO - Train loss epoch 1 batch 6000: 1.3429
+2021-09-01 13:50:19,002 - global - INFO - Train loss epoch 1 batch 6100: 1.5014
+2021-09-01 13:52:15,140 - global - INFO - Train loss epoch 1 batch 6200: 1.3813
+2021-09-01 13:54:11,366 - global - INFO - Train loss epoch 1 batch 6300: 1.3685
+2021-09-01 13:56:07,456 - global - INFO - Train loss epoch 1 batch 6400: 1.4019
+2021-09-01 13:58:03,388 - global - INFO - Train loss epoch 1 batch 6500: 1.3933
+2021-09-01 13:59:59,380 - global - INFO - Train loss epoch 1 batch 6600: 1.3538
+2021-09-01 14:01:55,583 - global - INFO - Train loss epoch 1 batch 6700: 1.3450
+2021-09-01 14:08:32,312 - global - INFO - Val loss at epoch 1 batch 6721: 1.6952
+2021-09-01 14:08:32,376 - global - INFO - Saving checkpoint for the best precision: 0.3001
+2021-09-01 14:08:34,939 - global - INFO - Saving checkpoint for the best recall: 0.2519
+2021-09-01 14:08:37,619 - global - INFO - Saving checkpoint for the best f1: 0.2739
+2021-09-01 14:08:40,305 - global - INFO - Saving checkpoint for the best val_loss: 1.6952
+2021-09-01 14:10:25,492 - global - INFO - Train loss epoch 1 batch 6800: 1.7385
+2021-09-01 14:12:21,629 - global - INFO - Train loss epoch 1 batch 6900: 1.4733
+2021-09-01 14:14:16,921 - global - INFO - Train loss epoch 1 batch 7000: 1.4499
+2021-09-01 14:16:12,052 - global - INFO - Train loss epoch 1 batch 7100: 1.5030
+2021-09-01 14:18:07,281 - global - INFO - Train loss epoch 1 batch 7200: 1.3938
+2021-09-01 14:20:02,389 - global - INFO - Train loss epoch 1 batch 7300: 1.3030
+2021-09-01 14:21:57,461 - global - INFO - Train loss epoch 1 batch 7400: 1.3392
+2021-09-01 14:23:52,336 - global - INFO - Train loss epoch 1 batch 7500: 1.3506
+2021-09-01 14:25:47,346 - global - INFO - Train loss epoch 1 batch 7600: 1.3019
+2021-09-01 14:27:42,526 - global - INFO - Train loss epoch 1 batch 7700: 1.4382
+2021-09-01 14:29:37,758 - global - INFO - Train loss epoch 1 batch 7800: 1.4039
+2021-09-01 14:31:32,931 - global - INFO - Train loss epoch 1 batch 7900: 1.3015
+2021-09-01 14:33:28,133 - global - INFO - Train loss epoch 1 batch 8000: 1.3410
+2021-09-01 14:35:23,425 - global - INFO - Train loss epoch 1 batch 8100: 1.3196
+2021-09-01 14:37:18,669 - global - INFO - Train loss epoch 1 batch 8200: 1.2197
+2021-09-01 14:39:14,040 - global - INFO - Train loss epoch 1 batch 8300: 1.2480
+2021-09-01 14:41:09,445 - global - INFO - Train loss epoch 1 batch 8400: 1.3512
+2021-09-01 14:43:04,840 - global - INFO - Train loss epoch 1 batch 8500: 1.2246
+2021-09-01 14:45:00,276 - global - INFO - Train loss epoch 1 batch 8600: 1.2034
+2021-09-01 14:46:55,719 - global - INFO - Train loss epoch 1 batch 8700: 1.1842
+2021-09-01 14:48:51,144 - global - INFO - Train loss epoch 1 batch 8800: 1.1751
+2021-09-01 14:50:46,658 - global - INFO - Train loss epoch 1 batch 8900: 1.2438
+2021-09-01 14:52:42,232 - global - INFO - Train loss epoch 1 batch 9000: 1.3084
+2021-09-01 14:54:38,115 - global - INFO - Train loss epoch 1 batch 9100: 1.1905
+2021-09-01 14:56:34,264 - global - INFO - Train loss epoch 1 batch 9200: 1.3670
+2021-09-01 14:58:30,260 - global - INFO - Train loss epoch 1 batch 9300: 1.1558
+2021-09-01 15:00:26,507 - global - INFO - Train loss epoch 1 batch 9400: 1.3435
+2021-09-01 15:02:23,030 - global - INFO - Train loss epoch 1 batch 9500: 1.2167
+2021-09-01 15:04:19,850 - global - INFO - Train loss epoch 1 batch 9600: 1.2343
+2021-09-01 15:06:16,942 - global - INFO - Train loss epoch 1 batch 9700: 1.1434
+2021-09-01 15:08:14,011 - global - INFO - Train loss epoch 1 batch 9800: 1.2233
+2021-09-01 15:10:11,182 - global - INFO - Train loss epoch 1 batch 9900: 1.1866
+2021-09-01 15:12:08,593 - global - INFO - Train loss epoch 1 batch 10000: 1.2424
+2021-09-01 15:20:03,724 - global - INFO - Val loss at epoch 1 batch 10081: 3.8152
+2021-09-01 15:20:03,784 - global - INFO - Saving checkpoint for the best recall: 0.2536
+2021-09-01 15:20:39,513 - global - INFO - Train loss epoch 1 batch 10100: 1.3599
+2021-09-01 15:22:37,863 - global - INFO - Train loss epoch 1 batch 10200: 1.5273
+2021-09-01 15:24:36,400 - global - INFO - Train loss epoch 1 batch 10300: 1.5154
+2021-09-01 15:26:35,423 - global - INFO - Train loss epoch 1 batch 10400: 1.4992
+2021-09-01 15:28:34,699 - global - INFO - Train loss epoch 1 batch 10500: 1.3495
+2021-09-01 15:30:34,027 - global - INFO - Train loss epoch 1 batch 10600: 1.3164
+2021-09-01 15:32:33,410 - global - INFO - Train loss epoch 1 batch 10700: 1.4633
+2021-09-01 15:34:32,867 - global - INFO - Train loss epoch 1 batch 10800: 1.3922
+2021-09-01 15:36:32,326 - global - INFO - Train loss epoch 1 batch 10900: 1.3146
+2021-09-01 15:38:31,716 - global - INFO - Train loss epoch 1 batch 11000: 1.3962
+2021-09-01 15:40:31,141 - global - INFO - Train loss epoch 1 batch 11100: 1.3813
+2021-09-01 15:42:30,674 - global - INFO - Train loss epoch 1 batch 11200: 1.2722
+2021-09-01 15:44:30,226 - global - INFO - Train loss epoch 1 batch 11300: 1.3173
+2021-09-01 15:46:29,843 - global - INFO - Train loss epoch 1 batch 11400: 1.2902
+2021-09-01 15:48:29,524 - global - INFO - Train loss epoch 1 batch 11500: 1.3034
+2021-09-01 15:50:29,137 - global - INFO - Train loss epoch 1 batch 11600: 1.1188
+2021-09-01 15:52:28,733 - global - INFO - Train loss epoch 1 batch 11700: 1.2512
+2021-09-01 15:54:28,379 - global - INFO - Train loss epoch 1 batch 11800: 1.3300
+2021-09-01 15:56:28,040 - global - INFO - Train loss epoch 1 batch 11900: 1.3061
+2021-09-01 15:58:27,801 - global - INFO - Train loss epoch 1 batch 12000: 1.2544
+2021-09-01 16:00:27,396 - global - INFO - Train loss epoch 1 batch 12100: 1.2010
+2021-09-01 16:02:27,083 - global - INFO - Train loss epoch 1 batch 12200: 1.1863
+2021-09-01 16:04:26,694 - global - INFO - Train loss epoch 1 batch 12300: 1.2149
+2021-09-01 16:06:26,415 - global - INFO - Train loss epoch 1 batch 12400: 1.2515
+2021-09-01 16:08:26,119 - global - INFO - Train loss epoch 1 batch 12500: 1.2837
+2021-09-01 16:10:25,887 - global - INFO - Train loss epoch 1 batch 12600: 1.1874
+2021-09-01 16:12:25,796 - global - INFO - Train loss epoch 1 batch 12700: 1.2109
+2021-09-01 16:14:25,641 - global - INFO - Train loss epoch 1 batch 12800: 1.2770
+2021-09-01 16:16:25,430 - global - INFO - Train loss epoch 1 batch 12900: 1.2747
+2021-09-01 16:18:25,168 - global - INFO - Train loss epoch 1 batch 13000: 1.2294
+2021-09-01 16:20:24,698 - global - INFO - Train loss epoch 1 batch 13100: 1.2952
+2021-09-01 16:22:24,387 - global - INFO - Train loss epoch 1 batch 13200: 1.2549
+2021-09-01 16:24:23,961 - global - INFO - Train loss epoch 1 batch 13300: 1.2278
+2021-09-01 16:26:23,448 - global - INFO - Train loss epoch 1 batch 13400: 1.2372
+2021-09-01 16:33:35,361 - global - INFO - Val loss at epoch 1 batch 13441: 1.6377
+2021-09-01 16:33:35,424 - global - INFO - Saving checkpoint for the best recall: 0.2685
+2021-09-01 16:33:37,981 - global - INFO - Saving checkpoint for the best val_loss: 1.6377
+2021-09-01 16:35:01,056 - global - INFO - Train loss epoch 1 batch 13500: 1.5621
+2021-09-01 16:37:00,211 - global - INFO - Train loss epoch 1 batch 13600: 1.5210
+2021-09-01 16:38:59,661 - global - INFO - Train loss epoch 1 batch 13700: 1.4868
+2021-09-01 16:40:59,268 - global - INFO - Train loss epoch 1 batch 13800: 1.3826
+2021-09-01 16:42:58,991 - global - INFO - Train loss epoch 1 batch 13900: 1.3310
+2021-09-01 16:44:58,782 - global - INFO - Train loss epoch 1 batch 14000: 1.3106
+2021-09-01 16:46:58,611 - global - INFO - Train loss epoch 1 batch 14100: 1.2318
+2021-09-01 16:48:58,284 - global - INFO - Train loss epoch 1 batch 14200: 1.3379
+2021-09-01 16:50:58,103 - global - INFO - Train loss epoch 1 batch 14300: 1.2766
+2021-09-01 16:52:57,804 - global - INFO - Train loss epoch 1 batch 14400: 1.2355
+2021-09-01 16:54:57,504 - global - INFO - Train loss epoch 1 batch 14500: 1.2634
+2021-09-01 16:56:57,372 - global - INFO - Train loss epoch 1 batch 14600: 1.2187
+2021-09-01 16:58:57,282 - global - INFO - Train loss epoch 1 batch 14700: 1.2531
+2021-09-01 17:00:56,962 - global - INFO - Train loss epoch 1 batch 14800: 1.1928
+2021-09-01 17:02:56,406 - global - INFO - Train loss epoch 1 batch 14900: 1.2260
+2021-09-01 17:04:55,969 - global - INFO - Train loss epoch 1 batch 15000: 1.1430
+2021-09-01 17:06:55,663 - global - INFO - Train loss epoch 1 batch 15100: 1.2764
+2021-09-01 17:08:55,283 - global - INFO - Train loss epoch 1 batch 15200: 1.2611
+2021-09-01 17:10:54,992 - global - INFO - Train loss epoch 1 batch 15300: 1.1690
+2021-09-01 17:12:54,776 - global - INFO - Train loss epoch 1 batch 15400: 1.2027
+2021-09-01 17:14:54,443 - global - INFO - Train loss epoch 1 batch 15500: 1.2854
+2021-09-01 17:16:54,224 - global - INFO - Train loss epoch 1 batch 15600: 1.2269
+2021-09-01 17:18:53,834 - global - INFO - Train loss epoch 1 batch 15700: 1.2834
+2021-09-01 17:20:53,435 - global - INFO - Train loss epoch 1 batch 15800: 1.2956
+2021-09-01 17:22:53,081 - global - INFO - Train loss epoch 1 batch 15900: 1.2843
+2021-09-01 17:24:52,932 - global - INFO - Train loss epoch 1 batch 16000: 1.2901
+2021-09-01 17:26:52,916 - global - INFO - Train loss epoch 1 batch 16100: 1.2206
+2021-09-01 17:28:52,671 - global - INFO - Train loss epoch 1 batch 16200: 1.2119
+2021-09-01 17:30:52,597 - global - INFO - Train loss epoch 1 batch 16300: 1.1312
+2021-09-01 17:32:52,391 - global - INFO - Train loss epoch 1 batch 16400: 1.1767
+2021-09-01 17:34:52,262 - global - INFO - Train loss epoch 1 batch 16500: 1.1614
+2021-09-01 17:36:52,398 - global - INFO - Train loss epoch 1 batch 16600: 1.2586
+2021-09-01 17:38:52,522 - global - INFO - Train loss epoch 1 batch 16700: 1.1832
+2021-09-01 17:40:52,484 - global - INFO - Train loss epoch 1 batch 16800: 1.3003
+2021-09-01 17:47:16,233 - global - INFO - Val loss at epoch 1 batch 16801: 4.3030
+2021-09-01 17:47:16,294 - global - INFO - Saving checkpoint for the best recall: 0.2722
+2021-09-01 17:47:18,855 - global - INFO - Saving checkpoint for the best f1: 0.2756
+2021-09-01 17:49:29,510 - global - INFO - Train loss epoch 1 batch 16900: 1.5787
+2021-09-01 17:51:28,856 - global - INFO - Train loss epoch 1 batch 17000: 1.5855
+2021-09-01 17:53:28,253 - global - INFO - Train loss epoch 1 batch 17100: 1.4313
+2021-09-01 17:55:27,883 - global - INFO - Train loss epoch 1 batch 17200: 1.4116
+2021-09-01 17:57:27,730 - global - INFO - Train loss epoch 1 batch 17300: 1.3985
+2021-09-01 17:59:27,737 - global - INFO - Train loss epoch 1 batch 17400: 1.3543
+2021-09-01 18:01:27,574 - global - INFO - Train loss epoch 1 batch 17500: 1.3845
+2021-09-01 18:03:27,257 - global - INFO - Train loss epoch 1 batch 17600: 1.3425
+2021-09-01 18:05:27,144 - global - INFO - Train loss epoch 1 batch 17700: 1.3379
+2021-09-01 18:07:26,973 - global - INFO - Train loss epoch 1 batch 17800: 1.3897
+2021-09-01 18:09:26,579 - global - INFO - Train loss epoch 1 batch 17900: 1.3144
+2021-09-01 18:11:26,372 - global - INFO - Train loss epoch 1 batch 18000: 1.2545
+2021-09-01 18:13:26,259 - global - INFO - Train loss epoch 1 batch 18100: 1.3928
+2021-09-01 18:15:26,200 - global - INFO - Train loss epoch 1 batch 18200: 1.3770
+2021-09-01 18:17:26,199 - global - INFO - Train loss epoch 1 batch 18300: 1.3558
+2021-09-01 18:19:25,988 - global - INFO - Train loss epoch 1 batch 18400: 1.3143
+2021-09-01 18:21:25,789 - global - INFO - Train loss epoch 1 batch 18500: 1.3441
+2021-09-01 18:23:25,559 - global - INFO - Train loss epoch 1 batch 18600: 1.3592
+2021-09-01 18:25:25,464 - global - INFO - Train loss epoch 1 batch 18700: 1.3249
+2021-09-01 18:27:25,353 - global - INFO - Train loss epoch 1 batch 18800: 1.2935
+2021-09-01 18:29:25,205 - global - INFO - Train loss epoch 1 batch 18900: 1.3436
+2021-09-01 18:31:25,201 - global - INFO - Train loss epoch 1 batch 19000: 1.3648
+2021-09-01 18:33:25,200 - global - INFO - Train loss epoch 1 batch 19100: 1.3278
+2021-09-01 18:35:25,133 - global - INFO - Train loss epoch 1 batch 19200: 1.4506
+2021-09-01 18:37:24,813 - global - INFO - Train loss epoch 1 batch 19300: 1.2534
+2021-09-01 18:39:24,909 - global - INFO - Train loss epoch 1 batch 19400: 1.2543
+2021-09-01 18:41:24,710 - global - INFO - Train loss epoch 1 batch 19500: 1.2336
+2021-09-01 18:43:24,577 - global - INFO - Train loss epoch 1 batch 19600: 1.3657
+2021-09-01 18:45:24,303 - global - INFO - Train loss epoch 1 batch 19700: 1.4080
+2021-09-01 18:47:24,224 - global - INFO - Train loss epoch 1 batch 19800: 1.2538
+2021-09-01 18:49:24,086 - global - INFO - Train loss epoch 1 batch 19900: 1.3614
+2021-09-01 18:51:23,988 - global - INFO - Train loss epoch 1 batch 20000: 1.3374
+2021-09-01 18:53:24,068 - global - INFO - Train loss epoch 1 batch 20100: 1.3649
+2021-09-01 19:00:59,052 - global - INFO - Val loss at epoch 1 batch 20161: 1.8870
+2021-09-01 19:00:59,113 - global - INFO - Saving checkpoint for the best recall: 0.3557
+2021-09-01 19:01:01,658 - global - INFO - Saving checkpoint for the best f1: 0.3181
+2021-09-01 19:01:04,341 - global - INFO - Saving checkpoint at the end of epoch 1
+2021-09-01 19:03:13,427 - global - INFO - Train loss epoch 2 batch 100: 1.6134
+2021-09-01 19:05:12,815 - global - INFO - Train loss epoch 2 batch 200: 1.5681
+2021-09-01 19:07:12,625 - global - INFO - Train loss epoch 2 batch 300: 1.4377
+2021-09-01 19:09:12,626 - global - INFO - Train loss epoch 2 batch 400: 1.4050
+2021-09-01 19:11:12,739 - global - INFO - Train loss epoch 2 batch 500: 1.4620
+2021-09-01 19:13:12,801 - global - INFO - Train loss epoch 2 batch 600: 1.3876
+2021-09-01 19:15:12,949 - global - INFO - Train loss epoch 2 batch 700: 1.2667
+2021-09-01 19:17:12,947 - global - INFO - Train loss epoch 2 batch 800: 1.3784
+2021-09-01 19:19:12,993 - global - INFO - Train loss epoch 2 batch 900: 1.3227
+2021-09-01 19:21:12,936 - global - INFO - Train loss epoch 2 batch 1000: 1.2596
+2021-09-01 19:23:13,041 - global - INFO - Train loss epoch 2 batch 1100: 1.3233
+2021-09-01 19:25:13,359 - global - INFO - Train loss epoch 2 batch 1200: 1.3657
+2021-09-01 19:27:13,612 - global - INFO - Train loss epoch 2 batch 1300: 1.2542
+2021-09-01 19:29:13,791 - global - INFO - Train loss epoch 2 batch 1400: 1.2911
+2021-09-01 19:31:13,947 - global - INFO - Train loss epoch 2 batch 1500: 1.3196
+2021-09-01 19:33:13,791 - global - INFO - Train loss epoch 2 batch 1600: 1.3917
+2021-09-01 19:35:13,788 - global - INFO - Train loss epoch 2 batch 1700: 1.2640
+2021-09-01 19:37:13,705 - global - INFO - Train loss epoch 2 batch 1800: 1.3020
+2021-09-01 19:39:13,667 - global - INFO - Train loss epoch 2 batch 1900: 1.2187
+2021-09-01 19:41:13,798 - global - INFO - Train loss epoch 2 batch 2000: 1.2332
+2021-09-01 19:43:13,785 - global - INFO - Train loss epoch 2 batch 2100: 1.3321
+2021-09-01 19:45:13,654 - global - INFO - Train loss epoch 2 batch 2200: 1.2698
+2021-09-01 19:47:13,770 - global - INFO - Train loss epoch 2 batch 2300: 1.4597
+2021-09-01 19:49:13,884 - global - INFO - Train loss epoch 2 batch 2400: 1.2818
+2021-09-01 19:51:14,213 - global - INFO - Train loss epoch 2 batch 2500: 1.1822
+2021-09-01 19:53:14,360 - global - INFO - Train loss epoch 2 batch 2600: 1.2525
+2021-09-01 19:55:14,282 - global - INFO - Train loss epoch 2 batch 2700: 1.3772
+2021-09-01 19:57:14,258 - global - INFO - Train loss epoch 2 batch 2800: 1.1743
+2021-09-01 19:59:14,429 - global - INFO - Train loss epoch 2 batch 2900: 1.3354
+2021-09-01 20:01:14,506 - global - INFO - Train loss epoch 2 batch 3000: 1.3777
+2021-09-01 20:03:14,364 - global - INFO - Train loss epoch 2 batch 3100: 1.3140
+2021-09-01 20:05:14,409 - global - INFO - Train loss epoch 2 batch 3200: 1.2728
+2021-09-01 20:07:14,272 - global - INFO - Train loss epoch 2 batch 3300: 1.2634
+2021-09-01 20:14:48,576 - global - INFO - Val loss at epoch 2 batch 3361: 3.1029
+2021-09-01 20:15:45,613 - global - INFO - Train loss epoch 2 batch 3400: 1.6588
+2021-09-01 20:17:44,314 - global - INFO - Train loss epoch 2 batch 3500: 1.7460
+2021-09-01 20:19:43,457 - global - INFO - Train loss epoch 2 batch 3600: 1.3270
+2021-09-01 20:21:42,658 - global - INFO - Train loss epoch 2 batch 3700: 1.3883
+2021-09-01 20:23:41,919 - global - INFO - Train loss epoch 2 batch 3800: 1.3909
+2021-09-01 20:25:41,138 - global - INFO - Train loss epoch 2 batch 3900: 1.2625
+2021-09-01 20:27:40,136 - global - INFO - Train loss epoch 2 batch 4000: 1.4242
+2021-09-01 20:29:39,133 - global - INFO - Train loss epoch 2 batch 4100: 1.2763
+2021-09-01 20:31:37,799 - global - INFO - Train loss epoch 2 batch 4200: 1.3142
+2021-09-01 20:33:36,449 - global - INFO - Train loss epoch 2 batch 4300: 1.3239
+2021-09-01 20:35:35,231 - global - INFO - Train loss epoch 2 batch 4400: 1.2275
+2021-09-01 20:37:33,692 - global - INFO - Train loss epoch 2 batch 4500: 1.1946
+2021-09-01 20:39:31,893 - global - INFO - Train loss epoch 2 batch 4600: 1.2465
+2021-09-01 20:41:29,921 - global - INFO - Train loss epoch 2 batch 4700: 1.1991
+2021-09-01 20:43:27,780 - global - INFO - Train loss epoch 2 batch 4800: 1.1772
+2021-09-01 20:45:25,275 - global - INFO - Train loss epoch 2 batch 4900: 1.2787
+2021-09-01 20:47:22,702 - global - INFO - Train loss epoch 2 batch 5000: 1.2223
+2021-09-01 20:49:20,056 - global - INFO - Train loss epoch 2 batch 5100: 1.1590
+2021-09-01 20:51:17,242 - global - INFO - Train loss epoch 2 batch 5200: 1.1614
+2021-09-01 20:53:14,499 - global - INFO - Train loss epoch 2 batch 5300: 1.2082
+2021-09-01 20:55:11,771 - global - INFO - Train loss epoch 2 batch 5400: 1.1804
+2021-09-01 20:57:08,672 - global - INFO - Train loss epoch 2 batch 5500: 1.1485
+2021-09-01 20:59:05,651 - global - INFO - Train loss epoch 2 batch 5600: 1.2523
+2021-09-01 21:01:02,635 - global - INFO - Train loss epoch 2 batch 5700: 1.1650
+2021-09-01 21:02:59,319 - global - INFO - Train loss epoch 2 batch 5800: 1.1578
+2021-09-01 21:04:56,154 - global - INFO - Train loss epoch 2 batch 5900: 1.1772
+2021-09-01 21:06:52,811 - global - INFO - Train loss epoch 2 batch 6000: 1.1128
+2021-09-01 21:08:49,451 - global - INFO - Train loss epoch 2 batch 6100: 1.1714
+2021-09-01 21:10:45,847 - global - INFO - Train loss epoch 2 batch 6200: 1.1871
+2021-09-01 21:12:42,119 - global - INFO - Train loss epoch 2 batch 6300: 1.1029
+2021-09-01 21:14:38,205 - global - INFO - Train loss epoch 2 batch 6400: 1.1354
+2021-09-01 21:16:34,309 - global - INFO - Train loss epoch 2 batch 6500: 1.1976
+2021-09-01 21:18:30,421 - global - INFO - Train loss epoch 2 batch 6600: 1.1567
+2021-09-01 21:20:26,723 - global - INFO - Train loss epoch 2 batch 6700: 1.1788
+2021-09-01 21:26:58,760 - global - INFO - Val loss at epoch 2 batch 6721: 1.3097
+2021-09-01 21:26:58,821 - global - INFO - Saving checkpoint for the best precision: 0.3183
+2021-09-01 21:27:01,383 - global - INFO - Saving checkpoint for the best recall: 0.4153
+2021-09-01 21:27:04,067 - global - INFO - Saving checkpoint for the best f1: 0.3604
+2021-09-01 21:27:06,748 - global - INFO - Saving checkpoint for the best val_loss: 1.3097
+2021-09-01 21:28:50,730 - global - INFO - Train loss epoch 2 batch 6800: 1.5350
+2021-09-01 21:30:45,709 - global - INFO - Train loss epoch 2 batch 6900: 1.2967
+2021-09-01 21:32:41,098 - global - INFO - Train loss epoch 2 batch 7000: 1.2691
+2021-09-01 21:34:36,554 - global - INFO - Train loss epoch 2 batch 7100: 1.1000
+2021-09-01 21:36:32,072 - global - INFO - Train loss epoch 2 batch 7200: 1.0571
+2021-09-01 21:38:27,680 - global - INFO - Train loss epoch 2 batch 7300: 1.2050
+2021-09-01 21:40:23,192 - global - INFO - Train loss epoch 2 batch 7400: 1.0933
+2021-09-01 21:42:18,627 - global - INFO - Train loss epoch 2 batch 7500: 1.0885
+2021-09-01 21:44:14,007 - global - INFO - Train loss epoch 2 batch 7600: 1.1562
+2021-09-01 21:46:09,403 - global - INFO - Train loss epoch 2 batch 7700: 1.1282
+2021-09-01 21:48:04,813 - global - INFO - Train loss epoch 2 batch 7800: 1.1503
+2021-09-01 21:50:00,110 - global - INFO - Train loss epoch 2 batch 7900: 1.0382
+2021-09-01 21:51:55,493 - global - INFO - Train loss epoch 2 batch 8000: 1.0636
+2021-09-01 21:53:50,787 - global - INFO - Train loss epoch 2 batch 8100: 1.1068
+2021-09-01 21:55:46,028 - global - INFO - Train loss epoch 2 batch 8200: 1.0821
+2021-09-01 21:57:41,280 - global - INFO - Train loss epoch 2 batch 8300: 1.0763
+2021-09-01 21:59:36,587 - global - INFO - Train loss epoch 2 batch 8400: 1.0359
+2021-09-01 22:01:31,716 - global - INFO - Train loss epoch 2 batch 8500: 1.0193
+2021-09-01 22:03:27,043 - global - INFO - Train loss epoch 2 batch 8600: 1.1136
+2021-09-01 22:05:22,429 - global - INFO - Train loss epoch 2 batch 8700: 1.1585
+2021-09-01 22:07:17,738 - global - INFO - Train loss epoch 2 batch 8800: 1.0932
+2021-09-01 22:09:13,132 - global - INFO - Train loss epoch 2 batch 8900: 1.0217
+2021-09-01 22:11:08,454 - global - INFO - Train loss epoch 2 batch 9000: 1.0409
+2021-09-01 22:13:03,838 - global - INFO - Train loss epoch 2 batch 9100: 1.0349
+2021-09-01 22:14:59,134 - global - INFO - Train loss epoch 2 batch 9200: 1.0340
+2021-09-01 22:16:54,473 - global - INFO - Train loss epoch 2 batch 9300: 0.9959
+2021-09-01 22:18:49,780 - global - INFO - Train loss epoch 2 batch 9400: 0.9164
+2021-09-01 22:20:45,139 - global - INFO - Train loss epoch 2 batch 9500: 0.9640
+2021-09-01 22:22:40,529 - global - INFO - Train loss epoch 2 batch 9600: 1.0250
+2021-09-01 22:24:35,961 - global - INFO - Train loss epoch 2 batch 9700: 0.9476
+2021-09-01 22:26:31,378 - global - INFO - Train loss epoch 2 batch 9800: 0.9549
+2021-09-01 22:28:26,793 - global - INFO - Train loss epoch 2 batch 9900: 0.9530
+2021-09-01 22:30:22,307 - global - INFO - Train loss epoch 2 batch 10000: 0.9435
+2021-09-01 22:38:01,561 - global - INFO - Val loss at epoch 2 batch 10081: 2.5096
+2021-09-01 22:38:34,013 - global - INFO - Train loss epoch 2 batch 10100: 1.1337
+2021-09-01 22:40:29,052 - global - INFO - Train loss epoch 2 batch 10200: 1.3322
+2021-09-01 22:42:24,435 - global - INFO - Train loss epoch 2 batch 10300: 1.1421
+2021-09-01 22:44:19,948 - global - INFO - Train loss epoch 2 batch 10400: 1.1599
+2021-09-01 22:46:15,464 - global - INFO - Train loss epoch 2 batch 10500: 1.1946
+2021-09-01 22:48:10,947 - global - INFO - Train loss epoch 2 batch 10600: 1.1268
+2021-09-01 22:50:06,568 - global - INFO - Train loss epoch 2 batch 10700: 1.1754
+2021-09-01 22:52:02,303 - global - INFO - Train loss epoch 2 batch 10800: 1.1141
+2021-09-01 22:53:58,024 - global - INFO - Train loss epoch 2 batch 10900: 1.0697
+2021-09-01 22:55:53,666 - global - INFO - Train loss epoch 2 batch 11000: 1.0780
+2021-09-01 22:57:49,334 - global - INFO - Train loss epoch 2 batch 11100: 1.0175
+2021-09-01 22:59:45,002 - global - INFO - Train loss epoch 2 batch 11200: 1.0910
+2021-09-01 23:01:40,648 - global - INFO - Train loss epoch 2 batch 11300: 1.0843
+2021-09-01 23:03:36,494 - global - INFO - Train loss epoch 2 batch 11400: 1.0594
+2021-09-01 23:05:32,198 - global - INFO - Train loss epoch 2 batch 11500: 0.9706
+2021-09-01 23:07:28,001 - global - INFO - Train loss epoch 2 batch 11600: 1.0158
+2021-09-01 23:09:23,798 - global - INFO - Train loss epoch 2 batch 11700: 1.0632
+2021-09-01 23:11:19,642 - global - INFO - Train loss epoch 2 batch 11800: 1.0200
+2021-09-01 23:13:15,633 - global - INFO - Train loss epoch 2 batch 11900: 0.9839
+2021-09-01 23:15:11,429 - global - INFO - Train loss epoch 2 batch 12000: 1.0407
+2021-09-01 23:17:07,207 - global - INFO - Train loss epoch 2 batch 12100: 1.0085
+2021-09-01 23:19:03,097 - global - INFO - Train loss epoch 2 batch 12200: 0.9913
+2021-09-01 23:20:59,021 - global - INFO - Train loss epoch 2 batch 12300: 0.9876
+2021-09-01 23:22:54,897 - global - INFO - Train loss epoch 2 batch 12400: 1.0366
+2021-09-01 23:24:50,824 - global - INFO - Train loss epoch 2 batch 12500: 1.0404
+2021-09-01 23:26:46,649 - global - INFO - Train loss epoch 2 batch 12600: 0.9635
+2021-09-01 23:28:42,647 - global - INFO - Train loss epoch 2 batch 12700: 0.9669
+2021-09-01 23:30:38,674 - global - INFO - Train loss epoch 2 batch 12800: 1.0246
+2021-09-01 23:32:34,619 - global - INFO - Train loss epoch 2 batch 12900: 0.9921
+2021-09-01 23:34:30,596 - global - INFO - Train loss epoch 2 batch 13000: 1.0097
+2021-09-01 23:36:26,378 - global - INFO - Train loss epoch 2 batch 13100: 0.9677
+2021-09-01 23:38:22,248 - global - INFO - Train loss epoch 2 batch 13200: 0.9455
+2021-09-01 23:40:18,082 - global - INFO - Train loss epoch 2 batch 13300: 0.9604
+2021-09-01 23:42:13,950 - global - INFO - Train loss epoch 2 batch 13400: 0.9522
+2021-09-01 23:49:10,581 - global - INFO - Val loss at epoch 2 batch 13441: 1.5953
+2021-09-01 23:49:10,643 - global - INFO - Saving checkpoint for the best precision: 0.3233
+2021-09-01 23:50:31,710 - global - INFO - Train loss epoch 2 batch 13500: 1.4637
+2021-09-01 23:52:27,424 - global - INFO - Train loss epoch 2 batch 13600: 1.4818
+2021-09-01 23:54:23,255 - global - INFO - Train loss epoch 2 batch 13700: 1.1684
+2021-09-01 23:56:19,080 - global - INFO - Train loss epoch 2 batch 13800: 1.0884
+2021-09-01 23:58:14,982 - global - INFO - Train loss epoch 2 batch 13900: 1.2079
+2021-09-02 00:00:10,899 - global - INFO - Train loss epoch 2 batch 14000: 1.1289
+2021-09-02 00:02:06,566 - global - INFO - Train loss epoch 2 batch 14100: 1.0883
+2021-09-02 00:04:02,278 - global - INFO - Train loss epoch 2 batch 14200: 1.0403
+2021-09-02 00:05:57,962 - global - INFO - Train loss epoch 2 batch 14300: 1.0598
+2021-09-02 00:07:53,707 - global - INFO - Train loss epoch 2 batch 14400: 1.0389
+2021-09-02 00:09:49,425 - global - INFO - Train loss epoch 2 batch 14500: 1.1202
+2021-09-02 00:11:45,251 - global - INFO - Train loss epoch 2 batch 14600: 1.0694
+2021-09-02 00:13:40,956 - global - INFO - Train loss epoch 2 batch 14700: 1.0929
+2021-09-02 00:15:36,694 - global - INFO - Train loss epoch 2 batch 14800: 1.0834
+2021-09-02 00:17:32,587 - global - INFO - Train loss epoch 2 batch 14900: 0.9705
+2021-09-02 00:19:28,436 - global - INFO - Train loss epoch 2 batch 15000: 0.9894
+2021-09-02 00:21:24,302 - global - INFO - Train loss epoch 2 batch 15100: 1.0272
+2021-09-02 00:23:20,202 - global - INFO - Train loss epoch 2 batch 15200: 0.9803
+2021-09-02 00:25:15,963 - global - INFO - Train loss epoch 2 batch 15300: 1.0046
+2021-09-02 00:27:11,606 - global - INFO - Train loss epoch 2 batch 15400: 1.0943
+2021-09-02 00:29:07,370 - global - INFO - Train loss epoch 2 batch 15500: 0.9997
+2021-09-02 00:31:03,004 - global - INFO - Train loss epoch 2 batch 15600: 1.0521
+2021-09-02 00:32:58,588 - global - INFO - Train loss epoch 2 batch 15700: 1.0381
+2021-09-02 00:34:54,233 - global - INFO - Train loss epoch 2 batch 15800: 1.0777
+2021-09-02 00:36:49,880 - global - INFO - Train loss epoch 2 batch 15900: 1.0418
+2021-09-02 00:38:45,470 - global - INFO - Train loss epoch 2 batch 16000: 1.0213
+2021-09-02 00:40:41,011 - global - INFO - Train loss epoch 2 batch 16100: 1.0252
+2021-09-02 00:42:36,590 - global - INFO - Train loss epoch 2 batch 16200: 0.9908
+2021-09-02 00:44:32,129 - global - INFO - Train loss epoch 2 batch 16300: 1.0215
+2021-09-02 00:46:27,703 - global - INFO - Train loss epoch 2 batch 16400: 1.0178
+2021-09-02 00:48:23,206 - global - INFO - Train loss epoch 2 batch 16500: 0.9942
+2021-09-02 00:50:18,793 - global - INFO - Train loss epoch 2 batch 16600: 0.9771
+2021-09-02 00:52:14,280 - global - INFO - Train loss epoch 2 batch 16700: 0.9772
+2021-09-02 00:54:09,861 - global - INFO - Train loss epoch 2 batch 16800: 1.0444
+2021-09-02 01:00:18,663 - global - INFO - Val loss at epoch 2 batch 16801: 3.7351
+2021-09-02 01:02:23,159 - global - INFO - Train loss epoch 2 batch 16900: 1.5346
+2021-09-02 01:04:18,494 - global - INFO - Train loss epoch 2 batch 17000: 1.3368
+2021-09-02 01:06:13,794 - global - INFO - Train loss epoch 2 batch 17100: 1.2495
+2021-09-02 01:08:09,143 - global - INFO - Train loss epoch 2 batch 17200: 1.1958
+2021-09-02 01:10:04,297 - global - INFO - Train loss epoch 2 batch 17300: 1.2252
+2021-09-02 01:11:59,668 - global - INFO - Train loss epoch 2 batch 17400: 1.1810
+2021-09-02 01:13:55,490 - global - INFO - Train loss epoch 2 batch 17500: 1.1210
+2021-09-02 01:15:50,735 - global - INFO - Train loss epoch 2 batch 17600: 1.1594
+2021-09-02 01:17:42,234 - global - INFO - Train loss epoch 2 batch 17700: 1.0998
+2021-09-02 01:19:27,313 - global - INFO - Train loss epoch 2 batch 17800: 1.0504
+2021-09-02 01:21:11,775 - global - INFO - Train loss epoch 2 batch 17900: 1.0977
+2021-09-02 01:22:56,226 - global - INFO - Train loss epoch 2 batch 18000: 1.0373
+2021-09-02 01:24:40,679 - global - INFO - Train loss epoch 2 batch 18100: 1.0983
+2021-09-02 01:26:24,997 - global - INFO - Train loss epoch 2 batch 18200: 1.0456
+2021-09-02 01:28:09,389 - global - INFO - Train loss epoch 2 batch 18300: 1.0339
+2021-09-02 01:29:53,922 - global - INFO - Train loss epoch 2 batch 18400: 1.1009
+2021-09-02 01:31:38,198 - global - INFO - Train loss epoch 2 batch 18500: 1.0633
+2021-09-02 01:33:22,883 - global - INFO - Train loss epoch 2 batch 18600: 1.0971
+2021-09-02 01:35:07,308 - global - INFO - Train loss epoch 2 batch 18700: 1.1087
+2021-09-02 01:36:52,301 - global - INFO - Train loss epoch 2 batch 18800: 1.0461
+2021-09-02 01:38:39,067 - global - INFO - Train loss epoch 2 batch 18900: 1.0559
+2021-09-02 01:40:31,908 - global - INFO - Train loss epoch 2 batch 19000: 1.0417
+2021-09-02 01:42:26,789 - global - INFO - Train loss epoch 2 batch 19100: 0.9935
+2021-09-02 01:44:21,380 - global - INFO - Train loss epoch 2 batch 19200: 1.0435
+2021-09-02 01:46:16,069 - global - INFO - Train loss epoch 2 batch 19300: 1.0516
+2021-09-02 01:48:10,822 - global - INFO - Train loss epoch 2 batch 19400: 0.9989
+2021-09-02 01:50:05,566 - global - INFO - Train loss epoch 2 batch 19500: 0.9610
+2021-09-02 01:52:00,133 - global - INFO - Train loss epoch 2 batch 19600: 0.9809
+2021-09-02 01:53:55,018 - global - INFO - Train loss epoch 2 batch 19700: 1.0188
+2021-09-02 01:55:50,004 - global - INFO - Train loss epoch 2 batch 19800: 1.0069
+2021-09-02 01:57:44,836 - global - INFO - Train loss epoch 2 batch 19900: 1.0648
+2021-09-02 01:59:39,764 - global - INFO - Train loss epoch 2 batch 20000: 1.0054
+2021-09-02 02:01:34,793 - global - INFO - Train loss epoch 2 batch 20100: 0.9292
+2021-09-02 02:08:48,419 - global - INFO - Val loss at epoch 2 batch 20161: 2.5940
+2021-09-02 02:08:48,527 - global - INFO - Saving checkpoint for the best precision: 0.3281
+2021-09-02 02:08:51,063 - global - INFO - Saving checkpoint at the end of epoch 2
+2021-09-02 02:10:55,810 - global - INFO - Train loss epoch 3 batch 100: 1.5632
+2021-09-02 02:12:50,359 - global - INFO - Train loss epoch 3 batch 200: 1.3272
+2021-09-02 02:14:45,146 - global - INFO - Train loss epoch 3 batch 300: 1.2228
+2021-09-02 02:16:40,253 - global - INFO - Train loss epoch 3 batch 400: 1.2001
+2021-09-02 02:18:35,104 - global - INFO - Train loss epoch 3 batch 500: 1.1563
+2021-09-02 02:20:30,315 - global - INFO - Train loss epoch 3 batch 600: 1.1454
+2021-09-02 02:22:25,447 - global - INFO - Train loss epoch 3 batch 700: 1.0819
+2021-09-02 02:24:20,550 - global - INFO - Train loss epoch 3 batch 800: 1.1257
+2021-09-02 02:26:15,596 - global - INFO - Train loss epoch 3 batch 900: 1.0489
+2021-09-02 02:28:10,505 - global - INFO - Train loss epoch 3 batch 1000: 1.0552
+2021-09-02 02:30:05,707 - global - INFO - Train loss epoch 3 batch 1100: 1.1626
+2021-09-02 02:32:00,693 - global - INFO - Train loss epoch 3 batch 1200: 1.1500
+2021-09-02 02:33:55,862 - global - INFO - Train loss epoch 3 batch 1300: 1.0839
+2021-09-02 02:35:51,204 - global - INFO - Train loss epoch 3 batch 1400: 1.0873
+2021-09-02 02:37:46,447 - global - INFO - Train loss epoch 3 batch 1500: 1.0738
+2021-09-02 02:39:41,546 - global - INFO - Train loss epoch 3 batch 1600: 1.0377
+2021-09-02 02:41:36,534 - global - INFO - Train loss epoch 3 batch 1700: 1.0050
+2021-09-02 02:43:31,778 - global - INFO - Train loss epoch 3 batch 1800: 1.0495
+2021-09-02 02:45:27,034 - global - INFO - Train loss epoch 3 batch 1900: 1.0526
+2021-09-02 02:47:22,270 - global - INFO - Train loss epoch 3 batch 2000: 1.1012
+2021-09-02 02:49:17,390 - global - INFO - Train loss epoch 3 batch 2100: 1.0545
+2021-09-02 02:51:12,286 - global - INFO - Train loss epoch 3 batch 2200: 0.9717
+2021-09-02 02:53:07,327 - global - INFO - Train loss epoch 3 batch 2300: 0.9616
+2021-09-02 02:55:02,564 - global - INFO - Train loss epoch 3 batch 2400: 1.1979
+2021-09-02 02:56:57,777 - global - INFO - Train loss epoch 3 batch 2500: 1.0029
+2021-09-02 02:58:52,967 - global - INFO - Train loss epoch 3 batch 2600: 1.0274
+2021-09-02 03:00:48,070 - global - INFO - Train loss epoch 3 batch 2700: 0.9663
+2021-09-02 03:02:43,135 - global - INFO - Train loss epoch 3 batch 2800: 0.9892
+2021-09-02 03:04:38,413 - global - INFO - Train loss epoch 3 batch 2900: 0.9725
+2021-09-02 03:06:33,736 - global - INFO - Train loss epoch 3 batch 3000: 1.0250
+2021-09-02 03:08:29,006 - global - INFO - Train loss epoch 3 batch 3100: 0.9885
+2021-09-02 03:10:24,193 - global - INFO - Train loss epoch 3 batch 3200: 0.9400
+2021-09-02 03:12:19,389 - global - INFO - Train loss epoch 3 batch 3300: 0.9748
+2021-09-02 03:19:34,614 - global - INFO - Val loss at epoch 3 batch 3361: 2.7681
+2021-09-02 03:20:30,126 - global - INFO - Train loss epoch 3 batch 3400: 1.3072
+2021-09-02 03:22:25,439 - global - INFO - Train loss epoch 3 batch 3500: 1.2627
+2021-09-02 03:24:20,699 - global - INFO - Train loss epoch 3 batch 3600: 1.1108
+2021-09-02 03:26:16,031 - global - INFO - Train loss epoch 3 batch 3700: 1.1036
+2021-09-02 03:28:11,415 - global - INFO - Train loss epoch 3 batch 3800: 1.1260
+2021-09-02 03:30:06,819 - global - INFO - Train loss epoch 3 batch 3900: 1.1520
+2021-09-02 03:32:02,240 - global - INFO - Train loss epoch 3 batch 4000: 1.0424
+2021-09-02 03:33:57,660 - global - INFO - Train loss epoch 3 batch 4100: 1.0116
+2021-09-02 03:35:53,078 - global - INFO - Train loss epoch 3 batch 4200: 1.0313
+2021-09-02 03:37:48,426 - global - INFO - Train loss epoch 3 batch 4300: 1.0427
+2021-09-02 03:39:43,830 - global - INFO - Train loss epoch 3 batch 4400: 1.0829
+2021-09-02 03:41:39,214 - global - INFO - Train loss epoch 3 batch 4500: 1.0711
+2021-09-02 03:43:34,570 - global - INFO - Train loss epoch 3 batch 4600: 1.0442
+2021-09-02 03:45:29,976 - global - INFO - Train loss epoch 3 batch 4700: 1.0149
+2021-09-02 03:47:25,379 - global - INFO - Train loss epoch 3 batch 4800: 0.9319
+2021-09-02 03:49:20,767 - global - INFO - Train loss epoch 3 batch 4900: 1.0258
+2021-09-02 03:51:16,200 - global - INFO - Train loss epoch 3 batch 5000: 1.0417
+2021-09-02 03:53:11,601 - global - INFO - Train loss epoch 3 batch 5100: 1.0421
+2021-09-02 03:55:07,017 - global - INFO - Train loss epoch 3 batch 5200: 0.9718
+2021-09-02 03:57:02,443 - global - INFO - Train loss epoch 3 batch 5300: 1.0080
+2021-09-02 03:58:57,834 - global - INFO - Train loss epoch 3 batch 5400: 0.9429
+2021-09-02 04:00:53,230 - global - INFO - Train loss epoch 3 batch 5500: 1.0232
+2021-09-02 04:02:48,698 - global - INFO - Train loss epoch 3 batch 5600: 1.0415
+2021-09-02 04:04:44,206 - global - INFO - Train loss epoch 3 batch 5700: 1.0171
+2021-09-02 04:06:39,655 - global - INFO - Train loss epoch 3 batch 5800: 0.9263
+2021-09-02 04:08:35,085 - global - INFO - Train loss epoch 3 batch 5900: 0.9959
+2021-09-02 04:10:30,488 - global - INFO - Train loss epoch 3 batch 6000: 0.9338
+2021-09-02 04:12:25,916 - global - INFO - Train loss epoch 3 batch 6100: 0.8804
+2021-09-02 04:14:21,299 - global - INFO - Train loss epoch 3 batch 6200: 0.9205
+2021-09-02 04:16:16,704 - global - INFO - Train loss epoch 3 batch 6300: 0.9453
+2021-09-02 04:18:12,115 - global - INFO - Train loss epoch 3 batch 6400: 0.9555
+2021-09-02 04:20:07,523 - global - INFO - Train loss epoch 3 batch 6500: 0.9349
+2021-09-02 04:22:02,955 - global - INFO - Train loss epoch 3 batch 6600: 0.9404
+2021-09-02 04:23:58,383 - global - INFO - Train loss epoch 3 batch 6700: 0.9662
+2021-09-02 04:30:27,990 - global - INFO - Val loss at epoch 3 batch 6721: 1.4221
+2021-09-02 04:32:09,129 - global - INFO - Train loss epoch 3 batch 6800: 1.4694
+2021-09-02 04:34:04,002 - global - INFO - Train loss epoch 3 batch 6900: 1.4635
+2021-09-02 04:35:58,978 - global - INFO - Train loss epoch 3 batch 7000: 1.2251
+2021-09-02 04:37:53,888 - global - INFO - Train loss epoch 3 batch 7100: 1.1093
+2021-09-02 04:39:49,090 - global - INFO - Train loss epoch 3 batch 7200: 1.1653
+2021-09-02 04:41:44,207 - global - INFO - Train loss epoch 3 batch 7300: 1.0677
+2021-09-02 04:43:39,294 - global - INFO - Train loss epoch 3 batch 7400: 1.0223
+2021-09-02 04:45:34,106 - global - INFO - Train loss epoch 3 batch 7500: 1.0449
+2021-09-02 04:47:28,997 - global - INFO - Train loss epoch 3 batch 7600: 1.1021
+2021-09-02 04:49:23,979 - global - INFO - Train loss epoch 3 batch 7700: 1.0812
+2021-09-02 04:51:18,815 - global - INFO - Train loss epoch 3 batch 7800: 0.9878
+2021-09-02 04:53:13,505 - global - INFO - Train loss epoch 3 batch 7900: 0.9477
+2021-09-02 04:55:08,135 - global - INFO - Train loss epoch 3 batch 8000: 1.0113
+2021-09-02 04:57:03,296 - global - INFO - Train loss epoch 3 batch 8100: 0.9491
+2021-09-02 04:58:58,451 - global - INFO - Train loss epoch 3 batch 8200: 1.0251
+2021-09-02 05:00:53,677 - global - INFO - Train loss epoch 3 batch 8300: 0.9305
+2021-09-02 05:02:48,526 - global - INFO - Train loss epoch 3 batch 8400: 0.8995
+2021-09-02 05:04:43,654 - global - INFO - Train loss epoch 3 batch 8500: 0.9405
+2021-09-02 05:06:38,751 - global - INFO - Train loss epoch 3 batch 8600: 0.9560
+2021-09-02 05:08:33,691 - global - INFO - Train loss epoch 3 batch 8700: 0.9408
+2021-09-02 05:10:28,551 - global - INFO - Train loss epoch 3 batch 8800: 0.8589
+2021-09-02 05:12:23,351 - global - INFO - Train loss epoch 3 batch 8900: 0.8434
+2021-09-02 05:14:18,180 - global - INFO - Train loss epoch 3 batch 9000: 0.9610
+2021-09-02 05:16:13,285 - global - INFO - Train loss epoch 3 batch 9100: 0.8959
+2021-09-02 05:18:08,147 - global - INFO - Train loss epoch 3 batch 9200: 0.8740
+2021-09-02 05:20:03,492 - global - INFO - Train loss epoch 3 batch 9300: 0.8488
+2021-09-02 05:21:58,441 - global - INFO - Train loss epoch 3 batch 9400: 0.9215
+2021-09-02 05:23:53,665 - global - INFO - Train loss epoch 3 batch 9500: 0.8094
+2021-09-02 05:25:48,661 - global - INFO - Train loss epoch 3 batch 9600: 0.8471
+2021-09-02 05:27:43,676 - global - INFO - Train loss epoch 3 batch 9700: 0.9366
+2021-09-02 05:29:38,920 - global - INFO - Train loss epoch 3 batch 9800: 0.9262
+2021-09-02 05:31:34,047 - global - INFO - Train loss epoch 3 batch 9900: 0.9281
+2021-09-02 05:33:29,245 - global - INFO - Train loss epoch 3 batch 10000: 0.7977
+2021-09-02 05:41:07,117 - global - INFO - Val loss at epoch 3 batch 10081: 2.0344
+2021-09-02 05:41:39,468 - global - INFO - Train loss epoch 3 batch 10100: 0.9697
+2021-09-02 05:43:35,169 - global - INFO - Train loss epoch 3 batch 10200: 1.5108
+2021-09-02 05:45:30,845 - global - INFO - Train loss epoch 3 batch 10300: 1.2785
+2021-09-02 05:47:26,262 - global - INFO - Train loss epoch 3 batch 10400: 1.2391
+2021-09-02 05:49:21,065 - global - INFO - Train loss epoch 3 batch 10500: 1.2620
+2021-09-02 05:51:15,897 - global - INFO - Train loss epoch 3 batch 10600: 1.0001
+2021-09-02 05:53:10,449 - global - INFO - Train loss epoch 3 batch 10700: 1.0408
+2021-09-02 05:55:05,110 - global - INFO - Train loss epoch 3 batch 10800: 1.0442
+2021-09-02 05:56:59,581 - global - INFO - Train loss epoch 3 batch 10900: 1.0149
+2021-09-02 05:58:54,375 - global - INFO - Train loss epoch 3 batch 11000: 1.0304
+2021-09-02 06:00:49,230 - global - INFO - Train loss epoch 3 batch 11100: 1.0041
+2021-09-02 06:02:44,116 - global - INFO - Train loss epoch 3 batch 11200: 1.0068
+2021-09-02 06:04:38,808 - global - INFO - Train loss epoch 3 batch 11300: 0.9680
+2021-09-02 06:06:33,744 - global - INFO - Train loss epoch 3 batch 11400: 0.9735
+2021-09-02 06:08:28,491 - global - INFO - Train loss epoch 3 batch 11500: 0.9647
+2021-09-02 06:10:23,231 - global - INFO - Train loss epoch 3 batch 11600: 0.9720
+2021-09-02 06:12:18,027 - global - INFO - Train loss epoch 3 batch 11700: 0.9359
+2021-09-02 06:14:13,029 - global - INFO - Train loss epoch 3 batch 11800: 0.9758
+2021-09-02 06:16:08,065 - global - INFO - Train loss epoch 3 batch 11900: 0.9434
+2021-09-02 06:18:03,161 - global - INFO - Train loss epoch 3 batch 12000: 0.9876
+2021-09-02 06:19:58,040 - global - INFO - Train loss epoch 3 batch 12100: 1.0106
+2021-09-02 06:21:52,796 - global - INFO - Train loss epoch 3 batch 12200: 1.0025
+2021-09-02 06:23:47,600 - global - INFO - Train loss epoch 3 batch 12300: 0.8892
+2021-09-02 06:25:42,688 - global - INFO - Train loss epoch 3 batch 12400: 0.9706
+2021-09-02 06:27:37,913 - global - INFO - Train loss epoch 3 batch 12500: 0.9304
+2021-09-02 06:29:32,986 - global - INFO - Train loss epoch 3 batch 12600: 0.9042
+2021-09-02 06:31:28,055 - global - INFO - Train loss epoch 3 batch 12700: 0.8592
+2021-09-02 06:33:23,223 - global - INFO - Train loss epoch 3 batch 12800: 0.8362
+2021-09-02 06:35:18,231 - global - INFO - Train loss epoch 3 batch 12900: 0.9190
+2021-09-02 06:37:13,416 - global - INFO - Train loss epoch 3 batch 13000: 0.9232
+2021-09-02 06:39:08,513 - global - INFO - Train loss epoch 3 batch 13100: 0.9071
+2021-09-02 06:41:03,833 - global - INFO - Train loss epoch 3 batch 13200: 0.8046
+2021-09-02 06:42:58,941 - global - INFO - Train loss epoch 3 batch 13300: 0.8686
+2021-09-02 06:44:54,104 - global - INFO - Train loss epoch 3 batch 13400: 0.8439
+2021-09-02 06:51:47,049 - global - INFO - Val loss at epoch 3 batch 13441: 1.8599
+2021-09-02 06:51:47,112 - global - INFO - Saving checkpoint for the best precision: 0.3327
+2021-09-02 06:53:08,646 - global - INFO - Train loss epoch 3 batch 13500: 1.4190
+2021-09-02 06:55:04,701 - global - INFO - Train loss epoch 3 batch 13600: 1.6046
+2021-09-02 06:57:00,804 - global - INFO - Train loss epoch 3 batch 13700: 1.3525
+2021-09-02 06:58:56,747 - global - INFO - Train loss epoch 3 batch 13800: 1.1852
+2021-09-02 07:00:52,717 - global - INFO - Train loss epoch 3 batch 13900: 1.0966
+2021-09-02 07:02:48,975 - global - INFO - Train loss epoch 3 batch 14000: 1.1159
+2021-09-02 07:04:45,124 - global - INFO - Train loss epoch 3 batch 14100: 1.1237
+2021-09-02 07:06:41,358 - global - INFO - Train loss epoch 3 batch 14200: 1.0411
+2021-09-02 07:08:37,527 - global - INFO - Train loss epoch 3 batch 14300: 1.0106
+2021-09-02 07:10:33,499 - global - INFO - Train loss epoch 3 batch 14400: 1.0536
+2021-09-02 07:12:29,641 - global - INFO - Train loss epoch 3 batch 14500: 0.9839
+2021-09-02 07:14:25,502 - global - INFO - Train loss epoch 3 batch 14600: 1.0055
+2021-09-02 07:16:21,565 - global - INFO - Train loss epoch 3 batch 14700: 0.9708
+2021-09-02 07:18:17,615 - global - INFO - Train loss epoch 3 batch 14800: 1.0451
+2021-09-02 07:20:13,492 - global - INFO - Train loss epoch 3 batch 14900: 0.9423
+2021-09-02 07:22:09,423 - global - INFO - Train loss epoch 3 batch 15000: 1.1549
+2021-09-02 07:24:05,455 - global - INFO - Train loss epoch 3 batch 15100: 1.0470
+2021-09-02 07:26:01,397 - global - INFO - Train loss epoch 3 batch 15200: 1.0229
+2021-09-02 07:27:57,527 - global - INFO - Train loss epoch 3 batch 15300: 0.9799
+2021-09-02 07:29:53,699 - global - INFO - Train loss epoch 3 batch 15400: 0.9732
+2021-09-02 07:31:49,716 - global - INFO - Train loss epoch 3 batch 15500: 0.9201
+2021-09-02 07:33:45,940 - global - INFO - Train loss epoch 3 batch 15600: 0.9656
+2021-09-02 07:35:42,240 - global - INFO - Train loss epoch 3 batch 15700: 1.0292
+2021-09-02 07:37:38,463 - global - INFO - Train loss epoch 3 batch 15800: 1.0405
+2021-09-02 07:39:34,654 - global - INFO - Train loss epoch 3 batch 15900: 0.9142
+2021-09-02 07:41:30,847 - global - INFO - Train loss epoch 3 batch 16000: 0.9278
+2021-09-02 07:43:26,769 - global - INFO - Train loss epoch 3 batch 16100: 1.0026
+2021-09-02 07:45:23,031 - global - INFO - Train loss epoch 3 batch 16200: 0.9738
+2021-09-02 07:47:19,336 - global - INFO - Train loss epoch 3 batch 16300: 1.0451
+2021-09-02 07:49:15,465 - global - INFO - Train loss epoch 3 batch 16400: 0.8976
+2021-09-02 07:51:11,724 - global - INFO - Train loss epoch 3 batch 16500: 0.9631
+2021-09-02 07:53:07,962 - global - INFO - Train loss epoch 3 batch 16600: 0.9098
+2021-09-02 07:55:04,353 - global - INFO - Train loss epoch 3 batch 16700: 0.8830
+2021-09-02 07:57:00,720 - global - INFO - Train loss epoch 3 batch 16800: 0.9297
+2021-09-02 08:03:10,052 - global - INFO - Val loss at epoch 3 batch 16801: 2.9761
+2021-09-02 08:05:15,766 - global - INFO - Train loss epoch 3 batch 16900: 1.5669
+2021-09-02 08:07:11,659 - global - INFO - Train loss epoch 3 batch 17000: 1.4529
+2021-09-02 08:09:07,318 - global - INFO - Train loss epoch 3 batch 17100: 1.2252
+2021-09-02 08:11:03,009 - global - INFO - Train loss epoch 3 batch 17200: 1.3818
+2021-09-02 08:12:58,842 - global - INFO - Train loss epoch 3 batch 17300: 1.2880
+2021-09-02 08:14:54,591 - global - INFO - Train loss epoch 3 batch 17400: 1.2395
+2021-09-02 08:16:50,394 - global - INFO - Train loss epoch 3 batch 17500: 1.1540
+2021-09-02 08:18:46,480 - global - INFO - Train loss epoch 3 batch 17600: 1.1792
+2021-09-02 08:20:42,203 - global - INFO - Train loss epoch 3 batch 17700: 1.2265
+2021-09-02 08:22:37,947 - global - INFO - Train loss epoch 3 batch 17800: 1.1655
+2021-09-02 08:24:33,923 - global - INFO - Train loss epoch 3 batch 17900: 1.1123
+2021-09-02 08:26:29,809 - global - INFO - Train loss epoch 3 batch 18000: 1.1209
+2021-09-02 08:28:25,594 - global - INFO - Train loss epoch 3 batch 18100: 1.1823
+2021-09-02 08:30:21,343 - global - INFO - Train loss epoch 3 batch 18200: 1.0369
+2021-09-02 08:32:17,022 - global - INFO - Train loss epoch 3 batch 18300: 1.1140
+2021-09-02 08:34:12,637 - global - INFO - Train loss epoch 3 batch 18400: 1.0599
+2021-09-02 08:36:08,196 - global - INFO - Train loss epoch 3 batch 18500: 1.0845
+2021-09-02 08:38:03,855 - global - INFO - Train loss epoch 3 batch 18600: 1.0589
+2021-09-02 08:39:59,538 - global - INFO - Train loss epoch 3 batch 18700: 1.1605
+2021-09-02 08:41:55,204 - global - INFO - Train loss epoch 3 batch 18800: 1.0819
+2021-09-02 08:43:50,828 - global - INFO - Train loss epoch 3 batch 18900: 1.0870
+2021-09-02 08:45:46,389 - global - INFO - Train loss epoch 3 batch 19000: 1.0394
+2021-09-02 08:47:42,148 - global - INFO - Train loss epoch 3 batch 19100: 1.0777
+2021-09-02 08:49:37,821 - global - INFO - Train loss epoch 3 batch 19200: 1.0770
+2021-09-02 08:51:33,471 - global - INFO - Train loss epoch 3 batch 19300: 1.0595
+2021-09-02 08:53:29,358 - global - INFO - Train loss epoch 3 batch 19400: 1.0648
+2021-09-02 08:55:25,335 - global - INFO - Train loss epoch 3 batch 19500: 0.9978
+2021-09-02 08:57:21,052 - global - INFO - Train loss epoch 3 batch 19600: 0.9588
+2021-09-02 08:59:16,593 - global - INFO - Train loss epoch 3 batch 19700: 0.9872
+2021-09-02 09:01:12,184 - global - INFO - Train loss epoch 3 batch 19800: 1.0867
+2021-09-02 09:03:08,045 - global - INFO - Train loss epoch 3 batch 19900: 0.9982
+2021-09-02 09:05:03,780 - global - INFO - Train loss epoch 3 batch 20000: 1.0650
+2021-09-02 09:06:59,582 - global - INFO - Train loss epoch 3 batch 20100: 1.1027
+2021-09-02 09:14:14,253 - global - INFO - Val loss at epoch 3 batch 20161: 2.4808
+2021-09-02 09:14:14,316 - global - INFO - Saving checkpoint for the best f1: 0.3623
+2021-09-02 09:14:16,865 - global - INFO - Saving checkpoint at the end of epoch 3
+2021-09-02 09:16:22,429 - global - INFO - Train loss epoch 4 batch 100: 1.4648
+2021-09-02 09:18:17,686 - global - INFO - Train loss epoch 4 batch 200: 1.6389
+2021-09-02 09:20:12,992 - global - INFO - Train loss epoch 4 batch 300: 1.4607
+2021-09-02 09:22:08,140 - global - INFO - Train loss epoch 4 batch 400: 1.2951
+2021-09-02 09:24:03,336 - global - INFO - Train loss epoch 4 batch 500: 1.3085
+2021-09-02 09:25:58,438 - global - INFO - Train loss epoch 4 batch 600: 1.2512
+2021-09-02 09:27:53,520 - global - INFO - Train loss epoch 4 batch 700: 1.2359
+2021-09-02 09:29:48,520 - global - INFO - Train loss epoch 4 batch 800: 1.2485
+2021-09-02 09:31:43,664 - global - INFO - Train loss epoch 4 batch 900: 1.1683
+2021-09-02 09:33:38,709 - global - INFO - Train loss epoch 4 batch 1000: 1.1658
+2021-09-02 09:35:33,892 - global - INFO - Train loss epoch 4 batch 1100: 1.2012
+2021-09-02 09:37:29,098 - global - INFO - Train loss epoch 4 batch 1200: 1.1595
+2021-09-02 09:39:24,288 - global - INFO - Train loss epoch 4 batch 1300: 1.1312
+2021-09-02 09:41:19,418 - global - INFO - Train loss epoch 4 batch 1400: 1.1840
+2021-09-02 09:43:14,680 - global - INFO - Train loss epoch 4 batch 1500: 1.0997
+2021-09-02 09:45:09,917 - global - INFO - Train loss epoch 4 batch 1600: 1.1025
+2021-09-02 09:47:05,121 - global - INFO - Train loss epoch 4 batch 1700: 1.1142
+2021-09-02 09:49:00,303 - global - INFO - Train loss epoch 4 batch 1800: 1.1086
+2021-09-02 09:50:55,509 - global - INFO - Train loss epoch 4 batch 1900: 1.0922
+2021-09-02 09:52:50,672 - global - INFO - Train loss epoch 4 batch 2000: 1.1226
+2021-09-02 09:54:45,764 - global - INFO - Train loss epoch 4 batch 2100: 1.0438
+2021-09-02 09:56:40,928 - global - INFO - Train loss epoch 4 batch 2200: 1.1896
+2021-09-02 09:58:35,937 - global - INFO - Train loss epoch 4 batch 2300: 1.0144
+2021-09-02 10:00:31,030 - global - INFO - Train loss epoch 4 batch 2400: 1.1334
+2021-09-02 10:02:26,292 - global - INFO - Train loss epoch 4 batch 2500: 1.0564
+2021-09-02 10:04:21,442 - global - INFO - Train loss epoch 4 batch 2600: 1.0253
+2021-09-02 10:06:16,538 - global - INFO - Train loss epoch 4 batch 2700: 1.0060
+2021-09-02 10:08:11,719 - global - INFO - Train loss epoch 4 batch 2800: 1.0473
+2021-09-02 10:10:06,867 - global - INFO - Train loss epoch 4 batch 2900: 1.0621
+2021-09-02 10:12:02,187 - global - INFO - Train loss epoch 4 batch 3000: 0.9744
+2021-09-02 10:13:57,573 - global - INFO - Train loss epoch 4 batch 3100: 1.0591
+2021-09-02 10:15:52,942 - global - INFO - Train loss epoch 4 batch 3200: 0.9640
+2021-09-02 10:17:48,350 - global - INFO - Train loss epoch 4 batch 3300: 1.0692
+2021-09-02 10:25:05,449 - global - INFO - Val loss at epoch 4 batch 3361: 2.5504
+2021-09-02 10:26:01,266 - global - INFO - Train loss epoch 4 batch 3400: 1.3383
+2021-09-02 10:27:57,202 - global - INFO - Train loss epoch 4 batch 3500: 1.4284
+2021-09-02 10:29:53,142 - global - INFO - Train loss epoch 4 batch 3600: 1.3682
+2021-09-02 10:31:48,938 - global - INFO - Train loss epoch 4 batch 3700: 1.1439
+2021-09-02 10:33:45,031 - global - INFO - Train loss epoch 4 batch 3800: 1.1483
+2021-09-02 10:35:40,724 - global - INFO - Train loss epoch 4 batch 3900: 1.0945
+2021-09-02 10:37:36,629 - global - INFO - Train loss epoch 4 batch 4000: 1.1274
+2021-09-02 10:39:32,354 - global - INFO - Train loss epoch 4 batch 4100: 1.1294
+2021-09-02 10:41:28,096 - global - INFO - Train loss epoch 4 batch 4200: 0.9975
+2021-09-02 10:43:23,903 - global - INFO - Train loss epoch 4 batch 4300: 1.0366
+2021-09-02 10:45:19,661 - global - INFO - Train loss epoch 4 batch 4400: 1.0583
+2021-09-02 10:47:15,520 - global - INFO - Train loss epoch 4 batch 4500: 1.0803
+2021-09-02 10:49:11,418 - global - INFO - Train loss epoch 4 batch 4600: 0.9861
+2021-09-02 10:51:07,622 - global - INFO - Train loss epoch 4 batch 4700: 1.0269
+2021-09-02 10:53:03,664 - global - INFO - Train loss epoch 4 batch 4800: 1.0262
+2021-09-02 10:54:59,376 - global - INFO - Train loss epoch 4 batch 4900: 1.0240
+2021-09-02 10:56:55,153 - global - INFO - Train loss epoch 4 batch 5000: 1.0412
+2021-09-02 10:58:50,919 - global - INFO - Train loss epoch 4 batch 5100: 0.9928
+2021-09-02 11:00:46,841 - global - INFO - Train loss epoch 4 batch 5200: 1.0558
+2021-09-02 11:02:42,589 - global - INFO - Train loss epoch 4 batch 5300: 0.9454
+2021-09-02 11:04:38,350 - global - INFO - Train loss epoch 4 batch 5400: 1.0090
+2021-09-02 11:06:34,184 - global - INFO - Train loss epoch 4 batch 5500: 0.9875
+2021-09-02 11:08:29,996 - global - INFO - Train loss epoch 4 batch 5600: 0.9944
+2021-09-02 11:10:25,981 - global - INFO - Train loss epoch 4 batch 5700: 0.9533
+2021-09-02 11:12:21,969 - global - INFO - Train loss epoch 4 batch 5800: 0.9471
+2021-09-02 11:14:17,849 - global - INFO - Train loss epoch 4 batch 5900: 0.9349
+2021-09-02 11:16:13,753 - global - INFO - Train loss epoch 4 batch 6000: 0.9994
+2021-09-02 11:18:09,572 - global - INFO - Train loss epoch 4 batch 6100: 0.9931
+2021-09-02 11:20:05,357 - global - INFO - Train loss epoch 4 batch 6200: 0.9716
+2021-09-02 11:22:01,266 - global - INFO - Train loss epoch 4 batch 6300: 1.0501
+2021-09-02 11:23:57,272 - global - INFO - Train loss epoch 4 batch 6400: 0.9233
+2021-09-02 11:25:53,158 - global - INFO - Train loss epoch 4 batch 6500: 0.9333
+2021-09-02 11:27:49,098 - global - INFO - Train loss epoch 4 batch 6600: 0.9394
+2021-09-02 11:29:44,900 - global - INFO - Train loss epoch 4 batch 6700: 0.9285
+2021-09-02 11:36:14,965 - global - INFO - Val loss at epoch 4 batch 6721: 1.3139
+2021-09-02 11:37:56,890 - global - INFO - Train loss epoch 4 batch 6800: 1.4568
+2021-09-02 11:39:52,420 - global - INFO - Train loss epoch 4 batch 6900: 1.4883
+2021-09-02 11:41:47,934 - global - INFO - Train loss epoch 4 batch 7000: 1.3270
+2021-09-02 11:43:43,509 - global - INFO - Train loss epoch 4 batch 7100: 1.3317
+2021-09-02 11:45:39,081 - global - INFO - Train loss epoch 4 batch 7200: 1.3355
+2021-09-02 11:47:34,609 - global - INFO - Train loss epoch 4 batch 7300: 1.2633
+2021-09-02 11:49:30,088 - global - INFO - Train loss epoch 4 batch 7400: 1.2842
+2021-09-02 11:51:25,571 - global - INFO - Train loss epoch 4 batch 7500: 1.3020
+2021-09-02 11:53:21,165 - global - INFO - Train loss epoch 4 batch 7600: 1.2576
+2021-09-02 11:55:16,703 - global - INFO - Train loss epoch 4 batch 7700: 1.1642
+2021-09-02 11:57:12,245 - global - INFO - Train loss epoch 4 batch 7800: 1.1344
+2021-09-02 11:59:07,720 - global - INFO - Train loss epoch 4 batch 7900: 1.1517
+2021-09-02 12:01:03,211 - global - INFO - Train loss epoch 4 batch 8000: 1.1098
+2021-09-02 12:02:58,694 - global - INFO - Train loss epoch 4 batch 8100: 1.1501
+2021-09-02 12:04:54,197 - global - INFO - Train loss epoch 4 batch 8200: 1.1660
+2021-09-02 12:06:49,666 - global - INFO - Train loss epoch 4 batch 8300: 1.1269
+2021-09-02 12:08:45,144 - global - INFO - Train loss epoch 4 batch 8400: 1.0790
+2021-09-02 12:10:40,629 - global - INFO - Train loss epoch 4 batch 8500: 1.1825
+2021-09-02 12:12:36,092 - global - INFO - Train loss epoch 4 batch 8600: 1.0817
+2021-09-02 12:14:31,565 - global - INFO - Train loss epoch 4 batch 8700: 1.1134
+2021-09-02 12:16:27,060 - global - INFO - Train loss epoch 4 batch 8800: 1.1330
+2021-09-02 12:18:22,499 - global - INFO - Train loss epoch 4 batch 8900: 1.1362
+2021-09-02 12:20:17,964 - global - INFO - Train loss epoch 4 batch 9000: 1.1836
+2021-09-02 12:22:13,433 - global - INFO - Train loss epoch 4 batch 9100: 1.0538
+2021-09-02 12:24:08,915 - global - INFO - Train loss epoch 4 batch 9200: 1.1584
+2021-09-02 12:26:04,388 - global - INFO - Train loss epoch 4 batch 9300: 1.0988
+2021-09-02 12:27:59,863 - global - INFO - Train loss epoch 4 batch 9400: 1.0928
+2021-09-02 12:29:55,386 - global - INFO - Train loss epoch 4 batch 9500: 1.1410
+2021-09-02 12:31:50,850 - global - INFO - Train loss epoch 4 batch 9600: 1.0508
+2021-09-02 12:33:46,334 - global - INFO - Train loss epoch 4 batch 9700: 1.0464
+2021-09-02 12:35:41,817 - global - INFO - Train loss epoch 4 batch 9800: 1.0013
+2021-09-02 12:37:37,291 - global - INFO - Train loss epoch 4 batch 9900: 1.1186
+2021-09-02 12:39:32,760 - global - INFO - Train loss epoch 4 batch 10000: 1.0379
+2021-09-02 12:47:12,610 - global - INFO - Val loss at epoch 4 batch 10081: 1.4073
+2021-09-02 12:47:45,181 - global - INFO - Train loss epoch 4 batch 10100: 1.1108
+2021-09-02 12:49:40,869 - global - INFO - Train loss epoch 4 batch 10200: 1.3926
+2021-09-02 12:51:36,828 - global - INFO - Train loss epoch 4 batch 10300: 1.3522
+2021-09-02 12:53:32,513 - global - INFO - Train loss epoch 4 batch 10400: 1.4972
+2021-09-02 12:55:28,188 - global - INFO - Train loss epoch 4 batch 10500: 1.3473
+2021-09-02 12:57:23,687 - global - INFO - Train loss epoch 4 batch 10600: 1.3042
+2021-09-02 12:59:19,286 - global - INFO - Train loss epoch 4 batch 10700: 1.3488
+2021-09-02 13:01:14,874 - global - INFO - Train loss epoch 4 batch 10800: 1.2362
