@@ -42,5 +42,5 @@ TRAIN:
   COMET_TAGS: ["experiment", "crossentropy","weighted_loss"]
 TEST:
   DEVICE: "cuda:0"
-  WORKERS: 0
+  WORKERS: 4
   BATCH_SIZE_PER_DEVICE: 8

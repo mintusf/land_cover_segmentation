@@ -1,11 +1,8 @@
 import argparse
-from typing import List, Tuple
+from typing import List
 import os
 
-import cv2
-import numpy as np
 import torch
-from torch import Tensor
 from torch.utils.data import DataLoader
 from torch.nn import Module
 
@@ -17,9 +14,8 @@ from models.models_utils import (
     rename_ordered_dict_to_parallel,
 )
 from train_utils import load_checkpoint
-from utils.raster_utils import convert_np_for_vis
-from utils.visualization_utils import create_alphablend
-from utils.utilities import split_sample_name, get_gpu_count
+from utils.utilities import get_gpu_count
+from utils.infer_utils import generate_outputs
 
 
 def parser():
@@ -44,87 +40,24 @@ def parser():
         "--samples_list",
         help="Path to the list of samples for inference",
         type=str,
-        default="/data/land_cover_tracking/config/dataset/lists/test copy.txt",
+        default="/data/land_cover_tracking/config/dataset/lists/test.txt",
     )
 
     parser.add_argument(
         "--destination",
         help="Path for saving results",
         type=str,
-        default="/data/seg_data/masks",
+        default="/data/seg_data/inference",
     )
 
-    # TODO Add raster generation support
     parser.add_argument(
         "--outputs",
         nargs="+",
-        default=["alphablend"],
+        default=["alphablend", "raster", "alphablended_raster"],
         help="What kind of outputs to generate",
     )
 
     return parser.parse_args()
-
-
-def get_alphablend_path(name: str, alphablend_destination: str) -> str:
-    """Returns a path for alphablended sample.
-        Creates directory if doesn't exist
-
-    Args:
-        name (str): Sample name
-        alphablend_destination (str): Alphablend root directory
-
-    Returns:
-        str: Path to alphablended sample
-    """
-    roi_folder, area, _ = split_sample_name(name)
-    alphablend_folder = os.path.join(alphablend_destination, roi_folder, area)
-    if not os.path.isdir(alphablend_folder):
-        os.makedirs(alphablend_folder)
-    alphablend_path = os.path.join(alphablend_folder, f"{name}_alphablend.png")
-
-    return alphablend_path
-
-
-def prepare_tensors_for_vis(
-    input_img: Tensor, mask: Tensor
-) -> Tuple[np.array, np.array]:
-    """Prepares input and mask for visualization
-
-    Args:
-        input_img (Tensor): Input img tensor
-        mask (Tensor): Predicted mask tensor
-
-    Returns:
-        Tuple[np.array, np.array]: Input and mask for visualization
-    """
-    input_img = input_img.cpu().numpy()
-    input_img = input_img[(1, 2, 3), :, :]
-    input_img = convert_np_for_vis(input_img)
-
-    mask = mask.cpu().numpy()
-    return input_img, mask
-
-
-def generate_save_alphablend(
-    input_img: Tensor,
-    mask: Tensor,
-    name: str,
-    mask_config: dict,
-    alphablend_destination: str,
-):
-    """Generates and saves alphablend
-
-    Args:
-        input_img (Tensor): Input img tensor
-        mask (Tensor): Predicted mask tensor
-        name (str): Sample name
-        mask_config (dict): Mask config
-        alphablend_destination (str): Root path to save alphablend
-    """
-    input_img, mask = prepare_tensors_for_vis(input_img, mask)
-    alphablended = create_alphablend(input_img, mask, mask_config)
-    alphablend_path = get_alphablend_path(name, alphablend_destination)
-    cv2.imwrite(alphablend_path, alphablended)
 
 
 def infer(
@@ -159,10 +92,15 @@ def infer(
 
             for input_img, mask, name in zip(inputs, masks, names):
 
-                if "alphablend" in output_types:
-                    generate_save_alphablend(
-                        input_img, mask, name, mask_config, destination
-                    )
+                generate_outputs(
+                    output_types,
+                    destination,
+                    input_img,
+                    mask,
+                    name,
+                    mask_config,
+                    dataloader,
+                )
 
 
 def run_infer(
