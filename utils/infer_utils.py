@@ -53,7 +53,9 @@ def generate_save_alphablend(
     input_img, mask = prepare_tensors_for_vis(input_img, mask)
     alpha = mask_config["alpha"]
     colors_dict = mask_config["colors"]
-    alphablended = create_alphablend(input_img, mask, alpha, colors_dict)
+    class2label = mask_config["class2label"]
+    alphablended = create_alphablend(input_img, mask, alpha, colors_dict, class2label)
+    alphablended = cv2.cvtColor(alphablended, cv2.COLOR_BGR2RGB)
     alphablend_path = get_save_path(name, alphablend_destination, "alphablend")
     cv2.imwrite(alphablend_path, alphablended)
 
@@ -72,7 +74,7 @@ def generate_save_raster(
         raster_destination (str): Root path to save raster
     """
     mask = mask.cpu().numpy()
-    dummy_image = np.ones((mask.shape[0], mask.shape[1], 3))
+    dummy_image = np.ones((mask.shape[0], mask.shape[1], 3), dtype=np.float32)
     alpha = 1.0
     colors_dict = mask_config["colors"]
     alphablended = create_alphablend(dummy_image, mask, alpha, colors_dict)
