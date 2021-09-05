@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Dict, Tuple, Union
 
 import cv2
 import numpy as np
@@ -33,7 +33,11 @@ def apply_single_mask(
 
 
 def create_alphablend(
-    img: np.array, mask: np.array, alpha: float, colors_dict: dict
+    img: np.array,
+    mask: np.array,
+    alpha: float,
+    colors_dict: dict,
+    class2label: Union[None, Dict[int, str]] = None,
 ) -> np.array:
     """A method to create alphablend image
 
@@ -42,14 +46,28 @@ def create_alphablend(
         mask (np.array): Mask
         alpha (float): Alpha value
         colors_dict (dict): Dictionary matching class id to color
+        class2label (dict): Dictionary matching class id to label
 
     Returns:
         np.array: Alphablend image
     """
 
+    x_pos = 30
+    y_pox = 30
     for class_int, color in colors_dict.items():
         class_mask = np.where(mask == class_int, 1, 0)
         img = apply_single_mask(img, class_mask, color, alpha)
+        if class_mask.sum() > 100 and class2label is not None:
+            cv2.putText(
+                img,
+                class2label[class_int],
+                (x_pos, y_pox),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                color,
+                1,
+            )
+            y_pox += 30
 
     return img
 
@@ -104,7 +122,7 @@ def prepare_tensors_for_vis(
         Tuple[np.array, np.array]: Input and mask for visualization
     """
     input_img = input_img.cpu().numpy()
-    input_img = input_img[(1, 2, 3), :, :]
+    input_img = input_img[(2, 1, 0), :, :]
     input_img = convert_np_for_vis(input_img)
 
     mask = mask.cpu().numpy()
