@@ -36,6 +36,8 @@ class NormalizeSample(object):
             Dict[torch.Tensor]: sample with normalized raster
         """
         sample_input = sample["input"]
+        if sample_input.min() < 1:
+            sample_input *= 10000
 
         for channel in range(sample_input.shape[0]):
             sample_input[channel, :, :] = (
