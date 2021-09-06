@@ -1,3 +1,4 @@
+import glob
 from typing import List, Tuple, Union
 import os
 
@@ -174,6 +175,7 @@ def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
         dest_dir (str): Destination directory
         crop_size (List[int]): dimensions of the subgrid
     """
+    files = []
 
     with rio.open(input_raster) as src:
         height, width = (src.height, src.width)
@@ -188,8 +190,8 @@ def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
                 y_min = long_idx * crop_size[1]
                 (west, north) = src.xy(x_min, y_min)
 
-                x_max = (lat_idx + 1) * crop_size[0]
-                y_max = (long_idx + 1) * crop_size[1]
+                x_max = (lat_idx + 1) * crop_size[0] - 1
+                y_max = (long_idx + 1) * crop_size[1] - 1
                 (east, south) = src.xy(x_max, y_max)
 
                 polygon = Polygon(
@@ -212,3 +214,8 @@ def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
 
                 with rio.open(out_path, "w", **out_meta) as dest:
                     dest.write(out_image)
+                files.append(out_path)
+
+    with open(os.path.join(dest_dir, "crop_list.txt"), "w") as f:
+        for file in files:
+            f.write(file + "\n")
