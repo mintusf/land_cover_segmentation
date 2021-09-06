@@ -78,9 +78,12 @@ class PatchDataset(Dataset):
         sample_name = self.dataset_list[index]
 
         # Get input tensor
-        input_raster_path = get_raster_filepath(
-            self.dataset_root, sample_name, self.input_sensor_name
-        )
+        if os.path.isfile(sample_name):
+            input_raster_path = sample_name
+        else:
+            input_raster_path = get_raster_filepath(
+                self.dataset_root, sample_name, self.input_sensor_name
+            )
         input_tensor = raster_to_tensor(
             input_raster_path, bands=self.input_used_channels
         )

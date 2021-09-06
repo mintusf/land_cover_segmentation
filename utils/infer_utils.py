@@ -143,11 +143,14 @@ def generate_outputs(
             input_img, mask, name, mask_config, alphablend_destination
         )
 
-    ref_raster_path = get_raster_filepath(
-        dataloader.dataset.dataset_root,
-        name,
-        dataloader.dataset.input_sensor_name,
-    )
+    if os.path.isfile(name):
+        ref_raster_path = name
+    else:
+        ref_raster_path = get_raster_filepath(
+            dataloader.dataset.dataset_root,
+            name,
+            dataloader.dataset.input_sensor_name,
+        )
 
     if "raster" in output_types:
         raster_destination = os.path.join(destination, "raster")
