@@ -15,7 +15,8 @@ from models.models_utils import (
 )
 from train_utils import load_checkpoint
 from utils.utilities import get_gpu_count
-from utils.infer_utils import generate_outputs
+from utils.infer_utils import generate_outputs, prepare_raster_for_inference
+from utils.io_utils import get_lines_from_txt
 
 
 def parser():
@@ -40,7 +41,7 @@ def parser():
         "--samples_list",
         help="Path to the list of samples for inference",
         type=str,
-        default="/data/land_cover_tracking/config/dataset/lists/test.txt",
+        default="test",
     )
 
     parser.add_argument(
@@ -107,7 +108,7 @@ def infer(
 def run_infer(
     cfg_path: str,
     checkpoint: str,
-    samples_list: str,
+    samples_list_path: str,
     destination: str,
     output_types: List[str],
 ):
@@ -128,7 +129,22 @@ def run_infer(
         weights = rename_ordered_dict_to_parallel(weights)
     model.load_state_dict(weights)
 
-    dataloader = get_dataloader(cfg, samples_list)
+    if samples_list_path not in ["train", "val", "test"]:
+        samples_list = get_lines_from_txt(samples_list_path)
+        samples_to_infer = []
+        for sample_path in samples_list:
+            cropped_samples_paths = prepare_raster_for_inference(
+                sample_path, crop_size=[256, 256]
+            )
+            samples_to_infer.extend(cropped_samples_paths)
+
+        with open(cfg.TEST.INFER_SAMPLES_LIST_PATH, "w") as f:
+            for file in samples_to_infer:
+                f.write(file + "\n")
+
+        samples_list_path = cfg.TEST.INFER_SAMPLES_LIST_PATH
+
+    dataloader = get_dataloader(cfg, samples_list_path)
 
     if not os.path.isdir(destination):
         os.makedirs(destination)
