@@ -75,6 +75,7 @@ _C.TEST = CfgNode()
 _C.TEST.DEVICE = "cpu"
 _C.TEST.WORKERS = 0
 _C.TEST.BATCH_SIZE_PER_DEVICE = 1
+_C.INFER_SAMPLES_LIST_PATH = "/data/seg_data/infer_samples.txt"
 
 
 def get_cfg_defaults():
