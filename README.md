@@ -45,18 +45,24 @@ SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
 
 ## Results
 
-**Confusion matrix:**
+### **Confusion matrix:**
 
 ![Confusion_matrix](assets/Confusion_matrix.PNG)
 
 
-**Generated masks example**
+### **Generated masks example**
 
 | urban | water | agriculture | wetlands | open_forest | deep_forest |
 |-|-|-|-|-|-|
 | ![urban](assets/urban.PNG) | ![water](assets/water.PNG) | ![agriculture](assets/agriculture.PNG) | ![wetlands](assets/wetlands.PNG) | ![open_forest](assets/open_forest.PNG) | ![deep_forest](assets/deep_forest.PNG) |
 
+#### Test dataset
+
 ![Results1](assets/results1.PNG)
 ![Results2](assets/results2.PNG)
 ![Results3](assets/results3.PNG)
 ![Results4](assets/results4.PNG)
+
+#### Real-life test (Sentinel image downloaded from EOBrowser)
+
+![Results5](assets/Sentinel_data_1.PNG)
