@@ -11,7 +11,7 @@ def test_infer(module_dict, test_checkpoint, test_config):
     run_infer(
         module_dict["cfg_path"],
         test_checkpoint["path"],
-        test_config.DATASET.LIST_TEST,
+        "test",
         module_dict["infer_directory"],
         infer_modes,
     )

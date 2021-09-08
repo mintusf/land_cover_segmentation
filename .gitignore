@@ -11,3 +11,4 @@ logs/*.log
 temp/
 
 .comet.config
+/raster_join

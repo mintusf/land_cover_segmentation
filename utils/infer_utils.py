@@ -1,13 +1,14 @@
-from typing import List
-
+import glob
 import os
+from typing import List
+from shutil import rmtree
 
 import cv2
 import numpy as np
 from torch import Tensor
 from torch.utils.data import DataLoader
 
-from utils.raster_utils import np_to_raster
+from utils.raster_utils import np_to_raster, is_cropped, crop_raster
 from utils.visualization_utils import create_alphablend, prepare_tensors_for_vis
 from utils.utilities import split_sample_name, get_raster_filepath
 
@@ -37,9 +38,8 @@ def get_save_path(
 def generate_save_alphablend(
     input_img: Tensor,
     mask: Tensor,
-    name: str,
     mask_config: dict,
-    alphablend_destination: str,
+    alphablend_path: str,
 ):
     """Generates and saves alphablend
 
@@ -56,19 +56,17 @@ def generate_save_alphablend(
     class2label = mask_config["class2label"]
     alphablended = create_alphablend(input_img, mask, alpha, colors_dict, class2label)
     alphablended = cv2.cvtColor(alphablended, cv2.COLOR_BGR2RGB)
-    alphablend_path = get_save_path(name, alphablend_destination, "alphablend")
     cv2.imwrite(alphablend_path, alphablended)
 
 
 def generate_save_raster(
-    mask: Tensor, name: str, mask_config: dict, ref_raster: str, raster_destination: str
+    mask: Tensor, mask_config: dict, ref_raster: str, raster_path: str
 ) -> None:
     """Generates and saves raster of a mask
 
     Args:
         mask (Tensor): Mask tensor.
                        Shape (1, H, W) where pixel value corresponds to class int
-        name (str): Sample name
         mask_config (dict): Mask config
         ref_raster (str): Path to reference raster, used to get transform and crs
         raster_destination (str): Root path to save raster
@@ -79,17 +77,15 @@ def generate_save_raster(
     colors_dict = mask_config["colors"]
     alphablended = create_alphablend(dummy_image, mask, alpha, colors_dict)
     colored_mask = alphablended.transpose(2, 0, 1)
-    raster_path = get_save_path(name, raster_destination, "raster", extention="tif")
     np_to_raster(colored_mask, ref_raster, raster_path)
 
 
 def generate_save_alphablended_raster(
     mask: Tensor,
     input_img: Tensor,
-    name: str,
     mask_config: dict,
     ref_raster: str,
-    raster_destination: str,
+    raster_path: str,
 ) -> None:
     """Generates and saves raster of a mask
 
@@ -107,10 +103,22 @@ def generate_save_alphablended_raster(
     colors_dict = mask_config["colors"]
     alphablended = create_alphablend(input_img, mask, alpha, colors_dict)
     alphablended = alphablended.transpose(2, 0, 1)
-    raster_path = get_save_path(
-        name, raster_destination, "alphablended_raster", extention="tif"
-    )
     np_to_raster(alphablended, ref_raster, raster_path)
+
+
+def get_path_for_output(output_type, destination, name, dataloader):
+    output_destination = os.path.join(destination, output_type)
+    os.makedirs(output_destination, exist_ok=True)
+    extension = "tif" if "raster" in output_type else "png"
+    if dataloader.dataset.mode == "infer":
+        name = os.path.splitext(os.path.split(name)[1])[0]
+        alphablend_path = os.path.join(output_destination, name + f".{extension}")
+    else:
+        alphablend_path = get_save_path(
+            name, output_destination, output_type, extension
+        )
+
+    return alphablend_path
 
 
 def generate_outputs(
@@ -137,31 +145,55 @@ def generate_outputs(
         mask_config (dict): Mask config
         dataloader (DataLoader): Dataloader for samples
     """
-    if "alphablend" in output_types:
-        alphablend_destination = os.path.join(destination, "alphablend")
-        generate_save_alphablend(
-            input_img, mask, name, mask_config, alphablend_destination
-        )
 
-    ref_raster_path = get_raster_filepath(
-        dataloader.dataset.dataset_root,
-        name,
-        dataloader.dataset.input_sensor_name,
-    )
-
-    if "raster" in output_types:
-        raster_destination = os.path.join(destination, "raster")
-        generate_save_raster(
-            mask, name, mask_config, ref_raster_path, raster_destination
-        )
-    if "alphablended_raster" in output_types:
-        raster_destination = os.path.join(destination, "alphablended_raster")
-
-        generate_save_alphablended_raster(
-            mask,
-            input_img,
+    if os.path.isfile(name):
+        ref_raster_path = name
+    else:
+        ref_raster_path = get_raster_filepath(
+            dataloader.dataset.dataset_root,
             name,
-            mask_config,
-            ref_raster_path,
-            raster_destination,
+            dataloader.dataset.input_sensor_name,
         )
+
+    for output_type in output_types:
+        assert output_type in [
+            "alphablend",
+            "alphablended_raster",
+            "raster",
+        ], f"Output type {output_type} not supported"
+        output_path = get_path_for_output(output_type, destination, name, dataloader)
+
+        if output_type == "alphablend":
+            generate_save_alphablend(input_img, mask, mask_config, output_path)
+        elif output_type == "alphablended_raster":
+            generate_save_alphablended_raster(
+                mask,
+                input_img,
+                mask_config,
+                ref_raster_path,
+                output_path,
+            )
+        elif output_type == "raster":
+            generate_save_raster(mask, mask_config, ref_raster_path, output_path)
+
+
+def prepare_raster_for_inference(input_raster: str, crop_size: List[int]):
+    paths_to_infer = []
+    raster_folder, raster_file = os.path.split(input_raster)
+
+    if not is_cropped(input_raster, crop_size):
+        paths_to_infer.append(input_raster)
+    else:
+
+        raster_name = os.path.splitext(raster_file)[0]
+        cropped_rasters_directory = os.path.join(raster_folder, raster_name)
+
+        if os.path.isdir(cropped_rasters_directory):
+            rmtree(cropped_rasters_directory)
+        os.makedirs(cropped_rasters_directory)
+
+        crop_raster(input_raster, cropped_rasters_directory, crop_size)
+
+        paths_to_infer.extend(glob.glob(f"{cropped_rasters_directory}/*.tif"))
+
+    return paths_to_infer
