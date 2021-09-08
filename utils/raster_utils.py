@@ -168,11 +168,25 @@ def np_to_raster(img_np: np.array, ref_img: str, savepath: str):
         dst.write(img_np)
 
 
+def is_cropped(input_raster: str, crop_size: List[int]):
+    with rio.open(input_raster) as src:
+        height, width = (src.height, src.width)
+        if height < crop_size[0] or width < crop_size[1]:
+            raise ValueError(
+                "Raster cannot have smaller size than crop size. "
+                + f"Raster's size is [{height}, {width}], crop size: {crop_size}"
+            )
+        if height > crop_size[0] or width > crop_size[1]:
+            return True
+        else:
+            return False
+
+
 def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
     """Crop raster into subgrids
     Args:
         input_img (str): Path to raster file
-        dest_dir (str): Destination directory
+        dest_dir (str): Destination directory. Must not exist.
         crop_size (List[int]): dimensions of the subgrid
     """
     files = []
@@ -215,7 +229,3 @@ def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
                 with rio.open(out_path, "w", **out_meta) as dest:
                     dest.write(out_image)
                 files.append(out_path)
-
-    with open(os.path.join(dest_dir, "crop_list.txt"), "w") as f:
-        for file in files:
-            f.write(file + "\n")
