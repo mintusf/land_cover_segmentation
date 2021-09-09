@@ -3,13 +3,15 @@ import os
 from typing import List
 from shutil import rmtree
 
-import cv2
-import numpy as np
 from torch import Tensor
 from torch.utils.data import DataLoader
 
-from utils.raster_utils import np_to_raster, is_cropped, crop_raster
-from utils.visualization_utils import create_alphablend, prepare_tensors_for_vis
+from utils.raster_utils import is_cropped, crop_raster
+from utils.visualization_utils import (
+    generate_save_alphablend,
+    generate_save_alphablended_raster,
+    generate_save_raster,
+)
 from utils.utilities import split_sample_name, get_raster_filepath
 
 
@@ -33,77 +35,6 @@ def get_save_path(
     alphablend_path = os.path.join(alphablend_folder, f"{name}_{suffix}.{extention}")
 
     return alphablend_path
-
-
-def generate_save_alphablend(
-    input_img: Tensor,
-    mask: Tensor,
-    mask_config: dict,
-    alphablend_path: str,
-):
-    """Generates and saves alphablend
-
-    Args:
-        input_img (Tensor): Input img tensor
-        mask (Tensor): Predicted mask tensor
-        name (str): Sample name
-        mask_config (dict): Mask config
-        alphablend_destination (str): Root path to save alphablend
-    """
-    input_img, mask = prepare_tensors_for_vis(input_img, mask)
-    alpha = mask_config["alpha"]
-    colors_dict = mask_config["colors"]
-    class2label = mask_config["class2label"]
-    alphablended = create_alphablend(input_img, mask, alpha, colors_dict, class2label)
-    alphablended = cv2.cvtColor(alphablended, cv2.COLOR_BGR2RGB)
-    cv2.imwrite(alphablend_path, alphablended)
-
-
-def generate_save_raster(
-    mask: Tensor, mask_config: dict, ref_raster: str, raster_path: str
-) -> None:
-    """Generates and saves raster of a mask
-
-    Args:
-        mask (Tensor): Mask tensor.
-                       Shape (1, H, W) where pixel value corresponds to class int
-        mask_config (dict): Mask config
-        ref_raster (str): Path to reference raster, used to get transform and crs
-        raster_destination (str): Root path to save raster
-    """
-    mask = mask.cpu().numpy()
-    dummy_image = np.ones((mask.shape[0], mask.shape[1], 3), dtype=np.float32)
-    alpha = 1.0
-    colors_dict = mask_config["colors"]
-    alphablended = create_alphablend(dummy_image, mask, alpha, colors_dict)
-    colored_mask = alphablended.transpose(2, 0, 1)
-    np_to_raster(colored_mask, ref_raster, raster_path)
-
-
-def generate_save_alphablended_raster(
-    mask: Tensor,
-    input_img: Tensor,
-    mask_config: dict,
-    ref_raster: str,
-    raster_path: str,
-) -> None:
-    """Generates and saves raster of a mask
-
-    Args:
-        mask (Tensor): Mask tensor.
-                       Shape (1, H, W) where pixel value corresponds to class int
-        input_img (Tensor): Input img tensor
-        name (str): Sample name
-        mask_config (dict): Mask config
-        ref_raster (str): Path to reference raster, used to get transform and crs
-        raster_destination (str): Root path to save raster
-    """
-    input_img, mask = prepare_tensors_for_vis(input_img, mask)
-    alpha = mask_config["alpha"]
-    colors_dict = mask_config["colors"]
-    alphablended = create_alphablend(input_img, mask, alpha, colors_dict)
-    alphablended = alphablended.transpose(2, 0, 1)
-    np_to_raster(alphablended, ref_raster, raster_path)
 
 
 def get_path_for_output(output_type, destination, name, dataloader):
