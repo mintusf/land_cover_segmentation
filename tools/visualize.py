@@ -42,7 +42,7 @@ def parse_args() -> argparse.Namespace:
         help="path to save results",
     )
 
-    parser.add_argument("--labels", nargs="+", default=["urban", "agricultural", "barren", "snow", "water", "dense_forest", "open_forest", "wetlands", "grasslands",  "shrublands",  "tundra", "other"], type=str, help="")
+    parser.add_argument("--labels", nargs="+", default=["urban"], type=str, help="")
     parser.add_argument("--threshold", default=6000, type=int, help="")
     parser.add_argument(
         "--metadata_path",
