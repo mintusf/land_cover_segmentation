@@ -11,12 +11,13 @@ DATASET:
   INPUT:
     SENSOR: s2
     USED_CHANNELS: [1,2,3,4]
-    STATS_FILE: "config/dataset/stats/default.json"
+    STATS_FILE: "config/dataset/stats/channels_stats.json"
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/default.yml"
-  LABELS_COUNT_CSV: "/data/seg_data/training_labels.csv"
+  CLASSES_COUNT_JSON: "config/dataset/stats/classes_count.json"
+  MASKS_METADATA_PATH: "data/seg_data/masks_metadata.csv"
 TRAIN:
   EPOCHS: 5
   RESUME_CHECKPOINT: ""

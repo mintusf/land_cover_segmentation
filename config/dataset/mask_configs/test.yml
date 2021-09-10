@@ -1,4 +1,4 @@
-maskname2int: 
+maskname2int:
   mask_1: 0
   mask_2: 1
 channels_priority: ["mask_1", "mask_2"]

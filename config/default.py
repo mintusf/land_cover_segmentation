@@ -32,13 +32,14 @@ _C.DATASET.INPUT.CHANNELS = [
     "B12",
 ]
 _C.DATASET.INPUT.USED_CHANNELS = [3, 2, 1]
-_C.DATASET.INPUT.STATS_FILE = os.path.join("config", "dataset", "stats", "default.json")
+_C.DATASET.INPUT.STATS_FILE = os.path.join("config", "dataset", "stats", "channels_stats.json")
 _C.DATASET.MASK = CfgNode()
 _C.DATASET.MASK.SENSOR = "lc"
 _C.DATASET.MASK.CONFIG = os.path.join(
     "config", "dataset", "mask_configs", "default.yml"
 )
-_C.DATASET.LABELS_COUNT_CSV = "/data/seg_data/training_labels.csv"
+_C.DATASET.CLASSES_COUNT_JSON = "config/dataset/stats/classes_count.json"
+_C.DATASET.MASKS_METADATA_PATH = "data/seg_data/masks_metadata.csv"
 
 _C.TRAIN = CfgNode()
 _C.TRAIN.EPOCHS = 100
