@@ -1,14 +1,18 @@
 import logging
+import os
 from typing import Optional, List, Dict
 
-import pandas as pd
 import torch
 from torch import Tensor
 import torch.nn as nn
 from torch.nn import CrossEntropyLoss
 import torch.nn.functional as F
 
-from utils.io_utils import get_lines_from_txt, load_yaml
+from config.default import CfgNode
+from dataset import (
+    build_classes_distribution_json,
+    get_classes_counts_from_json,
+)
 
 logger = logging.getLogger("global")
 
@@ -21,10 +25,7 @@ def get_loss(cfg):
             logger.info(f"Loss {cfg.TRAIN.LOSS.TYPE} does not support weights")
             weights = None
         else:
-            samples_list = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
-            class2label = load_yaml(cfg.DATASET.MASK.CONFIG)["class2label"]
-            target_metadata = pd.read_csv(cfg.DATASET.LABELS_COUNT_CSV)
-            weights = get_class_weights(samples_list, class2label, target_metadata)
+            weights = get_class_weights(cfg, cfg.DATASET.MASK.CONFIGa)
 
             if "cuda" in cfg.TRAIN.DEVICE:
                 if "all" in cfg.TRAIN.DEVICE:
@@ -224,23 +225,22 @@ class FocalLoss(nn.Module):
         )
 
 
-def get_class_weights(
-    samples_list: List[str], class2label: Dict[int, str], target_metadata: pd.DataFrame
-) -> Tensor:
+def get_class_weights(cfg: CfgNode, mask_config: dict) -> Tensor:
     """Returns class weights for a given dataset.
 
     Args:
-        samples_list (List[str]): List of samples in the dataset.
-        class2label (Dict[int, str]): A dictionary mapping class indices to labels.
-        target_metadata (pd.DataFrame): A dataframe containing the target metadata.
+        cfg (CfgNode): The config node.
+        mask_config (dict): The mask config.
 
     Returns:
         Tensor: Tensor with classes' weights.
     """
-    samples_metadata = target_metadata[target_metadata["sample"].isin(samples_list)]
-    classes_counts = samples_metadata[list(class2label.values())].sum()
-    classes_counts = [classes_counts[class2label[i]] for i in range(len(class2label))]
+    classes_count = len(mask_config["class2label"])
+    if not os.path.isfile(cfg.DATASET.CLASSES_COUNT_JSON):
+        build_classes_distribution_json(cfg, mask_config)
+    counts = get_classes_counts_from_json(cfg, "train")
+    print(counts)
 
-    weights = [1 / count for count in classes_counts]
+    weights = [1 / (counts[str(i)] + 10e-6) for i in range(classes_count)]
 
     return Tensor(weights)
