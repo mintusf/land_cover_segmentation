@@ -72,6 +72,7 @@ def pytest_sessionfinish():
     cfg = get_cfg_from_file(test_config_path)
     assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
     os.remove(cfg.DATASET.INPUT.STATS_FILE)
+    os.remove(cfg.DATASET.CLASSES_COUNT_JSON)
     os.remove("tests/utils/test_vis.png")
     os.remove(checkpoint_save_path)
     rmtree(infer_directory)
