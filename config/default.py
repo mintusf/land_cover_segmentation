@@ -32,7 +32,9 @@ _C.DATASET.INPUT.CHANNELS = [
     "B12",
 ]
 _C.DATASET.INPUT.USED_CHANNELS = [3, 2, 1]
-_C.DATASET.INPUT.STATS_FILE = os.path.join("config", "dataset", "stats", "channels_stats.json")
+_C.DATASET.INPUT.STATS_FILE = os.path.join(
+    "config", "dataset", "stats", "channels_stats.json"
+)
 _C.DATASET.MASK = CfgNode()
 _C.DATASET.MASK.SENSOR = "lc"
 _C.DATASET.MASK.CONFIG = os.path.join(
