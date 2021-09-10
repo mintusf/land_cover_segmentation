@@ -3,12 +3,21 @@ from typing import Dict, Tuple, Union
 import cv2
 import numpy as np
 
+import torch
 from torch import Tensor
+from torchvision.transforms import Compose
 
 from config.default import CfgNode
 from dataset.dataset_utils import build_mask
+from dataset.transforms import get_transform
 from utils.io_utils import load_yaml
-from utils.raster_utils import convert_raster_for_vis, raster_to_np, convert_np_for_vis
+from utils.raster_utils import (
+    raster_to_tensor,
+    raster_to_np,
+    convert_np_for_vis,
+    np_to_torch,
+    np_to_raster,
+)
 from utils.utilities import get_raster_filepath
 
 
@@ -72,6 +81,77 @@ def create_alphablend(
     return img
 
 
+def generate_save_alphablend(
+    input_img: Tensor,
+    mask: Tensor,
+    mask_config: dict,
+    alphablend_path: str,
+):
+    """Generates and saves alphablend
+
+    Args:
+        input_img (Tensor): Input img tensor
+        mask (Tensor): Predicted mask tensor
+        name (str): Sample name
+        mask_config (dict): Mask config
+        alphablend_destination (str): Root path to save alphablend
+    """
+    input_img, mask = prepare_tensors_for_vis(input_img, mask)
+    alpha = mask_config["alpha"]
+    colors_dict = mask_config["colors"]
+    class2label = mask_config["class2label"]
+    alphablended = create_alphablend(input_img, mask, alpha, colors_dict, class2label)
+    alphablended = cv2.cvtColor(alphablended, cv2.COLOR_BGR2RGB)
+    cv2.imwrite(alphablend_path, alphablended)
+
+
+def generate_save_raster(
+    mask: Tensor, mask_config: dict, ref_raster: str, raster_path: str
+) -> None:
+    """Generates and saves raster of a mask
+
+    Args:
+        mask (Tensor): Mask tensor.
+                       Shape (1, H, W) where pixel value corresponds to class int
+        mask_config (dict): Mask config
+        ref_raster (str): Path to reference raster, used to get transform and crs
+        raster_destination (str): Root path to save raster
+    """
+    mask = mask.cpu().numpy()
+    dummy_image = np.ones((mask.shape[0], mask.shape[1], 3), dtype=np.float32)
+    alpha = 1.0
+    colors_dict = mask_config["colors"]
+    alphablended = create_alphablend(dummy_image, mask, alpha, colors_dict)
+    colored_mask = alphablended.transpose(2, 0, 1)
+    np_to_raster(colored_mask, ref_raster, raster_path)
+
+
+def generate_save_alphablended_raster(
+    mask: Tensor,
+    input_img: Tensor,
+    mask_config: dict,
+    ref_raster: str,
+    raster_path: str,
+) -> None:
+    """Generates and saves raster of a mask
+
+    Args:
+        mask (Tensor): Mask tensor.
+                       Shape (1, H, W) where pixel value corresponds to class int
+        input_img (Tensor): Input img tensor
+        name (str): Sample name
+        mask_config (dict): Mask config
+        ref_raster (str): Path to reference raster, used to get transform and crs
+        raster_destination (str): Root path to save raster
+    """
+    input_img, mask = prepare_tensors_for_vis(input_img, mask)
+    alpha = mask_config["alpha"]
+    colors_dict = mask_config["colors"]
+    alphablended = create_alphablend(input_img, mask, alpha, colors_dict)
+    alphablended = alphablended.transpose(2, 0, 1)
+    np_to_raster(alphablended, ref_raster, raster_path)
+
+
 def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     """A method to visualize a sample
 
@@ -90,7 +170,12 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     input_raster_path = get_raster_filepath(
         dataset_root, sample_name, input_sensor_name
     )
-    img = convert_raster_for_vis(input_raster_path)
+    input_used_channels = cfg.DATASET.INPUT.USED_CHANNELS
+    input_tensor = raster_to_tensor(input_raster_path, bands=input_used_channels)
+
+    transform = get_transform(cfg)
+    transforms = Compose([transform])
+    input_img = transforms({"input": input_tensor})["input"]
 
     # Get mask
     target_raster_path = get_raster_filepath(
@@ -98,15 +183,10 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
     )
     target_np = raster_to_np(target_raster_path)
     mask = build_mask(target_np, mask_config)
+    mask = np_to_torch(mask, dtype=torch.long)
 
     # Create alphablend
-    alpha = mask_config["alpha"]
-    colors_dict = mask_config["colors"]
-    alphablend = create_alphablend(img, mask, alpha, colors_dict)
-
-    # Save
-    alphablend = cv2.cvtColor(alphablend, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(savepath, alphablend)
+    generate_save_alphablend(input_img, mask, mask_config, savepath)
 
 
 def prepare_tensors_for_vis(
