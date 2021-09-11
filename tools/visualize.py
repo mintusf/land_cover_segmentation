@@ -8,7 +8,8 @@ import pandas as pd
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from config.default import get_cfg_from_file
-from utils.io_utils import get_lines_from_txt
+from dataset.dataset_utils import build_masks_metadata_df
+from utils.io_utils import get_lines_from_txt, load_yaml
 from utils.visualization_utils import vis_sample
 
 
@@ -23,7 +24,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--config",
-        default="config/weighted_loss.yml",
+        default="config/tests.yml",
         type=str,
         help="root directory in which files area searched for",
     )
@@ -42,14 +43,8 @@ def parse_args() -> argparse.Namespace:
         help="path to save results",
     )
 
-    parser.add_argument("--labels", nargs="+", default=["urban"], type=str, help="")
+    parser.add_argument("--labels", nargs="+", default=["class_1"], type=str, help="")
     parser.add_argument("--threshold", default=6000, type=int, help="")
-    parser.add_argument(
-        "--metadata_path",
-        default="/data/seg_data/training_labels.csv",
-        type=str,
-        help="path to metadata with labels count",
-    )
 
     args = parser.parse_args()
 
@@ -71,7 +66,7 @@ def get_samples_by_label(metadata_path: str, label: str, threshold: int) -> List
 
     label_filter = metadata[label] > threshold
 
-    samples = metadata[label_filter]["sample"].values
+    samples = metadata[label_filter]["subgrid_name"].values
     return samples
 
 
@@ -81,11 +76,15 @@ if __name__ == "__main__":
     destination = args.destination
     cfg = get_cfg_from_file(cfg_path)
     samples_all = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
+
+    mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
+    metadata_path = mask_config["MASKS_METADATA_PATH"]
+    if not os.path.isfile(metadata_path):
+        build_masks_metadata_df(cfg, mask_config)
+
     for label in args.labels:
         print(label)
-        samples_by_label = get_samples_by_label(
-            args.metadata_path, label, args.threshold
-        )
+        samples_by_label = get_samples_by_label(metadata_path, label, args.threshold)
         print(len(samples_by_label))
         samples_by_label = list(set(samples_all) & set(samples_by_label))
 
