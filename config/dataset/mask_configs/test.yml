@@ -24,3 +24,4 @@ colors:
   3: [255,211,92]
   4: [255, 255, 255]
   0: [0, 0, 0]
+MASKS_METADATA_PATH:  "config/dataset/mask_configs/masks_metadata_test.csv"

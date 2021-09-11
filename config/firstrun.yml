@@ -17,7 +17,6 @@ DATASET:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/default.yml"
   CLASSES_COUNT_JSON: "config/dataset/stats/classes_count.json"
-  MASKS_METADATA_PATH: "data/seg_data/masks_metadata.csv"
 TRAIN:
   EPOCHS: 20
   RESUME_CHECKPOINT: ""

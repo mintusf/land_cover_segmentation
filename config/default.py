@@ -41,7 +41,6 @@ _C.DATASET.MASK.CONFIG = os.path.join(
     "config", "dataset", "mask_configs", "default.yml"
 )
 _C.DATASET.CLASSES_COUNT_JSON = "config/dataset/stats/classes_count.json"
-_C.DATASET.MASKS_METADATA_PATH = "data/seg_data/masks_metadata.csv"
 
 _C.TRAIN = CfgNode()
 _C.TRAIN.EPOCHS = 100

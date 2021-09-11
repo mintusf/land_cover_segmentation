@@ -48,3 +48,4 @@ colors:
   10: [186, 201, 157]
   11: [9, 69, 15]
   0: [0, 0, 0]
+MASKS_METADATA_PATH:  "/data/seg_data/masks_metadata_v2.csv"
