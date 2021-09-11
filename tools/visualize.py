@@ -24,7 +24,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--config",
-        default="config/tests.yml",
+        default="config/weighted_loss.yml",
         type=str,
         help="root directory in which files area searched for",
     )
@@ -43,7 +43,7 @@ def parse_args() -> argparse.Namespace:
         help="path to save results",
     )
 
-    parser.add_argument("--labels", nargs="+", default=["class_1"], type=str, help="")
+    parser.add_argument("--labels", nargs="+", default=["urban"], type=str, help="")
     parser.add_argument("--threshold", default=6000, type=int, help="")
 
     args = parser.parse_args()
