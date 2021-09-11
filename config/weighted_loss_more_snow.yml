@@ -11,7 +11,7 @@ DATASET:
   INPUT:
     SENSOR: s2
     USED_CHANNELS: [1,2,3,4]
-    STATS_FILE: "config/dataset/stats/channels_stats.json"
+    STATS_FILE: "config/dataset/stats/channels_stats_more_snow.json"
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
     SENSOR: lc
