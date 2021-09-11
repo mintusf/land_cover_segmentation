@@ -10,19 +10,19 @@ DATASET:
   LIST_TEST: "config/dataset/lists/test.txt"
   INPUT:
     SENSOR: s2
-    USED_CHANNELS: [0,1,2,3,4,5,6,7,8,9,10,11,12]
+    USED_CHANNELS: [1,2,3,4]
     STATS_FILE: "config/dataset/stats/channels_stats.json"
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
     SENSOR: lc
-    CONFIG: "config/dataset/mask_configs/default.yml"
+    CONFIG: "config/dataset/mask_configs/less_classes.yml"
   CLASSES_COUNT_JSON: "config/dataset/stats/classes_count.json"
 TRAIN:
-  EPOCHS: 10
+  EPOCHS: 5
   RESUME_CHECKPOINT: ""
   BATCH_SIZE_PER_DEVICE: 8
   DEVICE: "cuda:0"
-  WORKERS: 4
+  WORKERS: 8
   SHUFFLE: True
   SEED: 42
   LOSS:
@@ -39,7 +39,7 @@ TRAIN:
     PATIENCE: 2
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
-  COMET_TAGS: ["experiment", "crossentropy","weighted_loss","all_channels"]
+  COMET_TAGS: ["experiment", "crossentropy","weighted_loss"]
 TEST:
   DEVICE: "cuda:0"
   WORKERS: 4

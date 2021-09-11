@@ -1,9 +1,12 @@
+import json
+
 import numpy as np
 import pandas as pd
-from torch.utils.data.dataloader import DataLoader
+from yacs.config import CfgNode
 
-from config.default import CfgNode
-from utils.io_utils import load_yaml
+from utils.raster_utils import raster_to_np
+from utils.io_utils import get_lines_from_txt, load_yaml
+from utils.utilities import get_raster_filepath
 
 
 def build_mask_single_channel(
@@ -75,19 +78,101 @@ def get_channels_out_count(cfg: CfgNode) -> int:
     return len(labels_config["class2label"])
 
 
-def get_classes_counts_from_df(
-    dataloader: DataLoader, target_metadata_path: str
-) -> dict:
-    """Returns the number of classes given config"""
-    samples_list = dataloader.dataset.dataset_list
+def get_counts_from_raster(target_raster_path, mask_config, classes_count):
+    target_np = raster_to_np(target_raster_path)
+    transformed_mask = build_mask(target_np, mask_config)
+    mask_unique = np.unique(transformed_mask, return_counts=True)
+    mask_counts = np.zeros(classes_count)
+    for i, count in zip(mask_unique[0], mask_unique[1]):
+        mask_counts[i] = count
 
-    class2label = dataloader.dataset.mask_config["class2label"]
+    return mask_counts
 
-    target_metadata = pd.read_csv(target_metadata_path)
 
-    dataloader_samples_metadata = target_metadata[
-        target_metadata["sample"].isin(samples_list)
-    ]
-    counts = dataloader_samples_metadata[list(class2label.values())].sum()
+def get_class_distribution(cfg, mask_config, subgrids_list):
 
-    return counts
+    class2label = mask_config["class2label"]
+    classes_count = len(class2label)
+    dataset_root = cfg.DATASET.ROOT
+    target_sensor_name = cfg.DATASET.MASK.SENSOR
+
+    classes_counts_single_mode = np.zeros(classes_count)
+    # Get target tensor
+    for sample_name in subgrids_list:
+        target_raster_path = get_raster_filepath(
+            dataset_root, sample_name, target_sensor_name
+        )
+
+        mask_counts = get_counts_from_raster(
+            target_raster_path, mask_config, classes_count
+        )
+        classes_counts_single_mode += mask_counts
+
+    classes_counts_single_mode = {
+        i: classes_counts_single_mode[i] for i in range(classes_count)
+    }
+
+    return classes_counts_single_mode
+
+
+def build_classes_distribution_json(cfg, mask_config):
+
+    classes_counts_all = {}
+
+    for mode in ["train", "val", "test"]:
+        subgrids_list = eval(f"get_lines_from_txt(cfg.DATASET.LIST_{mode.upper()})")
+
+        classes_counts_single_mode = get_class_distribution(
+            cfg, mask_config, subgrids_list
+        )
+
+        classes_counts_all[mode] = classes_counts_single_mode
+
+    json_save_path = cfg.DATASET.CLASSES_COUNT_JSON
+    with open(json_save_path, "w") as f:
+        json.dump(classes_counts_all, f)
+
+
+def get_classes_counts_from_json(cfg, mode):
+
+    json_save_path = cfg.DATASET.CLASSES_COUNT_JSON
+    with open(json_save_path, "r") as f:
+        classes_counts_all = json.load(f)
+
+    return classes_counts_all[mode]
+
+
+def build_masks_metadata_df(cfg, mask_config):
+
+    subgrids_list_train = get_lines_from_txt(cfg.DATASET.LIST_TRAIN)
+    subgrids_list_val = get_lines_from_txt(cfg.DATASET.LIST_VAL)
+    subgrids_list_test = get_lines_from_txt(cfg.DATASET.LIST_TEST)
+    subgrids_list_all = subgrids_list_train + subgrids_list_val + subgrids_list_test
+
+    dataset_root = cfg.DATASET.ROOT
+    target_sensor_name = cfg.DATASET.MASK.SENSOR
+    class2label = mask_config["class2label"]
+    classes_count = len(class2label)
+
+    all_counts = []
+    # Get target tensor
+    for sample_name in subgrids_list_all:
+        target_raster_path = get_raster_filepath(
+            dataset_root, sample_name, target_sensor_name
+        )
+
+        mask_counts = get_counts_from_raster(
+            target_raster_path, mask_config, classes_count
+        )
+
+        all_counts.append(mask_counts)
+
+    all_counts = np.stack(all_counts)
+    df_labels_counts = pd.DataFrame(
+        all_counts,
+        index=subgrids_list_all,
+        columns=[class2label[i] for i in range(classes_count)],
+    )
+
+    df_save_path = mask_config["MASKS_METADATA_PATH"]
+    df_labels_counts.to_csv(df_save_path, index_label="subgrid_name")
