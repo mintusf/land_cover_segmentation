@@ -7,6 +7,7 @@ from config.default import get_cfg_from_file
 from train_utils import get_loss, get_optimizer, get_lr_scheduler, save_checkpoint
 from models import get_model
 from dataset import get_dataloader
+from utils.io_utils import load_yaml
 
 test_config_path = os.path.join("config", "tests.yml")
 checkpoint_save_path = os.path.join("tests", "train_utils", "test_checkpoint")
@@ -73,6 +74,7 @@ def pytest_sessionfinish():
     assert os.path.isfile(cfg.DATASET.INPUT.STATS_FILE)
     os.remove(cfg.DATASET.INPUT.STATS_FILE)
     os.remove(cfg.DATASET.CLASSES_COUNT_JSON)
+    os.remove(load_yaml(cfg.DATASET.MASK.CONFIG)["MASKS_METADATA_PATH"])
     os.remove("tests/utils/test_vis.png")
     os.remove(checkpoint_save_path)
     rmtree(infer_directory)
