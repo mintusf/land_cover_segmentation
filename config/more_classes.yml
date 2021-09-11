@@ -15,7 +15,7 @@ DATASET:
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
     SENSOR: lc
-    CONFIG: "config/dataset/mask_configs/less_classes.yml"
+    CONFIG: "config/dataset/mask_configs/more_classes.yml"
   CLASSES_COUNT_JSON: "config/dataset/stats/classes_count.json"
 TRAIN:
   EPOCHS: 5

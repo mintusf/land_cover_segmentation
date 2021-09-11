@@ -211,7 +211,9 @@ def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
                     [(west, north), (east, north), (east, south), (west, south)]
                 )
 
-                out_image, out_transform = mask.mask(src, [polygon], crop=True)
+                out_image, out_transform = mask.mask(
+                    src, [polygon], crop=True, all_touched=True
+                )
                 out_meta = src.meta
 
                 out_meta.update(
