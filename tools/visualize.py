@@ -24,14 +24,14 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--config",
-        default="config/weighted_loss_more_snow.yml",
+        default="config/weighted_loss.yml",
         type=str,
         help="root directory in which files area searched for",
     )
 
     parser.add_argument(
         "--count",
-        default=100,
+        default=50,
         type=int,
         help="How many samples to visualized per label (selected randomly)",
     )
@@ -43,26 +43,7 @@ def parse_args() -> argparse.Namespace:
         help="path to save results",
     )
 
-    parser.add_argument(
-        "--labels",
-        nargs="+",
-        default=[
-            "urban",
-            "agricultural",
-            "barren",
-            "snow",
-            "water",
-            "dense_forest",
-            "open_forest",
-            "wetlands",
-            "grasslands",
-            "shrublands",
-            "tundra",
-            "other",
-        ],
-        type=str,
-        help="",
-    )
+    parser.add_argument("--labels", nargs="+", default=["urban"], type=str, help="")
     parser.add_argument("--threshold", default=6000, type=int, help="")
 
     args = parser.parse_args()
