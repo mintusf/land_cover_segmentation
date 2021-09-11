@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
         nargs="+",
         default=[
             "urban",
-            "agriculture",
+            "agricultural",
             "barren",
             "snow",
             "water",
