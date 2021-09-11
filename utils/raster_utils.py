@@ -181,7 +181,7 @@ def is_cropped(input_raster: str, crop_size: List[int]):
             return False
 
 
-def crop_raster(input_raster: str, dest_dir: str, area, crop_size: List[int]):
+def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
     """Crop raster into subgrids
     Args:
         input_img (str): Path to raster file
@@ -211,7 +211,9 @@ def crop_raster(input_raster: str, dest_dir: str, area, crop_size: List[int]):
                     [(west, north), (east, north), (east, south), (west, south)]
                 )
 
-                out_image, out_transform = mask.mask(src, [polygon], crop=True , all_touched=True)
+                out_image, out_transform = mask.mask(
+                    src, [polygon], crop=True, all_touched=True
+                )
                 out_meta = src.meta
 
                 out_meta.update(
@@ -223,11 +225,8 @@ def crop_raster(input_raster: str, dest_dir: str, area, crop_size: List[int]):
                     }
                 )
 
-                out_path = os.path.join(dest_dir, f"ROIs2020_snow_s2_{area}_{lat_idx * long_crop_num + long_idx}.tif")
-                os.makedirs(dest_dir, exist_ok=True)
+                out_path = os.path.join(dest_dir, f"crop_{lat_idx}_{long_idx}.tif")
+
                 with rio.open(out_path, "w", **out_meta) as dest:
                     dest.write(out_image)
                 files.append(out_path)
-mode = "test"
-for i in [8,9]:
-    crop_raster(input_raster=f"/data/seg_data/snow/raster/{mode}/ROIsnow_{i}.tiff", dest_dir=f"/data/seg_data/snow/ROIs2020_snow/s2_{i}/", area=i, crop_size=[256,256])
