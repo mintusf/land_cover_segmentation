@@ -15,7 +15,7 @@ DATASET:
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
     SENSOR: lc
-    CONFIG: "config/dataset/mask_configs/default.yml"
+    CONFIG: "config/dataset/mask_configs/less_classes.yml"
   CLASSES_COUNT_JSON: "config/dataset/stats/classes_count_more_snow.json"
 TRAIN:
   EPOCHS: 5
@@ -39,7 +39,7 @@ TRAIN:
     PATIENCE: 2
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
-  COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow"]
+  COMET_TAGS: ["experiment", "crossentropy","weighted_loss"]
 TEST:
   DEVICE: "cuda:0"
   WORKERS: 4
