@@ -1,0 +1,60 @@
+maskname2int:
+  IGBP: 0
+  LCCS_LC: 1
+  LCCS_LU: 2
+  LCCS_SH: 3
+channels_priority: ["LCCS_LU", "LCCS_SH"]
+selected_masks:
+  LCCS_LU:
+    1: [9]
+    2: [25]
+    3: [35]
+    4: [36]
+  LCCS_SH:
+    5: [1]
+    6: [2]
+    7: [3]
+    8: [10]
+    9: [20]
+    10: [27]
+    11: [50]
+    12: [30]
+    13: [40]
+    14: [51]
+    0: [0]
+class2label:
+  1: "urban"
+  2: "forrest/cropland mosaics"
+  3: "herba/cropland mosaics"
+  4: "herba croplands"
+  5: "barren"
+  6: "snow"
+  7: "water"
+  8: "dense_forest"
+  9: "open_forest"
+  10: "woody wetlands"
+  11: "herba wetlands"
+  12: "grasslands"
+  13: "shrublands"
+  14: "tundra"
+  0: "other"
+
+# Visualization
+alpha: 0.3
+colors:
+  1: [200, 200, 200]
+  2: [195, 255, 84]
+  3: [0, 0, 0]
+  4: [255, 0, 0]
+  5: [255,211,92]
+  6: [255, 255, 255]
+  7: [60, 38, 201]
+  8: [2, 110, 40]
+  9: [6, 143, 54]
+  10: [100, 143, 16]
+  11: [0, 255, 0]
+  12: [151, 166, 22]
+  13: [186, 201, 157]
+  14: [9, 69, 15]
+  0: [0, 0, 0]
+MASKS_METADATA_PATH:  "/data/seg_data/masks_metadata_more_classes.csv"

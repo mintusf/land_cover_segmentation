@@ -1,0 +1,46 @@
+IS_TEST: False
+
+MODEL:
+  TYPE: DeepLab
+
+DATASET:
+  ROOT: "/data/seg_data"
+  LIST_TRAIN: "config/dataset/lists/train.txt"
+  LIST_VAL: "config/dataset/lists/val.txt"
+  LIST_TEST: "config/dataset/lists/test.txt"
+  INPUT:
+    SENSOR: s2
+    USED_CHANNELS: [1,2,3,4]
+    STATS_FILE: "config/dataset/stats/channels_stats.json"
+    CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
+  MASK:
+    SENSOR: lc
+    CONFIG: "config/dataset/mask_configs/more_classes.yml"
+  CLASSES_COUNT_JSON: "config/dataset/stats/classes_count.json"
+TRAIN:
+  EPOCHS: 5
+  RESUME_CHECKPOINT: ""
+  BATCH_SIZE_PER_DEVICE: 8
+  DEVICE: "cuda:0"
+  WORKERS: 8
+  SHUFFLE: True
+  SEED: 42
+  LOSS:
+    TYPE: "categorical_crossentropy"
+    USE_WEIGHTS: True
+  OPTIMIZER: "adam"
+  LR: 0.01
+  WEIGHT_DECAY: 0.0001
+  VERBOSE_STEP: 100
+  VAL_PER_EPOCH: 6
+  SCHEDULER:
+    TYPE: "ReduceLROnPlateau"
+    FACTOR: 0.2
+    PATIENCE: 2
+  WEIGHTS_FOLDER: "weights"
+  USE_COMET: True
+  COMET_TAGS: ["experiment", "crossentropy","weighted_loss"]
+TEST:
+  DEVICE: "cuda:0"
+  WORKERS: 4
+  BATCH_SIZE_PER_DEVICE: 8
