@@ -24,7 +24,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument(
         "--config",
-        default="config/more_classes.yml",
+        default="config/weighted_loss_more_snow.yml",
         type=str,
         help="root directory in which files area searched for",
     )
@@ -48,16 +48,13 @@ def parse_args() -> argparse.Namespace:
         nargs="+",
         default=[
             "urban",
-            "forrest/cropland mosaics",
-            "herba/cropland mosaics",
-            "herba croplands",
+            "agriculture",
             "barren",
             "snow",
             "water",
             "dense_forest",
             "open_forest",
-            "woody wetlands",
-            "herba wetlands",
+            "wetlands",
             "grasslands",
             "shrublands",
             "tundra",
