@@ -32,6 +32,19 @@ class2label:
   10: "shrublands"
   11: "tundra"
   0: "other"
+class_importance:
+  1: 2
+  2: 2
+  3: 1
+  4: 1
+  5: 2
+  6: 1
+  7: 0.8
+  8: 0.5
+  9: 1
+  10: 0.5
+  11: 0.2
+  0: 0.0
 
 # Visualization
 alpha: 0.3
