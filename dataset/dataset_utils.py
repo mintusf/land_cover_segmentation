@@ -174,5 +174,5 @@ def build_masks_metadata_df(cfg, mask_config):
         columns=[class2label[i] for i in range(classes_count)],
     )
 
-    df_save_path = cfg.DATASET.MASKS_METADATA_PATH
+    df_save_path = mask_config["MASKS_METADATA_PATH"]
     df_labels_counts.to_csv(df_save_path, index_label="subgrid_name")
