@@ -13,6 +13,7 @@ from dataset import (
     build_classes_distribution_json,
     get_classes_counts_from_json,
 )
+from utils.io_utils import load_yaml
 
 logger = logging.getLogger("global")
 
@@ -25,7 +26,7 @@ def get_loss(cfg):
             logger.info(f"Loss {cfg.TRAIN.LOSS.TYPE} does not support weights")
             weights = None
         else:
-            weights = get_class_weights(cfg, cfg.DATASET.MASK.CONFIGa)
+            weights = get_class_weights(cfg)
 
             if "cuda" in cfg.TRAIN.DEVICE:
                 if "all" in cfg.TRAIN.DEVICE:
@@ -225,7 +226,7 @@ class FocalLoss(nn.Module):
         )
 
 
-def get_class_weights(cfg: CfgNode, mask_config: dict) -> Tensor:
+def get_class_weights(cfg: CfgNode) -> Tensor:
     """Returns class weights for a given dataset.
 
     Args:
@@ -235,12 +236,17 @@ def get_class_weights(cfg: CfgNode, mask_config: dict) -> Tensor:
     Returns:
         Tensor: Tensor with classes' weights.
     """
+    mask_config = load_yaml(cfg.DATASET.MASK.CONFIG)
     classes_count = len(mask_config["class2label"])
+    class_importance = mask_config["class_importance"]
     if not os.path.isfile(cfg.DATASET.CLASSES_COUNT_JSON):
         build_classes_distribution_json(cfg, mask_config)
     counts = get_classes_counts_from_json(cfg, "train")
     print(counts)
 
-    weights = [1 / (counts[str(i)] + 10e-6) for i in range(classes_count)]
+    weights = [
+        1 / ((counts[str(i)] * class_importance[i]) + 10e-6)
+        for i in range(classes_count)
+    ]
 
     return Tensor(weights)

@@ -27,7 +27,7 @@ TRAIN:
   SEED: 42
   LOSS:
     TYPE: "categorical_crossentropy"
-    USE_WEIGHTS: False
+    USE_WEIGHTS: True
   OPTIMIZER: "adam"
   LR: 0.001
   WEIGHT_DECAY: 0.0005
