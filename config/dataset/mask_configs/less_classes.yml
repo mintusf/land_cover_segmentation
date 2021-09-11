@@ -7,31 +7,30 @@ channels_priority: ["LCCS_LU", "LCCS_SH"]
 selected_masks:
   LCCS_LU:
     1: [9]
-    2: [25]
-    3: [35]
-    4: [36]
+    2: [25, 35, 36]
   LCCS_SH:
-    5: [1]
-    6: [3]
-    7: [10, 20]
+    3: [1]
+    4: [2]
+    5: [3]
+    6: [10]
+    7: [20]
     8: [27, 50]
     9: [30]
     10: [40]
     11: [51]
-    0: [0, 2]
+    1: [0]
 class2label:
   1: "urban"
-  2: "forest_cropland_mosaics"
-  3: "herbaceous_cropland_mosaics"
-  4: "herbaceous_cropland"
-  5: "barren"
-  6: "water"
-  7: "forest"
+  2: "agricultural"
+  3: "barren"
+  4: "snow"
+  5: "water"
+  6: "dense_forest"
+  7: "open_forest"
   8: "wetlands"
   9: "grasslands"
   10: "shrublands"
   11: "tundra"
-  0: "other"
 
 # Visualization
 alpha: 0.3
@@ -47,5 +46,4 @@ colors:
   9: [151, 166, 22]
   10: [186, 201, 157]
   11: [9, 69, 15]
-  0: [0, 0, 0]
-MASKS_METADATA_PATH:  "/data/seg_data/masks_metadata_v2.csv"
+MASKS_METADATA_PATH:  "/data/seg_data/masks_metadata_default.csv"
