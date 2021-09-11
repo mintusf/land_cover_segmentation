@@ -5,9 +5,9 @@ MODEL:
 
 DATASET:
   ROOT: "/data/seg_data"
-  LIST_TRAIN: "config/dataset/lists/train.txt"
-  LIST_VAL: "config/dataset/lists/val.txt"
-  LIST_TEST: "config/dataset/lists/test.txt"
+  LIST_TRAIN: "config/dataset/lists/train_more_snow.txt"
+  LIST_VAL: "config/dataset/lists/val_more_snow.txt"
+  LIST_TEST: "config/dataset/lists/test_more_snow.txt"
   INPUT:
     SENSOR: s2
     USED_CHANNELS: [1,2,3,4]
@@ -39,7 +39,7 @@ TRAIN:
     PATIENCE: 2
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
-  COMET_TAGS: ["experiment", "crossentropy","weighted_loss"]
+  COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow"]
 TEST:
   DEVICE: "cuda:0"
   WORKERS: 4
