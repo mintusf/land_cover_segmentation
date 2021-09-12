@@ -48,7 +48,7 @@ class PatchDataset(Dataset):
 
         self.mode = samples_list
 
-        self.dataset_list = get_lines_from_txt(self.dataset_list_path)
+        self.dataset_list = get_lines_from_txt(self.dataset_list_path, shuffle=True)
 
         self.transforms = transforms
         self.device = (
