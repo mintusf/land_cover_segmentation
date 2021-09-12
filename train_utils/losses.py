@@ -245,7 +245,7 @@ def get_class_weights(cfg: CfgNode) -> Tensor:
     print(counts)
 
     weights = [
-        1 / ((counts[str(i)] * class_importance[i]) + 10e-6)
+        (1 / ((counts[str(i)] + 10e-6))) * class_importance[i]
         for i in range(classes_count)
     ]
 
