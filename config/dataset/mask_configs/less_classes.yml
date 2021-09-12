@@ -58,4 +58,4 @@ colors:
   8: [100, 143, 16]
   9: [151, 166, 22]
   10: [186, 201, 157]
-MASKS_METADATA_PATH:  "/data/seg_data/masks_metadata_default.csv"
+MASKS_METADATA_PATH:  "/data/seg_data/masks_metadata_less_classes.csv"
