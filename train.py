@@ -117,7 +117,14 @@ def run_training(cfg_path: str) -> None:
                         + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
                     log_metrics_comet(
-                        cfg, {"train_loss": current_loss}, experiment, epoch, batch_no
+                        cfg,
+                        {
+                            "train_loss": current_loss,
+                            "learning_rate": optimizer.param_groups[0]["lr"],
+                        },
+                        experiment,
+                        epoch,
+                        batch_no,
                     )
 
             # validation step

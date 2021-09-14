@@ -1,7 +1,7 @@
 import logging
 
 from torch.optim import Optimizer
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR
 from yacs.config import CfgNode
 
 from utils.logger import init_log
@@ -9,7 +9,7 @@ from utils.logger import init_log
 logger = logging.getLogger("global")
 
 
-def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode):
+def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode, start_epoch: int = 0):
     """Returns LR scheduler module"""
 
     # Get mode
@@ -24,6 +24,14 @@ def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode):
             mode,
             factor=cfg.TRAIN.SCHEDULER.FACTOR,
             patience=cfg.TRAIN.SCHEDULER.PATIENCE,
+            verbose=True,
+        )
+    elif cfg.TRAIN.SCHEDULER.TYPE == "StepLR":
+        scheduler = StepLR(
+            optimizer,
+            step_size=cfg.TRAIN.SCHEDULER.PATIENCE,
+            gamma=cfg.TRAIN.SCHEDULER.FACTOR,
+            last_epoch=start_epoch - 1,
             verbose=True,
         )
     elif cfg.TRAIN.SCHEDULER.TYPE == "None":
