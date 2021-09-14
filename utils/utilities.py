@@ -66,7 +66,7 @@ def build_dataset_stats_json(
     ]
 
     for file in filepaths:
-        image_means, image_stds = get_stats(file)
+        image_means, image_stds = get_stats(file, len(channels_list))
         means.append(image_means)
         stds.append(image_stds)
 
@@ -75,12 +75,13 @@ def build_dataset_stats_json(
 
     # Since all images have same amount of pixels,
     # mean of combination is mean of means
-    global_mean = np.mean(means, axis=0)
+    means = np.stack(means)
+    global_mean = np.nanmean(means, axis=0)
 
     # Calculate std of combination
     _N = stds.shape[0]
-    std_squared_sum = np.sum(stds ** 2, axis=0)
-    means_difference_squared_sum = np.sum((means - global_mean) ** 2, axis=0)
+    std_squared_sum = np.nansum(stds ** 2, axis=0)
+    means_difference_squared_sum = np.nansum((means - global_mean) ** 2, axis=0)
     global_std = ((std_squared_sum + means_difference_squared_sum) / (_N)) ** 0.5
 
     means_dict = {band: mean.item() for band, mean in zip(channels_list, global_mean)}

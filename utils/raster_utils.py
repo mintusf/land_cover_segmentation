@@ -127,11 +127,13 @@ def raster_to_tensor(
     return img_tensor
 
 
-def get_stats(file: str) -> Tuple[np.array]:
+def get_stats(file: str, channels_count: int) -> Tuple[np.array]:
     """Gets raster's mean and std for each channel.
 
     Args:
         file (str): Path to the raster
+        channels_count (int): Target number of channels in the raster
+                              If actual number is smaller, stats set to np.nan
 
     Returns:
         Tuple[np.array]: (mean, std)
@@ -139,6 +141,13 @@ def get_stats(file: str) -> Tuple[np.array]:
     img_np = raster_to_np(file)
     image_stds = np.std(img_np, axis=(1, 2))
     image_means = np.mean(img_np, axis=(1, 2))
+
+    # Pad to channels_count
+    if image_means.shape[0]:
+        pad = np.empty(channels_count - image_stds.shape[0])
+        pad.fill(np.nan)
+        image_stds = np.concatenate([image_stds, pad])
+        image_means = np.concatenate([image_means, pad])
     return image_means, image_stds
 
 
