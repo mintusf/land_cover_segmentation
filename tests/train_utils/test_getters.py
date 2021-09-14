@@ -28,9 +28,9 @@ def test_get_lr_scheduler(test_config):
 
     test_config.defrost()
     for lr_scheduler, scheduler_type in zip(
-        ["ReduceLROnPlateau", "StepLR", "None"], [ReduceLROnPlateau, StepLR, None]
+        ["ReduceLROnPlateau", "StepLR", "None"], [ReduceLROnPlateau, StepLR, type(None)]
     ):
-        test_config.TRAIN.LR_SCHEDULER = lr_scheduler
+        test_config.TRAIN.SCHEDULER.TYPE = lr_scheduler
 
         scheduler = get_lr_scheduler(optimizer, test_config)
 
