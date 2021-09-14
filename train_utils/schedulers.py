@@ -32,7 +32,6 @@ def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode, start_epoch: int = 0):
             step_size=cfg.TRAIN.SCHEDULER.PATIENCE,
             gamma=cfg.TRAIN.SCHEDULER.FACTOR,
             last_epoch=start_epoch - 1,
-            verbose=True,
         )
     elif cfg.TRAIN.SCHEDULER.TYPE == "None":
         scheduler = None
