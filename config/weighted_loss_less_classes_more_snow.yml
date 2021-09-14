@@ -34,9 +34,9 @@ TRAIN:
   VERBOSE_STEP: 100
   VAL_PER_EPOCH: 6
   SCHEDULER:
-    TYPE: "ReduceLROnPlateau"
-    FACTOR: 0.2
-    PATIENCE: 12
+    TYPE: "StepLR"
+    FACTOR: 0.5
+    PATIENCE: 6
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
   COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow"]
