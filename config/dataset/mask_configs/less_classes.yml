@@ -16,11 +16,10 @@ selected_masks:
     7: [20]
     8: [27, 50]
     9: [30]
-    10: [40]
-    0: [51]
+    0: [51, 40]
     1: [0]
 class2label:
-  0: "tundra"
+  0: "shrublands"
   1: "urban"
   2: "agricultural"
   3: "barren"
@@ -30,7 +29,6 @@ class2label:
   7: "open_forest"
   8: "wetlands"
   9: "grasslands"
-  10: "shrublands"
 class_importance:
   0: 1
   1: 1
@@ -42,12 +40,11 @@ class_importance:
   7: 1
   8: 1
   9: 1
-  10: 1
 
 # Visualization
 alpha: 0.3
 colors:
-  0: [9, 69, 15]
+  0: [186, 201, 157]
   1: [200, 200, 200]
   2: [195, 255, 84]
   3: [255,211,92]
@@ -57,5 +54,4 @@ colors:
   7: [6, 143, 54]
   8: [100, 143, 16]
   9: [151, 166, 22]
-  10: [186, 201, 157]
 MASKS_METADATA_PATH:  "/data/seg_data/masks_metadata_less_classes.csv"
