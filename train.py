@@ -92,6 +92,7 @@ def run_training(cfg_path: str) -> None:
     # run the training loop
     losses = []
     best_val_metrics = {}
+    current_loss = None
     for epoch in range(start_epoch, epochs + 1):
         batch_no = 0
         for train_phase in range(cfg.TRAIN.VAL_PER_EPOCH):
