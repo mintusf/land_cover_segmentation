@@ -41,3 +41,15 @@ def get_lr_scheduler(optimizer: Optimizer, cfg: CfgNode, start_epoch: int = 0):
     logger.info(f"Used scheduler: {scheduler}")
 
     return scheduler
+
+
+def update_scheduler(cfg: CfgNode, scheduler, val_loss: float) -> None:
+    """Updates scheduler"""
+    if cfg.TRAIN.SCHEDULER.TYPE == "ReduceLROnPlateau":
+        scheduler.step(val_loss)
+    elif cfg.TRAIN.SCHEDULER.TYPE == "StepLR":
+        scheduler.step()
+    elif cfg.TRAIN.SCHEDULER.TYPE == "None":
+        pass
+    else:
+        raise NotImplementedError

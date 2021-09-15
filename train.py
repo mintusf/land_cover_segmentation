@@ -13,6 +13,7 @@ from train_utils import (
     training_step,
     model_validation,
     get_lr_scheduler,
+    update_scheduler,
     validate_metrics,
 )
 from dataset import get_dataloader
@@ -60,14 +61,13 @@ def run_training(cfg_path: str) -> None:
     _ = get_dataloader(cfg, "test")
 
     if not cfg.IS_TEST:
-        assert is_intersection_empty(train_dataloader, val_dataloader)
+    assert is_intersection_empty(train_dataloader, val_dataloader)
 
     # load the model
     model = get_model(cfg, cfg.TRAIN.DEVICE)
 
     # load the optimizer
     optimizer = get_optimizer(model, cfg)
-    scheduler = get_lr_scheduler(optimizer, cfg)
 
     # load the weights if training resumed
     if os.path.isfile(cfg.TRAIN.RESUME_CHECKPOINT):
@@ -88,6 +88,7 @@ def run_training(cfg_path: str) -> None:
         criterion = get_loss(cfg)
 
     epochs = cfg.TRAIN.EPOCHS
+    scheduler = get_lr_scheduler(optimizer, cfg, start_epoch - 1)
 
     # run the training loop
     losses = []
@@ -132,7 +133,7 @@ def run_training(cfg_path: str) -> None:
             val_metrics = model_validation(model, criterion, val_dataloader)
             val_loss = val_metrics["val_loss"]
             logger.info(f"Val loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}")
-            scheduler.step(val_loss)
+            update_scheduler(cfg, scheduler, val_loss)
             log_metrics_comet(cfg, val_metrics, experiment, epoch, batch_no)
             validate_metrics(
                 val_metrics,
