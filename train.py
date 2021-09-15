@@ -61,7 +61,7 @@ def run_training(cfg_path: str) -> None:
     _ = get_dataloader(cfg, "test")
 
     if not cfg.IS_TEST:
-    assert is_intersection_empty(train_dataloader, val_dataloader)
+        assert is_intersection_empty(train_dataloader, val_dataloader)
 
     # load the model
     model = get_model(cfg, cfg.TRAIN.DEVICE)
