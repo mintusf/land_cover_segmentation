@@ -13,6 +13,7 @@ from train_utils import (
     training_step,
     model_validation,
     get_lr_scheduler,
+    update_scheduler,
     validate_metrics,
 )
 from dataset import get_dataloader
@@ -67,7 +68,6 @@ def run_training(cfg_path: str) -> None:
 
     # load the optimizer
     optimizer = get_optimizer(model, cfg)
-    scheduler = get_lr_scheduler(optimizer, cfg)
 
     # load the weights if training resumed
     if os.path.isfile(cfg.TRAIN.RESUME_CHECKPOINT):
@@ -88,10 +88,12 @@ def run_training(cfg_path: str) -> None:
         criterion = get_loss(cfg)
 
     epochs = cfg.TRAIN.EPOCHS
+    scheduler = get_lr_scheduler(optimizer, cfg, start_epoch - 1)
 
     # run the training loop
     losses = []
     best_val_metrics = {}
+    current_loss = None
     for epoch in range(start_epoch, epochs + 1):
         batch_no = 0
         for train_phase in range(cfg.TRAIN.VAL_PER_EPOCH):
@@ -117,14 +119,21 @@ def run_training(cfg_path: str) -> None:
                         + f"batch {batch_no + 1}: {current_loss:.4f}"
                     )
                     log_metrics_comet(
-                        cfg, {"train_loss": current_loss}, experiment, epoch, batch_no
+                        cfg,
+                        {
+                            "train_loss": current_loss,
+                            "learning_rate": optimizer.param_groups[0]["lr"],
+                        },
+                        experiment,
+                        epoch,
+                        batch_no,
                     )
 
             # validation step
             val_metrics = model_validation(model, criterion, val_dataloader)
             val_loss = val_metrics["val_loss"]
             logger.info(f"Val loss at epoch {epoch} batch {batch_no+1}: {val_loss:.4f}")
-            scheduler.step(val_loss)
+            update_scheduler(cfg, scheduler, val_loss)
             log_metrics_comet(cfg, val_metrics, experiment, epoch, batch_no)
             validate_metrics(
                 val_metrics,

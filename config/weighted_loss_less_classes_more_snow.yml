@@ -11,17 +11,17 @@ DATASET:
   INPUT:
     SENSOR: s2
     USED_CHANNELS: [1,2,3,4]
-    STATS_FILE: "config/dataset/stats/channels_stats_more_snow.json"
+    STATS_FILE: "config/dataset/stats/channels_stats_less_classes_more_snow.json"
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/less_classes.yml"
-  CLASSES_COUNT_JSON: "config/dataset/stats/classes_count_more_snow.json"
+  CLASSES_COUNT_JSON: "config/dataset/stats/classes_count_less_classes_more_snow.json"
 TRAIN:
   EPOCHS: 20
   RESUME_CHECKPOINT: ""
-  BATCH_SIZE_PER_DEVICE: 2
-  DEVICE: "cuda:all"
+  BATCH_SIZE_PER_DEVICE: 8
+  DEVICE: "cuda:0"
   WORKERS: 8
   SHUFFLE: True
   SEED: 42
@@ -34,13 +34,9 @@ TRAIN:
   VERBOSE_STEP: 100
   VAL_PER_EPOCH: 6
   SCHEDULER:
-    TYPE: "ReduceLROnPlateau"
-    FACTOR: 0.2
+    TYPE: "StepLR"
+    FACTOR: 0.5
     PATIENCE: 12
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
   COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow"]
-TEST:
-  DEVICE: "cuda:0"
-  WORKERS: 4
-  BATCH_SIZE_PER_DEVICE: 8
