@@ -82,7 +82,7 @@ def get_dataloader(cfg: CfgNode, samples_list: str) -> DataLoader:
         f"\nDataloader used for {samples_list}:\n" + print_dataloader(dataloader) + "\n"
     )
 
-    if not cfg.IS_TEST:
+    if not cfg.IS_TEST and samples_list in ["train", "val"]:
         if not os.path.isfile(cfg.DATASET.CLASSES_COUNT_JSON):
             build_classes_distribution_json(cfg, dataloader.dataset.mask_config)
         counts = get_classes_counts_from_json(cfg, samples_list)
