@@ -40,3 +40,7 @@ TRAIN:
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
   COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow"]
+TEST:
+  DEVICE: "cuda:0"
+  WORKERS: 4
+  BATCH_SIZE_PER_DEVICE: 8
