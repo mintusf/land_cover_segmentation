@@ -234,7 +234,10 @@ def crop_raster(input_raster: str, dest_dir: str, crop_size: List[int]):
                     }
                 )
 
-                out_path = os.path.join(dest_dir, f"crop_{lat_idx}_{long_idx}.tif")
+                raster_name = os.path.splitext(os.path.split(input_raster)[1])[0]
+                out_path = os.path.join(
+                    dest_dir, f"{raster_name}_{lat_idx}_{long_idx}.tif"
+                )
 
                 with rio.open(out_path, "w", **out_meta) as dest:
                     dest.write(out_image)
