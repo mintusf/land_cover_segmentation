@@ -10,7 +10,7 @@ DATASET:
   LIST_TEST: "config/dataset/lists/test_more_snow.txt"
   INPUT:
     SENSOR: s2
-    USED_CHANNELS: [1,2,3,4]
+    USED_CHANNELS: [0,1,2,3,4,5,6,7,8,9,10,11,12]
     STATS_FILE: "config/dataset/stats/channels_stats_less_classes_more_snow.json"
     CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
   MASK:
@@ -22,7 +22,7 @@ TRAIN:
   RESUME_CHECKPOINT: ""
   BATCH_SIZE_PER_DEVICE: 8
   DEVICE: "cuda:0"
-  WORKERS: 8
+  WORKERS: 4
   SHUFFLE: True
   SEED: 42
   LOSS:
@@ -39,7 +39,7 @@ TRAIN:
     PATIENCE: 12
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
-  COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow"]
+  COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow","all_channels"]
 TEST:
   DEVICE: "cuda:0"
   WORKERS: 4
