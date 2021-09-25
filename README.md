@@ -45,7 +45,22 @@ SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
 
 ## Results
 
-### **Confusion matrix:**
+### **Metrics (test set)**
+
+| class | recall | precision  |      f1|
+|-|-|-|-|
+| shrublands    | 0.931397 |  0.398179  |0.557866|
+| urban         | 0.748475 |  0.679214  |0.712164|
+| agricultural  | 0.883135 |  0.235822  |0.372244|
+| barren        | 0.389128 |  0.851968  |0.534245|
+| snow          | 1.000000 |  0.999835  |0.999917|
+| water         | 0.818348 |  0.959264  |0.883221|
+| dense_forest  | 0.659396 |  0.670900  |0.665098|
+| open_forest   | 0.373307 |  0.728801  |0.493720|
+| wetlands      | 0.473258 |  0.213453  |0.294209|
+| grasslands    | 0.003759 |  0.612439  |0.007472|
+
+
 
 ![Confusion_matrix](assets/Confusion_matrix.PNG)
 
@@ -58,10 +73,15 @@ SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
 
 #### Test dataset
 
-![Results1](assets/results1.PNG)
-![Results2](assets/results2.PNG)
-![Results3](assets/results3.PNG)
-![Results4](assets/results4.PNG)
+| Stree Map | Satelite image alphablended with predictions masks |
+|-|-|
+| ![1-1](assets/1-1.PNG) | ![1-2](assets/1-2.PNG) |
+| ![2-1](assets/2-1.PNG) | ![2-2](assets/2-2.PNG) |
+| ![3-1](assets/3-1.PNG) | ![3-2](assets/3-2.PNG) |
+| ![4-1](assets/4-1.PNG) | ![4-2](assets/4-2.PNG) |
+| ![5-1](assets/5-1.PNG) | ![5-2](assets/5-2.PNG) |
+| ![6-1](assets/6-1.PNG) | ![6-2](assets/6-2.PNG) |
+| ![7-1](assets/7-1.PNG) | ![7-2](assets/7-2.PNG) |
 
 #### Real-life test (Sentinel image downloaded from EOBrowser)
 
