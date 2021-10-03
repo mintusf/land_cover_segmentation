@@ -13,7 +13,9 @@ from utils.utilities import get_raster_filepath
 
 
 class PatchDataset(Dataset):
-    def __init__(self, cfg: CfgNode, samples_list: str, transforms=None):
+    def __init__(
+        self, cfg: CfgNode, samples_list: str, transforms=None, aug_transforms=None
+    ):
         """Patch Dataset initialization
 
         Args:
@@ -23,6 +25,8 @@ class PatchDataset(Dataset):
                                 If a path, Dataset is used in inference mode and
                                 only input is generated.
             transforms (callable, optional): Optional transform to be applied
+            aug_transforms (callable, optional): Optional data augmentation transforms
+                                                 to be applied
         """
         self.cfg = cfg
 
@@ -51,6 +55,8 @@ class PatchDataset(Dataset):
         self.dataset_list = get_lines_from_txt(self.dataset_list_path, shuffle=True)
 
         self.transforms = transforms
+        self.aug_transforms = aug_transforms
+
         self.device = (
             cfg.TRAIN.DEVICE if self.mode in ["train", "val"] else cfg.TEST.DEVICE
         )
@@ -115,8 +121,15 @@ class PatchDataset(Dataset):
             target_tensor = target_tensor.to(device).long()
             sample["target"] = target_tensor
 
-        # Tranform
-        if self.transforms:
+        # Transform
+        if self.transforms is not None:
             sample = self.transforms(sample)
+
+        if self.aug_transforms is not None:
+            augmented = self.aug_transforms(
+                image=sample["input"], mask=sample["target"]
+            )
+            sample["input"] = augmented["image"]
+            sample["target"] = augmented["mask"]
 
         return sample
