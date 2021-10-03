@@ -9,7 +9,7 @@ from utils.io_utils import load_yaml
 def test_deeplab_forward(test_config):
     test_config.defrost()
     test_config.MODEL.TYPE = "hrnet"
-    test_config.MODEL.CONFIG = "/data/land_cover_tracking/config/model/hrnet.yml"
+    test_config.MODEL.CONFIG = "./config/model/hrnet.yml"
     channels_in = len(test_config.DATASET.INPUT.USED_CHANNELS)
     labels_config = load_yaml(test_config.DATASET.MASK.CONFIG)
     channels_out = len(labels_config["class2label"])
@@ -32,3 +32,5 @@ def test_deeplab_forward(test_config):
     assert pred.shape[1] == channels_out
     assert pred.shape[2] == 256
     assert pred.shape[3] == 256
+
+    test_config.MODEL.TYPE = "DeepLab"
