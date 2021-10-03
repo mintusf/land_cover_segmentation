@@ -83,16 +83,32 @@ class PatchDataset(Dataset):
         # Get sample name
         sample_name = self.dataset_list[index]
 
-        # Get input tensor
+        # Get input numpy array
         if os.path.isfile(sample_name):
             input_raster_path = sample_name
         else:
             input_raster_path = get_raster_filepath(
                 self.dataset_root, sample_name, self.input_sensor_name
             )
-        input_tensor = raster_to_tensor(
-            input_raster_path, bands=self.input_used_channels
-        )
+        input_np = raster_to_np(input_raster_path, bands=self.input_used_channels)
+
+        # Get target numpy array
+        if self.mode != "infer":
+            # Get target tensor
+            target_raster_path = get_raster_filepath(
+                self.dataset_root, sample_name, self.target_sensor_name
+            )
+            target_np = raster_to_np(target_raster_path)
+            transformed_mask = build_mask(target_np, self.mask_config)
+
+        # Apply data augmentation
+        if self.mode == "train":
+            if self.aug_transforms is not None:
+                input_np = input_np.transpose(1, 2, 0)
+                augmented = self.aug_transforms(image=input_np, mask=transformed_mask)
+                augmented["image"] = augmented["image"].transpose(2, 0, 1)
+                input_np = augmented["image"]
+                transformed_mask = augmented["mask"]
 
         if "cuda" in self.device:
             if "all" in self.device:
@@ -106,17 +122,12 @@ class PatchDataset(Dataset):
         else:
             raise NotImplementedError
 
+        input_tensor = np_to_torch(input_np)
         input_tensor = input_tensor.to(device).float()
 
         sample = {"input": input_tensor, "name": sample_name}
 
         if self.mode != "infer":
-            # Get target tensor
-            target_raster_path = get_raster_filepath(
-                self.dataset_root, sample_name, self.target_sensor_name
-            )
-            target_np = raster_to_np(target_raster_path)
-            transformed_mask = build_mask(target_np, self.mask_config)
             target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
             target_tensor = target_tensor.to(device).long()
             sample["target"] = target_tensor
@@ -124,12 +135,5 @@ class PatchDataset(Dataset):
         # Transform
         if self.transforms is not None:
             sample = self.transforms(sample)
-
-        if self.aug_transforms is not None:
-            augmented = self.aug_transforms(
-                image=sample["input"], mask=sample["target"]
-            )
-            sample["input"] = augmented["image"]
-            sample["target"] = augmented["mask"]
 
         return sample
