@@ -34,3 +34,4 @@ def test_deeplab_forward(test_config):
     assert pred.shape[3] == 256
 
     test_config.MODEL.TYPE = "DeepLab"
+    test_config.MODEL.CONFIG = ""
