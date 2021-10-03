@@ -77,15 +77,16 @@ def run_training(cfg_path: str) -> None:
             optimizer_state,
             current_loss,
             checkpoint_cfg,
-        ) = load_checkpoint(cfg, cfg.TRAIN.DEVICE)
+        ) = load_checkpoint(cfg.TRAIN.RESUME_CHECKPOINT, cfg.TRAIN.DEVICE)
         if checkpoint_cfg != cfg:
             raise Exception("The checkpoint config is different from the config file.")
-        model.load_state_dict(optimizer_state)
-        optimizer.load_state_dict(weights)
+        model.load_state_dict(weights)
+        optimizer.load_state_dict(optimizer_state)
         logger.info(f"Checkpoint {cfg.TRAIN.RESUME_CHECKPOINT} loaded")
     else:
         start_epoch = 1
-        criterion = get_loss(cfg)
+
+    criterion = get_loss(cfg)
 
     epochs = cfg.TRAIN.EPOCHS
     scheduler = get_lr_scheduler(optimizer, cfg, start_epoch - 1)
