@@ -29,7 +29,7 @@ def get_model(cfg: CfgNode, device: str) -> Module:
         channels_in = get_channels_in_count(cfg)
         channels_out = get_channels_out_count(cfg)
         model = create_deeplab(channels_in, channels_out)
-    if cfg.MODEL.TYPE == "hrnet":
+    elif cfg.MODEL.TYPE == "hrnet":
         channels_in = get_channels_in_count(cfg)
         channels_out = get_channels_out_count(cfg)
         model_config = load_yaml(cfg.MODEL.CONFIG)
