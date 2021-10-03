@@ -17,6 +17,7 @@ DATASET:
   MASK:
     SENSOR: lc
     CONFIG: "config/dataset/mask_configs/less_classes.yml"
+  SHAPE: [256, 256]
   CLASSES_COUNT_JSON: "config/dataset/stats/classes_count_less_classes_more_snow.json"
 TRAIN:
   EPOCHS: 20
@@ -41,6 +42,17 @@ TRAIN:
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
   COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow","all_channels"]
+  DATA_AUG:
+    RANDOM_RESIZE_CROP:
+      USE: True
+      SCALE: [0.9, 1.1]
+      RATIO: [0.9, 1.1]
+      PROBABILITY: 0.6
+    RANDOM_BRIGHTNESS_CONTRAST:
+      USE: True
+      BRIGHTNESS_CHANGE: 0.2
+      CONTRAST_CHANGE: 0.1
+      PROBABILITY: 0.6
 TEST:
   DEVICE: "cuda:0"
   WORKERS: 4
