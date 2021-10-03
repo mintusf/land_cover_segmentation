@@ -45,8 +45,8 @@ TRAIN:
   DATA_AUG:
     RANDOM_RESIZE_CROP:
       USE: True
-      SCALE: [0.9, 1.1]
-      RATIO: [0.9, 1.1]
+      SCALE: [0.8, 1.0]
+      RATIO: [0.95, 1.05]
       PROBABILITY: 0.6
     HORIZONTAL_FLIP:
       USE: True
