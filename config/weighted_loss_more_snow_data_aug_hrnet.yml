@@ -38,10 +38,10 @@ TRAIN:
   SCHEDULER:
     TYPE: "StepLR"
     FACTOR: 0.5
-    PATIENCE: 12
+    PATIENCE: 18
   WEIGHTS_FOLDER: "weights"
   USE_COMET: True
-  COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow","all_channels"]
+  COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow","all_channels","data_aug"]
   DATA_AUG:
     RANDOM_RESIZE_CROP:
       USE: True
