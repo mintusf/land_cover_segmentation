@@ -49,20 +49,24 @@ SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
 
 | class | recall | precision  |      f1|
 |-|-|-|-|
-| shrublands    | 0.931397 |  0.398179  |0.557866|
-| urban         | 0.748475 |  0.679214  |0.712164|
-| agricultural  | 0.883135 |  0.235822  |0.372244|
-| barren        | 0.389128 |  0.851968  |0.534245|
-| snow          | 1.000000 |  0.999835  |0.999917|
-| water         | 0.818348 |  0.959264  |0.883221|
-| dense_forest  | 0.659396 |  0.670900  |0.665098|
-| open_forest   | 0.373307 |  0.728801  |0.493720|
-| wetlands      | 0.473258 |  0.213453  |0.294209|
-| grasslands    | 0.003759 |  0.612439  |0.007472|
+| shrublands    | 0.95 |  0.36  |0.52|
+| urban         | 0.74 |  0.78  |0.76|
+| agricultural  | 0.69 |  0.35  |0.46|
+| barren        | 0.31 |  0.98  |0.47|
+| snow          | 0.89 |  0.90  |0.89|
+| water         | 0.80 |  0.97  |0.88|
+| dense_forest  | 0.90 |  0.69  |0.78|
+| open_forest   | 0.41 |  0.72  |0.52|
+| wetlands      | 0.83 |  0.80  |0.81|
+| grasslands    | 0.15 |  0.50  |0.23|
 
 
 
-![Confusion_matrix](assets/Confusion_matrix.PNG)
+| Confusion matrix (samples counts) | Confusion matrix (% of row) | Confusion matrix (% of column) |
+|-|-|-|
+| ![Confusion_matrix](assets/conf_mat_counts.PNG) | ![Confusion_matrix](assets/conf_mat_rows.PNG) | ![Confusion_matrix](assets/conf_mat_cols.PNG) |
+
+
 
 
 ### **Generated masks example**
