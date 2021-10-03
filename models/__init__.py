@@ -7,6 +7,8 @@ from torch.nn.parallel import DataParallel
 from config.default import CfgNode
 from dataset.dataset_utils import get_channels_in_count, get_channels_out_count
 from models.deeplab import create_deeplab
+from models.hrnet.hrnet import get_hrnet
+from utils.io_utils import load_yaml
 
 logger = logging.getLogger("global")
 
@@ -27,6 +29,13 @@ def get_model(cfg: CfgNode, device: str) -> Module:
         channels_in = get_channels_in_count(cfg)
         channels_out = get_channels_out_count(cfg)
         model = create_deeplab(channels_in, channels_out)
+    if cfg.MODEL.TYPE == "hrnet":
+        channels_in = get_channels_in_count(cfg)
+        channels_out = get_channels_out_count(cfg)
+        model_config = load_yaml(cfg.MODEL.CONFIG)
+        model = get_hrnet(
+            model_config, channels_in, channels_out, cfg.TRAIN.RESUME_CHECKPOINT
+        )
     else:
         raise NotImplementedError
 

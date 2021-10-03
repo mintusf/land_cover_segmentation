@@ -7,6 +7,7 @@ _C.IS_TEST = False
 
 _C.MODEL = CfgNode()
 _C.MODEL.TYPE = "DeepLab"
+_C.MODEL.CONFIG = ""
 
 _C.DATASET = CfgNode()
 _C.DATASET.ROOT = os.path.join("/data")
