@@ -123,6 +123,7 @@ def generate_save_raster(
     colors_dict = mask_config["colors"]
     alphablended = create_alphablend(dummy_image, mask, alpha, colors_dict)
     colored_mask = alphablended.transpose(2, 0, 1)
+    colored_mask = colored_mask.astype(np.int8)
     np_to_raster(colored_mask, ref_raster, raster_path)
 
 
@@ -150,6 +151,27 @@ def generate_save_alphablended_raster(
     alphablended = create_alphablend(input_img, mask, alpha, colors_dict)
     alphablended = alphablended.transpose(2, 0, 1)
     np_to_raster(alphablended, ref_raster, raster_path)
+
+
+def generate_save_raw_raster(
+    input_img: Tensor,
+    ref_raster: str,
+    raster_path: str,
+) -> None:
+    """Generates and saves raster of a mask
+
+    Args:
+        mask (Tensor): Mask tensor.
+                       Shape (1, H, W) where pixel value corresponds to class int
+        input_img (Tensor): Input img tensor
+        name (str): Sample name
+        mask_config (dict): Mask config
+        ref_raster (str): Path to reference raster, used to get transform and crs
+        raster_destination (str): Root path to save raster
+    """
+    input_img = prepare_tensors_for_vis(input_img, None)
+    input_img = input_img.transpose(2, 0, 1)
+    np_to_raster(input_img, ref_raster, raster_path)
 
 
 def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
@@ -190,8 +212,8 @@ def vis_sample(sample_name: str, cfg: CfgNode, savepath: str) -> None:
 
 
 def prepare_tensors_for_vis(
-    input_img: Tensor, mask: Tensor
-) -> Tuple[np.array, np.array]:
+    input_img: Tensor, mask: Union[None, Tensor]
+) -> Union[np.array, Tuple[np.array, np.array]]:
     """Prepares input and mask for visualization
 
     Args:
@@ -205,5 +227,8 @@ def prepare_tensors_for_vis(
     input_img = input_img[(2, 1, 0), :, :]
     input_img = convert_np_for_vis(input_img)
 
-    mask = mask.cpu().numpy()
-    return input_img, mask
+    if mask is None:
+        return input_img
+    else:
+        mask = mask.cpu().numpy()
+        return input_img, mask
