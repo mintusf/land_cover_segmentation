@@ -11,6 +11,7 @@ from utils.visualization_utils import (
     generate_save_alphablend,
     generate_save_alphablended_raster,
     generate_save_raster,
+    generate_save_raw_raster,
 )
 from utils.utilities import split_sample_name, get_raster_filepath
 
@@ -91,6 +92,7 @@ def generate_outputs(
             "alphablend",
             "alphablended_raster",
             "raster",
+            "raw_raster"
         ], f"Output type {output_type} not supported"
         output_path = get_path_for_output(output_type, destination, name, dataloader)
 
@@ -101,6 +103,12 @@ def generate_outputs(
                 mask,
                 input_img,
                 mask_config,
+                ref_raster_path,
+                output_path,
+            )
+        elif output_type == "raw_raster":
+            generate_save_raw_raster(
+                input_img,
                 ref_raster_path,
                 output_path,
             )

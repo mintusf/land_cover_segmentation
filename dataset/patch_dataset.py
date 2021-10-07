@@ -8,12 +8,14 @@ from yacs.config import CfgNode
 
 from dataset.dataset_utils import build_mask
 from utils.io_utils import get_lines_from_txt, load_yaml
-from utils.raster_utils import raster_to_tensor, raster_to_np, np_to_torch
+from utils.raster_utils import raster_to_np, np_to_torch
 from utils.utilities import get_raster_filepath
 
 
 class PatchDataset(Dataset):
-    def __init__(self, cfg: CfgNode, samples_list: str, transforms=None):
+    def __init__(
+        self, cfg: CfgNode, samples_list: str, transforms=None, aug_transforms=None
+    ):
         """Patch Dataset initialization
 
         Args:
@@ -23,6 +25,8 @@ class PatchDataset(Dataset):
                                 If a path, Dataset is used in inference mode and
                                 only input is generated.
             transforms (callable, optional): Optional transform to be applied
+            aug_transforms (callable, optional): Optional data augmentation transforms
+                                                 to be applied
         """
         self.cfg = cfg
 
@@ -51,6 +55,8 @@ class PatchDataset(Dataset):
         self.dataset_list = get_lines_from_txt(self.dataset_list_path, shuffle=True)
 
         self.transforms = transforms
+        self.aug_transforms = aug_transforms
+
         self.device = (
             cfg.TRAIN.DEVICE if self.mode in ["train", "val"] else cfg.TEST.DEVICE
         )
@@ -77,16 +83,32 @@ class PatchDataset(Dataset):
         # Get sample name
         sample_name = self.dataset_list[index]
 
-        # Get input tensor
+        # Get input numpy array
         if os.path.isfile(sample_name):
             input_raster_path = sample_name
         else:
             input_raster_path = get_raster_filepath(
                 self.dataset_root, sample_name, self.input_sensor_name
             )
-        input_tensor = raster_to_tensor(
-            input_raster_path, bands=self.input_used_channels
-        )
+        input_np = raster_to_np(input_raster_path, bands=self.input_used_channels)
+
+        # Get target numpy array
+        if self.mode != "infer":
+            # Get target tensor
+            target_raster_path = get_raster_filepath(
+                self.dataset_root, sample_name, self.target_sensor_name
+            )
+            target_np = raster_to_np(target_raster_path)
+            transformed_mask = build_mask(target_np, self.mask_config)
+
+        # Apply data augmentation
+        if self.mode == "train":
+            if self.aug_transforms is not None:
+                input_np = input_np.transpose(1, 2, 0)
+                augmented = self.aug_transforms(image=input_np, mask=transformed_mask)
+                augmented["image"] = augmented["image"].transpose(2, 0, 1)
+                input_np = augmented["image"]
+                transformed_mask = augmented["mask"]
 
         if "cuda" in self.device:
             if "all" in self.device:
@@ -100,23 +122,18 @@ class PatchDataset(Dataset):
         else:
             raise NotImplementedError
 
+        input_tensor = np_to_torch(input_np)
         input_tensor = input_tensor.to(device).float()
 
         sample = {"input": input_tensor, "name": sample_name}
 
         if self.mode != "infer":
-            # Get target tensor
-            target_raster_path = get_raster_filepath(
-                self.dataset_root, sample_name, self.target_sensor_name
-            )
-            target_np = raster_to_np(target_raster_path)
-            transformed_mask = build_mask(target_np, self.mask_config)
             target_tensor = np_to_torch(transformed_mask, dtype=torch.long)
             target_tensor = target_tensor.to(device).long()
             sample["target"] = target_tensor
 
-        # Tranform
-        if self.transforms:
+        # Transform
+        if self.transforms is not None:
             sample = self.transforms(sample)
 
         return sample

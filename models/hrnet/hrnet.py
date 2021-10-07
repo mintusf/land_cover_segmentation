@@ -541,9 +541,7 @@ class HighResolutionNet(nn.Module):
 
         x = self.last_layer(x)
 
-        x = F.interpolate(
-            x, size=[256, 256], mode="nearest"
-        )
+        x = F.interpolate(x, size=[256, 256], mode="nearest")
 
         return {"out": x}
 
@@ -558,17 +556,6 @@ class HighResolutionNet(nn.Module):
             elif isinstance(m, BatchNorm2d_class):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-        if os.path.isfile(pretrained):
-            pretrained_dict = torch.load(pretrained)
-            logger.info("=> loading pretrained model {}".format(pretrained))
-            model_dict = self.state_dict()
-            pretrained_dict = {
-                k: v for k, v in pretrained_dict.items() if k in model_dict.keys()
-            }
-            for k, _ in pretrained_dict.items():
-                logger.info("=> loading {} pretrained model {}".format(k, pretrained))
-            model_dict.update(pretrained_dict)
-            self.load_state_dict(model_dict)
 
 
 def get_hrnet(cfg, channels_in, classes_out, checkpoint_path):

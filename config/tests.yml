@@ -36,6 +36,18 @@ TRAIN:
   WEIGHTS_FOLDER: "tests/weights"
   USE_COMET: False
   COMET_TAGS: ["test"]
+  DATA_AUG:
+    RANDOM_RESIZE_CROP:
+      USE: True
+      SCALE: [0.9, 1.1]
+      RATIO: [0.9, 1.1]
+      PROBABILITY: 0.6
+    HORIZONTAL_FLIP:
+      USE: True
+      PROBABILITY: 0.5
+    VERTICAL_FLIP:
+      USE: True
+      PROBABILITY: 0.5
 TEST:
   DEVICE: "cpu"
   WORKERS: 0

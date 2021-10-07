@@ -1,0 +1,60 @@
+IS_TEST: False
+
+MODEL:
+  TYPE: hrnet
+  CONFIG: "/data/land_cover_tracking/config/model/hrnet.yml"
+
+DATASET:
+  ROOT: "/data/seg_data"
+  LIST_TRAIN: "config/dataset/lists/train_more_snow.txt"
+  LIST_VAL: "config/dataset/lists/val_more_snow.txt"
+  LIST_TEST: "config/dataset/lists/test_more_snow.txt"
+  INPUT:
+    SENSOR: s2
+    USED_CHANNELS: [0,1,2,3,4,5,6,7,8,9,10,11,12]
+    STATS_FILE: "config/dataset/stats/channels_stats_less_classes_more_snow.json"
+    CHANNELS: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B8a", "B9", "B10", "B11", "B12"]
+  MASK:
+    SENSOR: lc
+    CONFIG: "config/dataset/mask_configs/less_classes.yml"
+  SHAPE: [256, 256]
+  CLASSES_COUNT_JSON: "config/dataset/stats/classes_count_less_classes_more_snow.json"
+TRAIN:
+  EPOCHS: 20
+  RESUME_CHECKPOINT: ""
+  BATCH_SIZE_PER_DEVICE: 8
+  DEVICE: "cuda:0"
+  WORKERS: 4
+  SHUFFLE: True
+  SEED: 42
+  LOSS:
+    TYPE: "categorical_crossentropy"
+    USE_WEIGHTS: True
+  OPTIMIZER: "adam"
+  LR: 0.01
+  WEIGHT_DECAY: 0.0001
+  VERBOSE_STEP: 100
+  VAL_PER_EPOCH: 6
+  SCHEDULER:
+    TYPE: "StepLR"
+    FACTOR: 0.5
+    PATIENCE: 18
+  WEIGHTS_FOLDER: "weights"
+  USE_COMET: True
+  COMET_TAGS: ["experiment", "crossentropy","weighted_loss", "more_snow","all_channels","data_aug"]
+  DATA_AUG:
+    RANDOM_RESIZE_CROP:
+      USE: True
+      SCALE: [0.8, 1.0]
+      RATIO: [0.95, 1.05]
+      PROBABILITY: 0.6
+    HORIZONTAL_FLIP:
+      USE: True
+      PROBABILITY: 0.5
+    VERTICAL_FLIP:
+      USE: True
+      PROBABILITY: 0.5
+TEST:
+  DEVICE: "cuda:0"
+  WORKERS: 1
+  BATCH_SIZE_PER_DEVICE: 8

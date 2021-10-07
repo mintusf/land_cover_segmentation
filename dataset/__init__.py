@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
 from config.default import CfgNode
+from dataset.data_augmentation import get_augmentation_transforms
 from dataset.dataset_utils import (
     build_classes_distribution_json,
     get_classes_counts_from_json,
@@ -55,8 +56,11 @@ def get_dataloader(cfg: CfgNode, samples_list: str) -> DataLoader:
 
     transform = get_transform(cfg)
     transforms = Compose([transform])
+    aug_transforms = get_augmentation_transforms(cfg)
 
-    dataset = PatchDataset(cfg, samples_list, transforms=transforms)
+    dataset = PatchDataset(
+        cfg, samples_list, transforms=transforms, aug_transforms=aug_transforms
+    )
 
     if samples_list in ["train", "val"]:
         num_workers = cfg.TRAIN.WORKERS
