@@ -49,43 +49,27 @@ SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
 
 | class | recall | precision  |      f1|
 |-|-|-|-|
-| shrublands    | 0.95 |  0.36  |0.52|
-| urban         | 0.74 |  0.78  |0.76|
-| agricultural  | 0.69 |  0.35  |0.46|
-| barren        | 0.31 |  0.98  |0.47|
-| snow          | 0.89 |  0.90  |0.89|
-| water         | 0.80 |  0.97  |0.88|
-| dense_forest  | 0.90 |  0.69  |0.78|
-| open_forest   | 0.41 |  0.72  |0.52|
-| wetlands      | 0.83 |  0.80  |0.81|
-| grasslands    | 0.15 |  0.50  |0.23|
+| shrublands    | 0.85 |  0.73  |0.79|
+| urban         | 0.70 |  0.60  |0.65|
+| agricultural  | 0.90 |  0.76  |0.82|
+| barren        | 0.43 |  1.00  |0.60|
+| snow          | 0.91 |  0.93  |0.92|
+| water         | 0.92 |  0.97  |0.94|
+| dense_forest  | 0.42 |  0.77  |0.54|
+| open_forest   | 0.53 |  0.54  |0.54|
+| wetlands      | 0.66 |  0.23  |0.23|
+| grasslands    | 0.48 |  0.38  |0.42|
 
 
-
-| Confusion matrix (samples counts) | Confusion matrix (% of row) | Confusion matrix (% of column) |
-|-|-|-|
-| ![Confusion_matrix](assets/conf_mat_counts.PNG) | ![Confusion_matrix](assets/conf_mat_rows.PNG) | ![Confusion_matrix](assets/conf_mat_cols.PNG) |
-
-
+### **Confusion matrix (test set)**
+![Confusion_matrix](assets/matrix.png)
 
 
 ### **Generated masks example**
 
-| urban | water | agriculture | wetlands | open_forest | deep_forest |
-|-|-|-|-|-|-|
-| ![urban](assets/urban.PNG) | ![water](assets/water.PNG) | ![agriculture](assets/agriculture.PNG) | ![wetlands](assets/wetlands.PNG) | ![open_forest](assets/open_forest.PNG) | ![deep_forest](assets/deep_forest.PNG) |
+![Colors](assets/colors.png)
 
-#### Test dataset
-
-| Stree Map | Satelite image alphablended with predictions masks |
-|-|-|
-| ![1-1](assets/1-1.PNG) | ![1-2](assets/1-2.PNG) |
-| ![2-1](assets/2-1.PNG) | ![2-2](assets/2-2.PNG) |
-| ![3-1](assets/3-1.PNG) | ![3-2](assets/3-2.PNG) |
-| ![4-1](assets/4-1.PNG) | ![4-2](assets/4-2.PNG) |
-| ![5-1](assets/5-1.PNG) | ![5-2](assets/5-2.PNG) |
-| ![6-1](assets/6-1.PNG) | ![6-2](assets/6-2.PNG) |
-| ![7-1](assets/7-1.PNG) | ![7-2](assets/7-2.PNG) |
+![Test res](assets/test_res.jpg)
 
 #### Real-life test (Sentinel image downloaded from EOBrowser)
 
