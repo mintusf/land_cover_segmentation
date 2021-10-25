@@ -2,7 +2,7 @@
 ![Flake8 check](https://github.com/mintusf/land_cover_tracking/actions/workflows/flake8.yml/badge.svg?branch=main)
 
 ## Summary
-Land cover detection using Sentinel satellite data with instance segmentation (WIP).
+Land cover detection using Sentinel satellite data with instance segmentation.
 
 ## Folders and scripts structure:
 * assets: images for README
@@ -67,6 +67,5 @@ SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
 
 ![Test res](assets/test_res.jpg)
 
-#### Real-life test (Sentinel image downloaded from EOBrowser)
-
-![Results5](assets/Sentinel_data_1.PNG)
+#### Real-life Web App
+The model is used in [this repository](https://github.com/mintusf/land_cover_tracking) as a backend for land cover classification.
