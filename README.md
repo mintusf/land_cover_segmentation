@@ -30,6 +30,7 @@ SEN12MS ([LINK](https://mediatum.ub.tum.de/1474000))
 * Spatial resolution: 10m
 * Patch size: 256 x 256
 * Classes: 33 (converted to 12)
+* According to the [paper](https://www.isprs-ann-photogramm-remote-sens-spatial-inf-sci.net/IV-2-W7/153/2019/isprs-annals-IV-2-W7-153-2019.pdf), the accuracy of annotation is ~80%, which is also limitation for the training.
 * Channels: 12 bands of Sentinel L2C (Only RBG bands used for training and its results are shown in this document)
 * Dataset for class `snow` was created by this repository creator using [EO Browser](https://apps.sentinel-hub.com/eo-browser/)
 
