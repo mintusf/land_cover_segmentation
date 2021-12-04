@@ -4,10 +4,28 @@
 ## Summary
 Land cover detection using Sentinel satellite data with instance segmentation.
 
-## Folders and scripts structure:
-* assets: images for README
+## How to run
+
+### Environment setup
+1. If you want to create a local environment (e.g. on AWS), please run `env/setup_env.sh`
+2. If you want to create a docker container, please run `env/setup_docker.sh`)
+
+### Training
+1. Create your `yml` config file in `config` folder, according to parameters in `default.py`
+2. Run training with `python train.py --cfg CONFIG_PATH`
+3. Experiment can be tracket in [comet_ml](https://www.comet.ml/site/). In order to do so, please add your API_KEY in `.comet.config`
+![image](https://user-images.githubusercontent.com/40537332/144704820-cf51f1a0-61f0-40f9-859b-1c90d386d131.png)
+4. Weights are saved to `weights` folder
+5. Logs can be found in `logs` folder
+
+### Testing
+1. In order to test and get class-wise metrics on test set, run `evaluate.py --cfg CONFIG_PATH --checkpoint WEIGHTS_PATH`
+
+### Inference
+1. In order to make inference, run `infer.py --cfg CONFIG_PATH --checkpoint WEIGHTS_PATH --sample_list PATH_TO_SAMPLES_TXT --outputs SELECTED_OUTPUTS`. Possible outputs are: alphablend (png), raster (mask with geographic coordinates), alphablended_raster (alphablend with geographic coordinates) and raw_raster (input image).
+
+## Folders:
 * config: training configs, dataset configs
-* data_analysis: EDA notebooks
 * env: scripts to build docker environment
 * logs: training logs
 * models: models implementation
@@ -16,9 +34,6 @@ Land cover detection using Sentinel satellite data with instance segmentation.
 * train_utils: utils for training
 * utils: I/O, visualization, raster utils
 * weights: for weights
-* train.py: used for training
-* test.py: used for evaluating test set
-* infer.py: used for inference (raster or alphablend)
 
 ## Dataset
 Reference:
