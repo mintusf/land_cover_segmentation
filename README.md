@@ -23,6 +23,7 @@ Land cover detection using Sentinel satellite data with instance segmentation.
 
 ### Inference
 1. In order to make inference, run `infer.py --cfg CONFIG_PATH --checkpoint WEIGHTS_PATH --sample_list PATH_TO_SAMPLES_TXT --outputs SELECTED_OUTPUTS`. Possible outputs are: alphablend (png), raster (mask with geographic coordinates), alphablended_raster (alphablend with geographic coordinates) and raw_raster (input image).
+2. Weigths for 3 bands input (results shown below) are available [here](https://drive.google.com/file/d/1REnApKRIkTvpRRLAbheBX_4OFJKQtp0N/view)
 
 ## Folders:
 * config: training configs, dataset configs
